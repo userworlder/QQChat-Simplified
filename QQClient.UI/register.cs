@@ -27,7 +27,14 @@ namespace QQClient.UI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+            if(textBox1.Text !="" && textBox2.Text != "")
+            {
+                //register()
+                this.Hide();
+                register_new r_new = new register_new();
+                r_new.ShowDialog();
+
+            }
         }
     }
 }
