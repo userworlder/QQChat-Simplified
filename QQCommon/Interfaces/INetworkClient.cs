@@ -21,7 +21,7 @@ namespace QQCommon.Interfaces
         bool Register(string username, string password, string nickname);
 
         // 发送消息
-        bool SendMessage(string receiver, string content);
+        bool SendMessage(string username,string receiver, string content);
 
         // 添加好友
         bool AddFriend(string friendUsername);
