@@ -45,28 +45,27 @@
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(711, 375);
+            this.pictureBox1.Size = new System.Drawing.Size(800, 450);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-           
             // 
             // textBox1
             // 
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.Location = new System.Drawing.Point(258, 92);
+            this.textBox1.Location = new System.Drawing.Point(290, 110);
             this.textBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(237, 18);
+            this.textBox1.Size = new System.Drawing.Size(267, 21);
             this.textBox1.TabIndex = 1;
             // 
             // textBox2
             // 
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Location = new System.Drawing.Point(258, 153);
+            this.textBox2.Location = new System.Drawing.Point(290, 184);
             this.textBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(237, 18);
+            this.textBox2.Size = new System.Drawing.Size(267, 21);
             this.textBox2.TabIndex = 2;
             // 
             // button1
@@ -74,10 +73,10 @@
             this.button1.BackColor = System.Drawing.Color.Transparent;
             this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(203, 237);
+            this.button1.Location = new System.Drawing.Point(228, 284);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(309, 39);
+            this.button1.Size = new System.Drawing.Size(348, 47);
             this.button1.TabIndex = 3;
             this.button1.Text = " ";
             this.button1.UseVisualStyleBackColor = false;
@@ -89,18 +88,18 @@
             this.label1.BackColor = System.Drawing.Color.White;
             this.label1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.label1.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label1.Location = new System.Drawing.Point(373, 287);
+            this.label1.Location = new System.Drawing.Point(420, 344);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 15);
+            this.label1.Size = new System.Drawing.Size(98, 18);
             this.label1.TabIndex = 4;
             this.label1.Text = "注册账号  ";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // login
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(711, 375);
+            this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
