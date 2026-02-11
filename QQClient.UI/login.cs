@@ -36,5 +36,10 @@ namespace QQClient.UI
             user user= new user();
             user.ShowDialog();
         }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
