@@ -105,6 +105,9 @@
     <EmbeddedResource Include="register.resx">
       <DependentUpon>register.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="register_new.resx">
+      <DependentUpon>register_new.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="single.resx">
       <DependentUpon>single.cs</DependentUpon>
     </EmbeddedResource>

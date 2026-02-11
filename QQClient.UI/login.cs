@@ -32,6 +32,7 @@ namespace QQClient.UI
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             this.Hide();
             user user= new user();
             user.ShowDialog();
