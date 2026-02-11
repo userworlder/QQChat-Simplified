@@ -55,10 +55,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocols\ChatPacket.cs" />
     <Compile Include="Protocols\MessageType.cs" />
+    <Compile Include="Utils\JsonHelper.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Utils\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
