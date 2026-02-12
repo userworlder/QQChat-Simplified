@@ -42,9 +42,9 @@ namespace QQServer.Communication
                 _isRunning = true;
 
                 Console.WriteLine("========================================");
-                Console.WriteLine($"🚀 QQ服务器启动成功！");
-                Console.WriteLine($"📡 监听端口: {port}");
-                Console.WriteLine($"🕒 启动时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                Console.WriteLine($"QQ服务器启动成功！");
+                Console.WriteLine($"监听端口: {port}");
+                Console.WriteLine($"启动时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
                 Console.WriteLine("========================================");
 
                 // 启动接受客户端连接的线程
@@ -59,7 +59,7 @@ namespace QQServer.Communication
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ 服务器启动失败: {ex.Message}");
+                Console.WriteLine($"服务器启动失败: {ex.Message}");
                 throw;
             }
         }
@@ -84,7 +84,7 @@ namespace QQServer.Communication
             }
 
             _listener?.Stop();
-            Console.WriteLine("🛑 服务器已停止");
+            Console.WriteLine("服务器已停止");
         }
 
         // 接受客户端连接
@@ -110,8 +110,8 @@ namespace QQServer.Communication
                         _clients.Add(clientInfo);
                     }
 
-                    Console.WriteLine($"✅ 新客户端连接: {clientInfo.RemoteEndPoint}");
-                    Console.WriteLine($"📊 当前在线客户端数: {_clients.Count}");
+                    Console.WriteLine($"新客户端连接: {clientInfo.RemoteEndPoint}");
+                    Console.WriteLine($"当前在线客户端数: {_clients.Count}");
 
                     // 为每个客户端创建处理线程
                     Thread clientThread = new Thread(() => HandleClient(clientInfo));
@@ -121,7 +121,7 @@ namespace QQServer.Communication
                 catch (Exception ex)
                 {
                     if (_isRunning)
-                        Console.WriteLine($"❌ 接受客户端连接出错: {ex.Message}");
+                        Console.WriteLine($"接受客户端连接出错: {ex.Message}");
                 }
             }
         }
@@ -165,7 +165,7 @@ namespace QQServer.Communication
                 catch (Exception ex)
                 {
                     // 客户端断开连接
-                    Console.WriteLine($"❌ 客户端 {clientInfo.RemoteEndPoint} 断开连接: {ex.Message}");
+                    Console.WriteLine($"客户端 {clientInfo.RemoteEndPoint} 断开连接: {ex.Message}");
                     RemoveClient(clientInfo);
                     break;
                 }
@@ -242,7 +242,7 @@ namespace QQServer.Communication
                 // 添加用户信息
                 response.Extras["UserInfo"] = JsonConvert.SerializeObject(user);
 
-                Console.WriteLine($"✅ 登录成功: {username}");
+                Console.WriteLine($"登录成功: {username}");
             }
             else
             {
@@ -256,7 +256,7 @@ namespace QQServer.Communication
                     Timestamp = DateTime.Now
                 };
 
-                Console.WriteLine($"❌ 登录失败: {username}");
+                Console.WriteLine($"登录失败: {username}");
             }
 
             // 发送响应
@@ -266,7 +266,7 @@ namespace QQServer.Communication
         // 处理注册请求 - 完整实现
         private void HandleRegister(ChatPacket packet, ClientInfo clientInfo)
         {
-            Console.WriteLine($"📝 注册请求");
+            Console.WriteLine($"注册请求");
 
             try
             {
@@ -288,11 +288,11 @@ namespace QQServer.Communication
 
                 if (success)
                 {
-                    Console.WriteLine($"✅ 注册成功: {newUser.Username}");
+                    Console.WriteLine($"注册成功: {newUser.Username}");
                 }
                 else
                 {
-                    Console.WriteLine($"❌ 注册失败: {newUser.Username} (用户名已存在)");
+                    Console.WriteLine($"注册失败: {newUser.Username} (用户名已存在)");
                 }
 
                 // 发送响应
@@ -300,7 +300,7 @@ namespace QQServer.Communication
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ 注册处理出错: {ex.Message}");
+                Console.WriteLine($"注册处理出错: {ex.Message}");
 
                 var response = new ChatPacket
                 {
@@ -367,7 +367,7 @@ namespace QQServer.Communication
             string fromUser = packet.Sender;
             string toUser = packet.Receiver;
 
-            Console.WriteLine($"➕ 添加好友请求: {fromUser} -> {toUser}");
+            Console.WriteLine($"添加好友请求: {fromUser} -> {toUser}");
 
             // 调用业务层处理好友请求
             bool success = _friendService.AddFriendRequest(fromUser, toUser);
