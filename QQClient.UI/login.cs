@@ -30,13 +30,19 @@ namespace QQClient.UI
 
      
 
-        private void button1_Click(object sender, EventArgs e)
+        //private void button1_Click(object sender, EventArgs e)
+        //{
+            
+        //}
+
+        private void pictureBox2_Click(object sender, EventArgs e)
         {
             QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
             string ip = "127.0.0.1";
             int port = 2005;
             bool con = client.Connect(ip, port);
-            if (con) {
+            if (con)
+            {
                 //是否为空
                 if (textBox1.Text != "" && textBox2.Text != "")
                 {
@@ -64,7 +70,7 @@ namespace QQClient.UI
             else
             {
                 MessageBox.Show("无法连接到服务器，请重试");
-            }           
-        }  
+            }
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace QQClient.Host
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new QQClient.UI.login());
+           // Application.Run(new QQClient.UI.user());
         }
     }
 }
