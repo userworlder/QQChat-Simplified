@@ -71,11 +71,11 @@
     <Compile Include="register_new.Designer.cs">
       <DependentUpon>register_new.cs</DependentUpon>
     </Compile>
-    <Compile Include="single.cs">
+    <Compile Include="ContactItem.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="single.Designer.cs">
-      <DependentUpon>single.cs</DependentUpon>
+    <Compile Include="ContactItem.Designer.cs">
+      <DependentUpon>ContactItem.cs</DependentUpon>
     </Compile>
     <Compile Include="user.cs">
       <SubType>Form</SubType>
@@ -108,8 +108,8 @@
     <EmbeddedResource Include="register_new.resx">
       <DependentUpon>register_new.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="single.resx">
-      <DependentUpon>single.cs</DependentUpon>
+    <EmbeddedResource Include="ContactItem.resx">
+      <DependentUpon>ContactItem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="user.resx">
       <DependentUpon>user.cs</DependentUpon>

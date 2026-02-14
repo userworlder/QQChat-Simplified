@@ -17,8 +17,8 @@ namespace QQClient.UI
         {
             InitializeComponent();
 
-            pictureBox1.Image = ImageHelper.Load("login.png");
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+          //  pictureBox1.Image = ImageHelper.Load("login.png");
+           // pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
         }
 
         private void label1_Click(object sender, EventArgs e)
