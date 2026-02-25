@@ -94,7 +94,7 @@ namespace QQClient.Communication
             // 2. 发送给服务器
             SendPacket(packet);
 
-            // 3. 接收响应（简化版，实际应该异步处理）
+            // 3. 接收响应
             var response = ReceivePacket();
 
             // 4. 返回结果

@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
+    <PackageReference Include="System.Security.Permissions" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\QQServer.Business\QQServer.Business.csproj" />
     <ProjectReference Include="..\QQServer.Communication\QQServer.Communication.csproj" />
   </ItemGroup>

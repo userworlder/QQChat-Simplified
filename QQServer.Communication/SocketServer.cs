@@ -19,7 +19,7 @@ namespace QQServer.Communication
         private bool _isRunning;
         private List<ClientInfo> _clients = new List<ClientInfo>();
 
-        // 业务服务实例（由成员B实现）
+        // 业务服务实例
         private IUserService _userService;
         private IMessageService _messageService;
         private IFriendService _friendService;
@@ -125,51 +125,76 @@ namespace QQServer.Communication
                 }
             }
         }
+        private ChatPacket ReceivePacketFromClient(NetworkStream stream)
+        {
+            try
+            {
+                Console.WriteLine("[ReceivePacketFromClient] 开始接收数据...");
+                // 读取4字节长度
+                byte[] lengthBytes = new byte[4];
+                int bytesRead = 0;
+                while (bytesRead < 4)
+                {
+                    Console.WriteLine($"[ReceivePacketFromClient] 尝试读取长度，已读 {bytesRead}/4");
+                    int read = stream.Read(lengthBytes, bytesRead, 4 - bytesRead);
+                    Console.WriteLine($"[ReceivePacketFromClient] 实际读取: {read} 字节");
+                    if (read == 0) {
+                        Console.WriteLine("[ReceivePacketFromClient] 连接关闭 (read==0)");
+                        return null; 
+                    } // 连接关闭
+                    bytesRead += read;
+                }
+                Console.WriteLine($"[ReceivePacketFromClient] 长度字节: {BitConverter.ToString(lengthBytes)}");
+                int dataLength = BitConverter.ToInt32(lengthBytes, 0);
+                Console.WriteLine($"[ReceivePacketFromClient] 解析得到数据长度: {dataLength}");
+                // 读取数据
+                byte[] data = new byte[dataLength];
+                bytesRead = 0;
+                while (bytesRead < dataLength)
+                {
+                    Console.WriteLine($"[ReceivePacketFromClient] 尝试读取数据，已读 {bytesRead}/{dataLength}");
+                    int read = stream.Read(data, bytesRead, dataLength - bytesRead);
+                    Console.WriteLine($"[ReceivePacketFromClient] 实际读取数据: {read} 字节");
+                    if (read == 0) { 
+                        return null; 
+                    }
+                    bytesRead += read;
+                }
 
+                string json = Encoding.UTF8.GetString(data);
+                Console.WriteLine($"[ReceivePacketFromClient] 收到JSON: {json}");
+                return ChatPacket.FromJson(json);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"[ReceivePacketFromClient] 异常: {ex.GetType().Name} - {ex.Message}");
+                Console.WriteLine($"[ReceivePacketFromClient] 堆栈: {ex.StackTrace}");
+                return null; // 异常视为断开
+            }
+        }
         // 处理单个客户端
         private void HandleClient(ClientInfo clientInfo)
         {
             NetworkStream stream = clientInfo.Stream;
-            byte[] buffer = new byte[8192]; // 8KB缓冲区
-
             while (_isRunning && clientInfo.TcpClient.Connected)
             {
                 try
                 {
-                    // 读取消息（以\n分隔）
-                    List<byte> messageBytes = new List<byte>();
-                    int b;
-                    while ((b = stream.ReadByte()) != '\n')
-                    {
-                        if (b == -1)
-                        {
-                            // 客户端断开连接
-                            throw new Exception("客户端断开连接");
-                        }
-                        messageBytes.Add((byte)b);
-                    }
-
-                    if (messageBytes.Count == 0)
-                        continue;
-
-                    // 解析JSON
-                    string json = Encoding.UTF8.GetString(messageBytes.ToArray());
-                    ChatPacket packet = ChatPacket.FromJson(json);
+                    ChatPacket packet = ReceivePacketFromClient(stream);
+                    if (packet == null) break; // 连接断开
 
                     // 处理消息
                     ProcessPacket(packet, clientInfo);
 
-                    // 更新最后活动时间
                     clientInfo.LastActivityTime = DateTime.Now;
                 }
                 catch (Exception ex)
                 {
-                    // 客户端断开连接
-                    Console.WriteLine($"客户端 {clientInfo.RemoteEndPoint} 断开连接: {ex.Message}");
-                    RemoveClient(clientInfo);
+                    Console.WriteLine($"客户端 {clientInfo.RemoteEndPoint} 断开: {ex.Message}");
                     break;
                 }
             }
+            RemoveClient(clientInfo);
         }
 
         // 处理不同类型的数据包
@@ -213,7 +238,7 @@ namespace QQServer.Communication
             string username = packet.Sender;
             string password = packet.Content;
 
-            Console.WriteLine($"🔐 登录请求: {username}");
+            Console.WriteLine($"登录请求: {username}");
 
             // 调用业务层验证登录
             var user = _userService.Login(username, password);
@@ -421,16 +446,19 @@ namespace QQServer.Communication
             try
             {
                 string json = packet.ToJson();
-                byte[] data = Encoding.UTF8.GetBytes(json + "\n");
+                byte[] data = Encoding.UTF8.GetBytes(json);
+                byte[] lengthBytes = BitConverter.GetBytes(data.Length);
 
-                if (clientInfo.Stream != null && clientInfo.TcpClient.Connected)
-                {
-                    clientInfo.Stream.Write(data, 0, data.Length);
-                }
+                // 发送长度
+                clientInfo.Stream.Write(lengthBytes, 0, lengthBytes.Length);
+                // 发送数据
+                clientInfo.Stream.Write(data, 0, data.Length);
+                clientInfo.Stream.Flush();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ 发送消息失败: {ex.Message}");
+                Console.WriteLine($"发送失败: {ex.Message}");
+                RemoveClient(clientInfo);
             }
         }
 
