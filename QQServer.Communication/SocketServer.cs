@@ -347,7 +347,7 @@ namespace QQServer.Communication
             string receiver = packet.Receiver;
             string content = packet.Content;
 
-            Console.WriteLine($"💬 聊天消息: {sender} -> {receiver}: {content}");
+            Console.WriteLine($"聊天消息: {sender} -> {receiver}: {content}");
 
             // 1. 保存消息到数据库
             var message = new Message
@@ -521,8 +521,8 @@ namespace QQServer.Communication
                     }
                     catch { }
 
-                    Console.WriteLine($"📴 客户端断开: {clientInfo.RemoteEndPoint}");
-                    Console.WriteLine($"📊 当前在线客户端数: {_clients.Count}");
+                    Console.WriteLine($"客户端断开: {clientInfo.RemoteEndPoint}");
+                    Console.WriteLine($"当前在线客户端数: {_clients.Count}");
                 }
             }
         }
@@ -549,7 +549,7 @@ namespace QQServer.Communication
 
                     foreach (var client in deadClients)
                     {
-                        Console.WriteLine($"💀 客户端心跳超时: {client.RemoteEndPoint}");
+                        Console.WriteLine($"客户端心跳超时: {client.RemoteEndPoint}");
                         RemoveClient(client);
                     }
                 }
@@ -575,40 +575,5 @@ namespace QQServer.Communication
         }
     }
 
-    // 客户端信息类
-    public class ClientInfo
-    {
-        public TcpClient TcpClient { get; set; }
-        public NetworkStream Stream { get; set; }
-        public string RemoteEndPoint { get; set; }
-        public string Username { get; set; }
-        public string UserId { get; set; }
-        public DateTime ConnectedTime { get; set; }
-        public DateTime LastActivityTime { get; set; }
-        public DateTime LastHeartbeatTime { get; set; }
-
-        public ClientInfo()
-        {
-            LastActivityTime = DateTime.Now;
-            LastHeartbeatTime = DateTime.Now;
-        }
-    }
-
-    // 客户端信息简表（用于状态查询）
-    public class ClientInfoBrief
-    {
-        public string Username { get; set; }
-        public string RemoteEndPoint { get; set; }
-        public DateTime ConnectedTime { get; set; }
-        public DateTime LastActivityTime { get; set; }
-    }
-
-    // 服务器状态
-    public class ServerStatus
-    {
-        public bool IsRunning { get; set; }
-        public int ClientCount { get; set; }
-        public DateTime StartTime { get; set; }
-        public List<ClientInfoBrief> Clients { get; set; }
-    }
+   
 }
