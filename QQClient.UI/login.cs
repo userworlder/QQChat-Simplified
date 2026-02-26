@@ -39,7 +39,7 @@ namespace QQClient.UI
         {
             QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
             string ip = "127.0.0.1";
-            int port = 2005;
+            int port = 8888;
             bool con = client.Connect(ip, port);
             if (con)
             {

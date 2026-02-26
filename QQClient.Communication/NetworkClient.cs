@@ -23,9 +23,31 @@ namespace QQClient.Communication
         {
             throw new NotImplementedException();
         }
+        private bool IsConnected()
+        {
+            if (_tcpClient == null || !_tcpClient.Connected)
+                return false;
 
+            // 通过检查Socket的可用数据来验证连接是否真的活着
+            try
+            {
+                return !(_tcpClient.Client.Poll(1, SelectMode.SelectRead) && _tcpClient.Client.Available == 0);
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public bool Connect(string serverIp, int port)
         {
+            if (IsConnected())
+            {
+                return true; // 已连接，无需重复连接
+            }
+
+            // 确保清理旧连接
+            Disconnect();
+
             try
             {
                 _tcpClient = new TcpClient();
@@ -94,7 +116,7 @@ namespace QQClient.Communication
             // 2. 发送给服务器
             SendPacket(packet);
 
-            // 3. 接收响应（简化版，实际应该异步处理）
+            // 3. 接收响应
             var response = ReceivePacket();
 
             // 4. 返回结果
