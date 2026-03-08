@@ -166,7 +166,7 @@ namespace QQClient.Communication
             // 4字节都读完了，现在把它转成整数（真正的消息长度）
             // 比如lengthBytes = [0,0,0,5] → dataLength = 5
             int dataLength = BitConverter.ToInt32(lengthBytes, 0);
-
+            
             // 2. 读取数据（带超时）
             byte[] buffer = new byte[dataLength];
             totalRead = 0;
