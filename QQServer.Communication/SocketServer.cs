@@ -540,8 +540,8 @@ namespace QQServer.Communication
 
                     foreach (var client in _clients)
                     {
-                        // 如果超过1分钟没有收到心跳，认为客户端已死
-                        if ((DateTime.Now - client.LastHeartbeatTime).TotalSeconds > 60)
+                        // 如果超过10分钟没有收到心跳，认为客户端已死
+                        if ((DateTime.Now - client.LastHeartbeatTime).TotalSeconds > 600)
                         {
                             deadClients.Add(client);
                         }
