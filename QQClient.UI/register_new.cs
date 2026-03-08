@@ -16,5 +16,34 @@ namespace QQClient.UI
         {
             InitializeComponent();
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            textBox2.Text = "";
+            textBox3.Text = "";
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string nickname=textBox1.Text;
+            string account=textBox2.Text;
+            string password=textBox3.Text;
+            if (account != "" && nickname == "")
+            {
+                nickname = account;
+            }
+            if (password == "" || account == "")
+            {
+                label_warn.Text = "账号或密码不可为空";
+                label_warn.Visible = true;
+            }
+            else
+            {
+                QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
+                client.Register(nickname, account, password);
+            }
+           
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace QQClient.UI
         private void label1_Click(object sender, EventArgs e)
         {
             
-            register register=new register();
+            register_new register=new register_new();
             register.ShowDialog();
         }
 

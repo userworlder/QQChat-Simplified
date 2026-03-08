@@ -15,8 +15,8 @@ namespace QQClient.UI
         public register()
         {
             InitializeComponent();
-            pictureBox1.Image = ImageHelper.Load("register.png");
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+           // pictureBox1.Image = ImageHelper.Load("register.png");
+           // pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
         }
 
         private void button2_Click(object sender, EventArgs e)
