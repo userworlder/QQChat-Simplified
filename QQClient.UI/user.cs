@@ -12,7 +12,7 @@ namespace QQClient.UI
 {
     public partial class user : Form
     {
-        public user()
+        public user(Form login)
         {
             InitializeComponent();
             var testFriends = new List<QQCommon.Models.Message>
@@ -49,6 +49,8 @@ namespace QQClient.UI
                 // 添加到 FlowLayoutPanel
                 private_chat.Controls.Add(item);
             }
+
+            this.FormClosed += (sender, e) => login.Show();
         }
 
         private void panel2_Paint(object sender, PaintEventArgs e)

@@ -17,14 +17,14 @@ namespace QQClient.UI
         {
             InitializeComponent();
 
-          //  pictureBox1.Image = ImageHelper.Load("login.png");
+           //  pictureBox1.Image = ImageHelper.Load("login.png");
            // pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
         }
 
         private void label1_Click(object sender, EventArgs e)
         {
-            
-            register_new register=new register_new();
+            this.Hide();
+            register_new register=new register_new(this);
             register.ShowDialog();
         }
 
@@ -54,7 +54,7 @@ namespace QQClient.UI
                     if (x)
                     {   //打开界面
                         this.Hide();
-                        user user = new user();
+                        user user = new user(this);
                         user.ShowDialog();
                     }
                     else

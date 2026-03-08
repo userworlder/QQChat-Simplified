@@ -12,9 +12,10 @@ namespace QQClient.UI
 {
     public partial class register_new : Form
     {
-        public register_new()
+        public register_new(Form login)
         {
             InitializeComponent();
+            this.FormClosed += (sender, e) => login.Show();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -59,5 +60,7 @@ namespace QQClient.UI
             }
            
         }
+
+        
     }
 }

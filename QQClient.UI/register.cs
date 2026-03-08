@@ -31,7 +31,7 @@ namespace QQClient.UI
             {
                 //register()
                 this.Hide();
-                register_new r_new = new register_new();
+                register_new r_new = new register_new(this);
                 r_new.ShowDialog();
 
             }
