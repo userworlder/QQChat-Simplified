@@ -26,22 +26,33 @@ namespace QQClient.UI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string nickname=textBox1.Text;
-            string account=textBox2.Text;
-            string password=textBox3.Text;
-            if (account != "" && nickname == "")
+            QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
+            string ip = "127.0.0.1";
+            int port = 8888;
+            bool con = client.Connect(ip, port);
+            if (con) 
             {
-                nickname = account;
-            }
-            if (password == "" || account == "")
-            {
-                label_warn.Text = "账号或密码不可为空";
-                label_warn.Visible = true;
+                string nickname = textBox1.Text;
+                string account = textBox2.Text;
+                string password = textBox3.Text;
+                if (account != "" && nickname == "")
+                {
+                    nickname = account;
+                }
+                if (password == "" || account == "")
+                {
+                    label_warn.Text = "账号或密码不可为空";
+                    label_warn.Visible = true;
+                }
+                else
+                {
+                    client.Register(nickname, account, password);
+                }
+
             }
             else
             {
-                QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
-                client.Register(nickname, account, password);
+                MessageBox.Show("无法连接到服务器，请重试");
             }
            
         }
