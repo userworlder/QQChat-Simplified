@@ -46,7 +46,10 @@ namespace QQClient.UI
                 }
                 else
                 {
-                    client.Register(nickname, account, password);
+                    client.Register( account, password,nickname);
+                    this.Close();
+                    login log= new login();
+                    log.ShowDialog();
                 }
 
             }
