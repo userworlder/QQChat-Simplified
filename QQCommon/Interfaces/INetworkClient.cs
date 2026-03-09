@@ -24,7 +24,7 @@ namespace QQCommon.Interfaces
         bool SendMessage(string username,string receiver, string content);
 
         // 添加好友
-        bool AddFriend(string friendUsername);
+        bool AddFriend(string fromUserId,string toUserId);
 
         // 事件：收到消息
         event EventHandler<MessageReceivedEventArgs> MessageReceived;

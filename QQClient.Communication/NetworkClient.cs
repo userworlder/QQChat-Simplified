@@ -19,7 +19,7 @@ namespace QQClient.Communication
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<ConnectionEventArgs> ConnectionChanged;
 
-        public bool AddFriend(string friendUsername)
+        public bool AddFriend(string fromUserId, string toUserId)
         {
             throw new NotImplementedException();
         }
