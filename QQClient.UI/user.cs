@@ -67,58 +67,58 @@ namespace QQClient.UI
         {
 
         }
-
+        //私聊模式
         private void button1_Click(object sender, EventArgs e)
-        {//私聊模式
+        {
             public_chat.Visible = false;
             private_chat.Visible = true;
         }
-
+        //群聊模式
         private void button2_Click(object sender, EventArgs e)
-        {//群聊
+        {
             public_chat.Visible = true;
             private_chat.Visible = false;
         }
 
         // 加载私聊列表
-        private void LoadPrivateChats()
-        {
-            private_chat.Controls.Clear();
+    //    private void LoadPrivateChats()
+    //    {
+    //        private_chat.Controls.Clear();
 
-            // 示例数据（实际应从数据源获取）
-            var privateChats = new[]
-            {
-        new { Name = "张三", LastMsg = "你好", Time = "10:30", Unread = 3 },
-        new { Name = "李四", LastMsg = "在吗？", Time = "昨天", Unread = 0 }
-    };
+    //        // 示例数据（实际应从数据源获取）
+    //        var privateChats = new[]
+    //        {
+    //    new { Name = "张三", LastMsg = "你好", Time = "10:30", Unread = 3 },
+    //    new { Name = "李四", LastMsg = "在吗？", Time = "昨天", Unread = 0 }
+    //};
 
-            foreach (var chat in privateChats)
-            {
-                // 创建 contactItem 实例
-                var item = new ContactItem
-                {
-                    DisplayName = chat.Name,
-                    LastMessage = chat.LastMsg,
-                    Time = chat.Time,
-                   // UnreadCount = chat.Unread,
-                    //Avatar = Properties.Resources.default_avatar // 头像资源
-                };
+    //        foreach (var chat in privateChats)
+    //        {
+    //            // 创建 contactItem 实例
+    //            var item = new ContactItem
+    //            {
+    //                DisplayName = chat.Name,
+    //                LastMessage = chat.LastMsg,
+    //                Time = chat.Time,
+    //               // UnreadCount = chat.Unread,
+    //                //Avatar = Properties.Resources.default_avatar // 头像资源
+    //            };
 
-                // 设置宽度适应 FlowLayoutPanel（考虑滚动条）
-                item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? 20 : 0);
+    //            // 设置宽度适应 FlowLayoutPanel（考虑滚动条）
+    //            item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? 20 : 0);
 
-                // 订阅点击事件（假设 contactItem 有 Clicked 事件）
-                //item.Clicked += (s, e) =>
-                //{
-                //    var clickedItem = (contactItem)s;
-                //    MessageBox.Show($"打开与 {clickedItem.DisplayName} 的聊天");
-                //    // 这里打开聊天窗口
-                //};
+    //            // 订阅点击事件（假设 contactItem 有 Clicked 事件）
+    //            //item.Clicked += (s, e) =>
+    //            //{
+    //            //    var clickedItem = (contactItem)s;
+    //            //    MessageBox.Show($"打开与 {clickedItem.DisplayName} 的聊天");
+    //            //    // 这里打开聊天窗口
+    //            //};
 
-                // 添加到 FlowLayoutPanel
-                private_chat.Controls.Add(item);
-            }
-        }
+    //            // 添加到 FlowLayoutPanel
+    //            private_chat.Controls.Add(item);
+    //        }
+    //    }
 
         // 加载群聊列表（类似）
         //private void LoadGroupChats()
