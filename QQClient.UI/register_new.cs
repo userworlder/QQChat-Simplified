@@ -49,8 +49,7 @@ namespace QQClient.UI
                 {
                     client.Register( account, password,nickname);
                     this.Close();
-                    login log= new login();
-                    log.ShowDialog();
+                    
                 }
 
             }
