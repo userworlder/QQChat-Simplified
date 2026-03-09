@@ -47,8 +47,18 @@ namespace QQClient.UI
                 }
                 else
                 {
-                    client.Register( account, password,nickname);
-                    this.Close();
+                    bool x=client.Register( account, password,nickname);
+                    if (x)
+                    {
+                        MessageBox.Show("注册成功");
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("注册失败");
+                        label_warn.Text = "请尝试其他账号密码";
+                        label_warn.Visible = true;
+                    }
                     
                 }
 
