@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="add_friend.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="add_friend.Designer.cs">
+      <DependentUpon>add_friend.cs</DependentUpon>
+    </Compile>
     <Compile Include="chat.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +107,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="add_friend.resx">
+      <DependentUpon>add_friend.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="chat.resx">
       <DependentUpon>chat.cs</DependentUpon>
     </EmbeddedResource>
