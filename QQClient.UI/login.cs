@@ -54,8 +54,8 @@ namespace QQClient.UI
                     if (x)
                     {   //打开界面
                         this.Hide();
-                        user user = new user(this);
-                        user.ShowDialog();
+                        user user = new user(username,this);
+                        user.Show();
                     }
                     else
                     {   //返回错误信息

@@ -12,10 +12,12 @@ namespace QQClient.UI
 {
     public partial class user : Form
     {
-        public user(Form login)
+        string user_account;
+        public user(string user_account,Form login)
         {
             InitializeComponent();
             var testFriends = new List<QQCommon.Models.Message>
+//测试案例
     {
         new QQCommon.Models.Message
         {
@@ -83,7 +85,8 @@ namespace QQClient.UI
         private void button3_Click(object sender, EventArgs e)
         {
             this.Hide();
-            add_friend add = new add_friend();  
+            //add_friend add = new add_friend();  
+            ez_addfriend add = new ez_addfriend(user_account);
             add.ShowDialog();
         }
 

@@ -29,10 +29,6 @@
         private void InitializeComponent()
         {
             this.button2 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.button7 = new System.Windows.Forms.Button();
             this.blurd_mode = new System.Windows.Forms.CheckBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -53,42 +49,6 @@
             this.button2.TabIndex = 39;
             this.button2.Text = "刷新";
             this.button2.UseVisualStyleBackColor = true;
-            // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(757, 439);
-            this.button8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(112, 46);
-            this.button8.TabIndex = 38;
-            this.button8.Text = "出版社查询";
-            this.button8.UseVisualStyleBackColor = true;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(599, 450);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(149, 28);
-            this.textBox4.TabIndex = 37;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(599, 389);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(149, 28);
-            this.textBox3.TabIndex = 36;
-            // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(757, 378);
-            this.button7.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(112, 46);
-            this.button7.TabIndex = 35;
-            this.button7.Text = "作者查询";
-            this.button7.UseVisualStyleBackColor = true;
             // 
             // blurd_mode
             // 
@@ -189,10 +149,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(982, 573);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.button8);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.button7);
             this.Controls.Add(this.blurd_mode);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
@@ -211,10 +167,6 @@
         #endregion
 
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.Button button7;
         private System.Windows.Forms.CheckBox blurd_mode;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox textBox1;

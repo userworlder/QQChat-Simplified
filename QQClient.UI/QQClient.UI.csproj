@@ -58,6 +58,12 @@
     <Compile Include="chat.Designer.cs">
       <DependentUpon>chat.cs</DependentUpon>
     </Compile>
+    <Compile Include="ez_addfriend.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ez_addfriend.Designer.cs">
+      <DependentUpon>ez_addfriend.cs</DependentUpon>
+    </Compile>
     <Compile Include="Picture.cs" />
     <Compile Include="login.cs">
       <SubType>Form</SubType>
@@ -112,6 +118,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="chat.resx">
       <DependentUpon>chat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ez_addfriend.resx">
+      <DependentUpon>ez_addfriend.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="login.resx">
       <DependentUpon>login.cs</DependentUpon>
