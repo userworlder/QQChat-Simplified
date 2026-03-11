@@ -266,13 +266,6 @@ namespace QQClient.Communication
             return ChatPacket.FromJson(json);
         }
 
-        // 保留原 ReceivePacket 方法签名（但不再使用，改为内部调用 ReceivePacketInternal）
-        private ChatPacket ReceivePacket(MessageType messageType)
-        {
-            // 此方法已废弃，保留仅用于兼容，实际不会调用
-            throw new NotSupportedException("请使用异步等待机制");
-        }
-
         public bool Register(string username, string password, string nickname)
         {
             try
