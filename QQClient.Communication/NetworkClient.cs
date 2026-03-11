@@ -2,11 +2,12 @@
 using QQCommon.Models;
 using QQCommon.Protocols;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -16,57 +17,51 @@ namespace QQClient.Communication
     {
         private TcpClient _tcpClient;
         private NetworkStream _stream;
+        private Thread _receiveThread;
+        private bool _isRunning;
+        private readonly object _streamLock = new object();
+        private readonly ConcurrentDictionary<string, TaskCompletionSource<ChatPacket>> _pendingRequests
+            = new ConcurrentDictionary<string, TaskCompletionSource<ChatPacket>>();
+
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<ConnectionEventArgs> ConnectionChanged;
-        public bool SearchId(string fromUserId,string userId)
+
+        public bool SearchId(string fromUserId, string userId)
         {
             var packet = new ChatPacket
             {
                 Type = MessageType.SearchId,
                 Sender = fromUserId,
                 Content = userId,
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.Now,
+                MessageId = Guid.NewGuid().ToString() // 添加唯一ID用于匹配响应
             };
 
-            // 2. 发送给服务器
             SendPacket(packet);
-
-            // 3. 接收响应
-            var response = ReceivePacket(MessageType.AddFriendResponse);
-
-            // 4. 返回结果
-            return response != null
-                   && response.Type == MessageType.SearchIdResponse
-                   && response.Content == "SUCCESS";
+            var response = WaitForResponse(packet.MessageId, MessageType.SearchIdResponse);
+            return response != null && response.Content == "SUCCESS";
         }
+
         public bool AddFriend(string fromUserId, string toUserId)
         {
-            // 1. 创建添加好友请求包
             var packet = new ChatPacket
             {
                 Type = MessageType.AddFriendRequest,
                 Sender = fromUserId,
                 Content = toUserId,
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.Now,
+                MessageId = Guid.NewGuid().ToString()
             };
 
-            // 2. 发送给服务器
             SendPacket(packet);
-
-            // 3. 接收响应
-            var response = ReceivePacket(MessageType.AddFriendResponse);
-
-            // 4. 返回结果
-            return response != null
-                   && response.Type == MessageType.AddFriendResponse
-                   && response.Content == "SUCCESS";
+            var response = WaitForResponse(packet.MessageId, MessageType.AddFriendResponse);
+            return response != null && response.Content == "SUCCESS";
         }
+
         private bool IsConnected()
         {
             if (_tcpClient == null || !_tcpClient.Connected)
                 return false;
-
-            // 通过检查Socket的可用数据来验证连接是否真的活着
             try
             {
                 return !(_tcpClient.Client.Poll(1, SelectMode.SelectRead) && _tcpClient.Client.Available == 0);
@@ -76,33 +71,31 @@ namespace QQClient.Communication
                 return false;
             }
         }
+
         public bool Connect(string serverIp, int port)
         {
             if (IsConnected())
-            {
-                return true; // 已连接，无需重复连接
-            }
+                return true;
 
-            // 确保清理旧连接
             Disconnect();
 
             try
             {
                 _tcpClient = new TcpClient();
-
-                // 内部异步转同步，带超时控制
-                // ConnectAsync() 是异步方法，不会阻塞线程
-                // 它立即返回一个Task对象，表示"正在进行的连接操作"
                 var connectTask = _tcpClient.ConnectAsync(serverIp, port);
-                if (!connectTask.Wait(5000)) // 等待5秒超时
-                {
-                    return false; // 连接超时
-                }
+                if (!connectTask.Wait(5000))
+                    return false;
 
                 _stream = _tcpClient.GetStream();
+                _isRunning = true;
+                _receiveThread = new Thread(ReceiveLoop);
+                _receiveThread.IsBackground = true;
+                _receiveThread.Start();
+
+                OnConnectionChanged(true, "连接成功");
                 return true;
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }
@@ -110,140 +103,184 @@ namespace QQClient.Communication
 
         public void Disconnect()
         {
+            _isRunning = false;
+
+            // 取消所有等待的请求
+            foreach (var kv in _pendingRequests)
+            {
+                kv.Value.TrySetCanceled();
+            }
+            _pendingRequests.Clear();
+
             try
             {
-                // 1. 关闭网络流（释放资源）
-                if (_stream != null)
+                lock (_streamLock)
                 {
-                    _stream.Close();
-                    _stream = null;
+                    if (_stream != null)
+                    {
+                        _stream.Close();
+                        _stream = null;
+                    }
                 }
 
-                // 2. 关闭TCP连接
                 if (_tcpClient != null)
                 {
-                    // 如果连接还开着，先优雅关闭
                     if (_tcpClient.Connected)
-                    {
                         _tcpClient.Close();
-                    }
                     _tcpClient = null;
                 }
-
-                // 3. 触发连接状态改变事件（通知UI）
-                //OnConnectionChanged(false, "已断开连接");
             }
             catch (Exception ex)
             {
-                // 断开连接时的异常通常不需要抛出，记录日志即可
                 Console.WriteLine($"断开连接时出错: {ex.Message}");
+            }
+            finally
+            {
+                OnConnectionChanged(false, "已断开连接");
             }
         }
 
         public bool Login(string username, string password)
         {
-            // 1. 创建登录请求包
             var packet = new ChatPacket
             {
                 Type = MessageType.LoginRequest,
                 Sender = username,
                 Content = password,
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.Now,
+                MessageId = Guid.NewGuid().ToString()
             };
 
-            // 2. 发送给服务器
             SendPacket(packet);
-
-            // 3. 接收响应
-            var response = ReceivePacket(MessageType.LoginResponse);
-
-            // 4. 返回结果
-            return response != null
-                   && response.Type == MessageType.LoginResponse
-                   && response.Content == "SUCCESS";
+            var response = WaitForResponse(packet.MessageId, MessageType.LoginResponse);
+            return response != null && response.Content == "SUCCESS";
         }
+
         private void SendPacket(ChatPacket packet)
         {
             string json = packet.ToJson();
-            byte[] data = System.Text.Encoding.UTF8.GetBytes(json);
-
-            // 发送长度
+            byte[] data = Encoding.UTF8.GetBytes(json);
             byte[] lengthBytes = BitConverter.GetBytes(data.Length);
-            _stream.Write(lengthBytes, 0, lengthBytes.Length);
 
-            // 发送数据（带超时）
-            var writeTask = _stream.WriteAsync(data, 0, data.Length);
-            if (!writeTask.Wait(5000))
+            lock (_streamLock)
             {
-                throw new TimeoutException("发送数据超时");
+                _stream.Write(lengthBytes, 0, lengthBytes.Length);
+                var writeTask = _stream.WriteAsync(data, 0, data.Length);
+                if (!writeTask.Wait(5000))
+                    throw new TimeoutException("发送数据超时");
             }
         }
 
-        private ChatPacket ReceivePacket(MessageType messageType)
+        // 等待特定消息ID的响应
+        private ChatPacket WaitForResponse(string messageId, MessageType expectedType, int timeout = 10000)
         {
-            // 1. 读取长度（带超时）
-            // 比如要发"Hello"，长度是5，发送端会先发 [0,0,0,5]
-            byte[] lengthBytes = new byte[4];// 创建4字节的数组存放长度信息
-            int totalRead = 0;// 已经读取了多少字节
+            var tcs = new TaskCompletionSource<ChatPacket>();
+            _pendingRequests[messageId] = tcs;
+
+            try
+            {
+                if (tcs.Task.Wait(timeout))
+                    return tcs.Task.Result;
+                else
+                    throw new TimeoutException($"等待响应超时: {expectedType}");
+            }
+            finally
+            {
+                _pendingRequests.TryRemove(messageId, out _);
+            }
+        }
+
+        // 接收循环（运行在独立线程）
+        private void ReceiveLoop()
+        {
+            while (_isRunning && IsConnected())
+            {
+                try
+                {
+                    var packet = ReceivePacketInternal();
+                    if (packet == null) break;
+
+                    // 检查是否为某个挂起请求的响应
+                    if (!string.IsNullOrEmpty(packet.MessageId) &&
+                        _pendingRequests.TryRemove(packet.MessageId, out var tcs))
+                    {
+                        tcs.TrySetResult(packet);
+                    }
+                    else
+                    {
+                        // 是服务器推送的消息，触发事件
+                        OnMessageReceived(packet);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"接收循环异常: {ex.Message}");
+                    break;
+                }
+            }
+
+            // 连接断开，触发事件并清理
+            OnConnectionChanged(false, "连接已断开");
+            Disconnect();
+        }
+
+        // 内部接收数据包（不加锁，由ReceiveLoop单线程调用，或加锁保护）
+        private ChatPacket ReceivePacketInternal()
+        {
+            byte[] lengthBytes = new byte[4];
+            int totalRead = 0;
             while (totalRead < 4)
             {
-                // 参数1: 存到哪里      lengthBytes
-                // 参数2: 从哪个位置开始存 totalRead（断点续传）
-                // 参数3: 最多读多少字节  4 - totalRead（还剩多少没读）
-                var readTask = _stream.ReadAsync(lengthBytes, totalRead, 4 - totalRead);
-                if (!readTask.Wait(5000))
+                int bytesRead;
+                lock (_streamLock)
                 {
-                    throw new TimeoutException("接收数据超时");
+                    var readTask = _stream.ReadAsync(lengthBytes, totalRead, 4 - totalRead);
+                    if (!readTask.Wait(5000))
+                        throw new TimeoutException("接收数据超时");
+                    bytesRead = readTask.Result;
                 }
-                // Result：获取实际读取到的字节数
-                int bytesRead = readTask.Result;
                 if (bytesRead == 0)
-                    throw new EndOfStreamException("连接已关闭");
+                    return null;
                 totalRead += bytesRead;
             }
-            // 4字节都读完了，现在把它转成整数（真正的消息长度）
-            // 比如lengthBytes = [0,0,0,5] → dataLength = 5
+
             int dataLength = BitConverter.ToInt32(lengthBytes, 0);
-            
-            // 2. 读取数据（带超时）
             byte[] buffer = new byte[dataLength];
             totalRead = 0;
             while (totalRead < dataLength)
             {
-                var readTask = _stream.ReadAsync(buffer, totalRead, dataLength - totalRead);
-                if (!readTask.Wait(5000))
+                int bytesRead;
+                lock (_streamLock)
                 {
-                    throw new TimeoutException("接收数据超时");
+                    var readTask = _stream.ReadAsync(buffer, totalRead, dataLength - totalRead);
+                    if (!readTask.Wait(5000))
+                        throw new TimeoutException("接收数据超时");
+                    bytesRead = readTask.Result;
                 }
-
-                int bytesRead = readTask.Result;
                 if (bytesRead == 0)
-                    throw new EndOfStreamException("连接已关闭");
+                    return null;
                 totalRead += bytesRead;
             }
-            // 把字节数组转成字符串
-            string json = System.Text.Encoding.UTF8.GetString(buffer, 0, dataLength);
-            // 把JSON字符串转成ChatPacket对象
-            var response= ChatPacket.FromJson(json);
-            if (messageType==MessageType.LoginResponse || messageType == MessageType.RegisterResponse
-                ||messageType==MessageType.AddFriendResponse||messageType == MessageType.SearchIdResponse)
-            {
-                return response;
-            }
-            else
-            {
-                return null;
-            }
+
+            string json = Encoding.UTF8.GetString(buffer, 0, dataLength);
+            return ChatPacket.FromJson(json);
         }
+
+        // 保留原 ReceivePacket 方法签名（但不再使用，改为内部调用 ReceivePacketInternal）
+        private ChatPacket ReceivePacket(MessageType messageType)
+        {
+            // 此方法已废弃，保留仅用于兼容，实际不会调用
+            throw new NotSupportedException("请使用异步等待机制");
+        }
+
         public bool Register(string username, string password, string nickname)
         {
             try
             {
-                // 1. 创建注册请求包
                 var user = new User
                 {
                     Username = username,
-                    Password = password,  
+                    Password = password,
                     Nickname = string.IsNullOrEmpty(nickname) ? username : nickname,
                     RegisterTime = DateTime.Now
                 };
@@ -252,22 +289,14 @@ namespace QQClient.Communication
                 {
                     Type = MessageType.RegisterRequest,
                     Sender = username,
-                    Content = JsonConvert.SerializeObject(user),  // 把整个用户对象传给服务器
-                    Timestamp = DateTime.Now
+                    Content = JsonConvert.SerializeObject(user),
+                    Timestamp = DateTime.Now,
+                    MessageId = Guid.NewGuid().ToString()
                 };
 
-                // 2. 发送请求
                 SendPacket(packet);
-
-                // 3. 接收响应
-                var response = ReceivePacket(MessageType.RegisterResponse);
-
-                // 4. 处理响应
-                if (response != null && response.Type == MessageType.RegisterResponse)
-                {
-                    return response.Content == "SUCCESS";
-                }
-                return false;
+                var response = WaitForResponse(packet.MessageId, MessageType.RegisterResponse);
+                return response != null && response.Content == "SUCCESS";
             }
             catch (Exception ex)
             {
@@ -276,24 +305,22 @@ namespace QQClient.Communication
             }
         }
 
-        public bool SendMessage(string username,string receiver, string content)
+        public bool SendMessage(string username, string receiver, string content)
         {
             try
             {
-                //  创建聊天消息包
                 var packet = new ChatPacket
                 {
                     Type = MessageType.ChatMessage,
                     Sender = username,
                     Receiver = receiver,
                     Content = content,
-                    Timestamp = DateTime.Now
+                    Timestamp = DateTime.Now,
+                    MessageId = Guid.NewGuid().ToString() // 可选，用于送达确认
                 };
 
-                //发送消息
                 SendPacket(packet);
-
-                // 这里直接返回成功
+                // 不需要等待响应，送达确认会通过事件异步通知
                 return true;
             }
             catch (Exception ex)
@@ -303,5 +330,14 @@ namespace QQClient.Communication
             }
         }
 
+        protected virtual void OnMessageReceived(ChatPacket packet)
+        {
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(packet));
+        }
+
+        protected virtual void OnConnectionChanged(bool isConnected, string message)
+        {
+            ConnectionChanged?.Invoke(this, new ConnectionEventArgs(isConnected, message));
+        }
     }
 }

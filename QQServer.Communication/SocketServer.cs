@@ -264,6 +264,7 @@ namespace QQServer.Communication
                     Type = MessageType.LoginResponse,
                     Sender = "Server",
                     Receiver = username,
+                    MessageId = packet.MessageId,
                     Content = "SUCCESS",
                     Timestamp = DateTime.Now
                 };
@@ -281,6 +282,7 @@ namespace QQServer.Communication
                     Type = MessageType.LoginResponse,
                     Sender = "Server",
                     Receiver = username,
+                    MessageId = packet.MessageId,
                     Content = "FAILED",
                     Timestamp = DateTime.Now
                 };
@@ -311,6 +313,7 @@ namespace QQServer.Communication
                     Type = MessageType.RegisterResponse,
                     Sender = "Server",
                     Receiver = packet.Sender,
+                    MessageId = packet.MessageId,
                     Content = success ? "SUCCESS" : "FAILED",
                     Timestamp = DateTime.Now
                 };
@@ -336,6 +339,7 @@ namespace QQServer.Communication
                     Type = MessageType.RegisterResponse,
                     Sender = "Server",
                     Receiver = packet.Sender,
+                    MessageId = packet.MessageId,
                     Content = "ERROR",
                     Timestamp = DateTime.Now
                 };
@@ -364,6 +368,7 @@ namespace QQServer.Communication
                     Type = MessageType.SearchIdResponse,
                     Sender = "Server",
                     Content = "SUCCESS",
+                    MessageId = packet.MessageId,
                     Timestamp = DateTime.Now
                 };
 
@@ -374,16 +379,16 @@ namespace QQServer.Communication
             }
             else
             {
-                // 登录失败
                 response = new ChatPacket
                 {
-                    Type = MessageType.LoginResponse,
+                    Type = MessageType.SearchIdResponse,
                     Sender = "Server",
                     Content = "FAILED",
+                    MessageId = packet.MessageId,
                     Timestamp = DateTime.Now
                 };
 
-                Console.WriteLine($"登录失败: {sender}");
+                Console.WriteLine($"查询失败: {sender}");
             }
 
             // 发送响应
@@ -430,6 +435,7 @@ namespace QQServer.Communication
                 Type = MessageType.MessageReceived,
                 Sender = "Server",
                 Receiver = sender,
+                MessageId = packet.MessageId,
                 Content = "DELIVERED",
                 Timestamp = DateTime.Now
             };
@@ -452,6 +458,7 @@ namespace QQServer.Communication
                 Type = MessageType.AddFriendResponse,
                 Sender = "Server",
                 Receiver = fromUser,
+                MessageId = packet.MessageId,
                 Content = success ? "SUCCESS" : "FAILED",
                 Timestamp = DateTime.Now
             };
@@ -466,6 +473,7 @@ namespace QQServer.Communication
                     Type = MessageType.AddFriendRequest,
                     Sender = fromUser,
                     Receiver = toUser,
+                    MessageId = packet.MessageId,
                     Content = $"{fromUser} 请求添加你为好友",
                     Timestamp = DateTime.Now
                 };

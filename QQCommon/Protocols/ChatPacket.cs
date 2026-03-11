@@ -14,6 +14,7 @@ namespace QQCommon.Protocols
         public string Receiver { get; set; }  // 可以是用户名或"ALL"
         public string Content { get; set; }   // JSON字符串或普通文本
         public DateTime Timestamp { get; set; }
+        public string MessageId {  get; set; }
         public Dictionary<string, string> Extras { get; set; }
 
         public ChatPacket()

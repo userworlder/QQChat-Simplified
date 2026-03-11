@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QQCommon.Protocols;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,14 +40,22 @@ namespace QQCommon.Interfaces
     //当通信端收到新消息时，通过事件通知UI层，并传递消息的详细信息。
     public class MessageReceivedEventArgs : EventArgs
     {
-        public string Sender { get; set; }
-        public string Content { get; set; }
-        public DateTime Timestamp { get; set; }
+        public ChatPacket Packet { get; set; }
+        public MessageReceivedEventArgs(ChatPacket packet)
+        {
+            Packet = packet;
+        }
     }
     //当连接状态发生变化时，通知UI层更新界面。
     public class ConnectionEventArgs : EventArgs
     {
         public bool IsConnected { get; set; }
         public string Message { get; set; }
+        public ConnectionEventArgs(bool isConnected , string message)
+        {
+            IsConnected = isConnected;
+            Message = message;
+        }
+
     }
 }
