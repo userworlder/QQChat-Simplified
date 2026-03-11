@@ -226,6 +226,10 @@ namespace QQServer.Communication
                     RemoveClient(clientInfo);
                     break;
 
+                case MessageType.SearchId:
+                    SearchIdChat(packet,clientInfo);
+                    break;
+
                 default:
                     Console.WriteLine($"未知消息类型: {packet.Type}");
                     break;
@@ -339,7 +343,53 @@ namespace QQServer.Communication
                 SendToClient(response, clientInfo);
             }
         }
+        private void SearchIdChat(ChatPacket packet, ClientInfo senderInfo)
+        {
+            string sender = packet.Sender;
+            string content = packet.Content;
 
+            Console.WriteLine($"查询请求请求: {content}");
+
+            // 调用业务层验证登录
+            var user = _userService.SearchUser(content);
+
+            ChatPacket response = null;
+
+            if (user != null)
+            {
+                // 查询成功
+                // 创建成功响应
+                response = new ChatPacket
+                {
+                    Type = MessageType.SearchIdResponse,
+                    Sender = "Server",
+                    Content = "SUCCESS",
+                    Timestamp = DateTime.Now
+                };
+
+                // 添加用户信息
+                response.Extras["UserInfo"] = JsonConvert.SerializeObject(user);
+
+                Console.WriteLine($"查询成功: {sender}");
+            }
+            else
+            {
+                // 登录失败
+                response = new ChatPacket
+                {
+                    Type = MessageType.LoginResponse,
+                    Sender = "Server",
+                    Content = "FAILED",
+                    Timestamp = DateTime.Now
+                };
+
+                Console.WriteLine($"登录失败: {sender}");
+            }
+
+            // 发送响应
+            SendToClient(response, senderInfo);
+
+        }
         // 处理聊天消息 - 完整实现
         private void HandleChatMessage(ChatPacket packet, ClientInfo senderInfo)
         {

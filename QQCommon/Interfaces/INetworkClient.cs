@@ -26,6 +26,9 @@ namespace QQCommon.Interfaces
         // 添加好友
         bool AddFriend(string fromUserId,string toUserId);
 
+        //Id查询
+        bool SearchId(string fromUserId,string userId);
+
         // 事件：收到消息
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
 

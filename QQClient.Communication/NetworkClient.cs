@@ -18,10 +18,48 @@ namespace QQClient.Communication
         private NetworkStream _stream;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<ConnectionEventArgs> ConnectionChanged;
+        public bool SearchId(string fromUserId,string userId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.SearchId,
+                Sender = fromUserId,
+                Content = userId,
+                Timestamp = DateTime.Now
+            };
 
+            // 2. 发送给服务器
+            SendPacket(packet);
+
+            // 3. 接收响应
+            var response = ReceivePacket(MessageType.AddFriendResponse);
+
+            // 4. 返回结果
+            return response != null
+                   && response.Type == MessageType.SearchIdResponse
+                   && response.Content == "SUCCESS";
+        }
         public bool AddFriend(string fromUserId, string toUserId)
         {
-            throw new NotImplementedException();
+            // 1. 创建添加好友请求包
+            var packet = new ChatPacket
+            {
+                Type = MessageType.AddFriendRequest,
+                Sender = fromUserId,
+                Content = toUserId,
+                Timestamp = DateTime.Now
+            };
+
+            // 2. 发送给服务器
+            SendPacket(packet);
+
+            // 3. 接收响应
+            var response = ReceivePacket(MessageType.AddFriendResponse);
+
+            // 4. 返回结果
+            return response != null
+                   && response.Type == MessageType.AddFriendResponse
+                   && response.Content == "SUCCESS";
         }
         private bool IsConnected()
         {
@@ -117,7 +155,7 @@ namespace QQClient.Communication
             SendPacket(packet);
 
             // 3. 接收响应
-            var response = ReceivePacket();
+            var response = ReceivePacket(MessageType.LoginResponse);
 
             // 4. 返回结果
             return response != null
@@ -141,7 +179,7 @@ namespace QQClient.Communication
             }
         }
 
-        private ChatPacket ReceivePacket()
+        private ChatPacket ReceivePacket(MessageType messageType)
         {
             // 1. 读取长度（带超时）
             // 比如要发"Hello"，长度是5，发送端会先发 [0,0,0,5]
@@ -186,7 +224,16 @@ namespace QQClient.Communication
             // 把字节数组转成字符串
             string json = System.Text.Encoding.UTF8.GetString(buffer, 0, dataLength);
             // 把JSON字符串转成ChatPacket对象
-            return ChatPacket.FromJson(json);
+            var response= ChatPacket.FromJson(json);
+            if (messageType==MessageType.LoginResponse || messageType == MessageType.RegisterResponse
+                ||messageType==MessageType.AddFriendResponse||messageType == MessageType.SearchIdResponse)
+            {
+                return response;
+            }
+            else
+            {
+                return null;
+            }
         }
         public bool Register(string username, string password, string nickname)
         {
@@ -213,7 +260,7 @@ namespace QQClient.Communication
                 SendPacket(packet);
 
                 // 3. 接收响应
-                var response = ReceivePacket();
+                var response = ReceivePacket(MessageType.RegisterResponse);
 
                 // 4. 处理响应
                 if (response != null && response.Type == MessageType.RegisterResponse)
