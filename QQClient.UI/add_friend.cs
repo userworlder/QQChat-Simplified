@@ -16,10 +16,7 @@ namespace QQClient.UI
         {
             InitializeComponent();
         }
-        private void user_Load(object sender, EventArgs e)
-        {
-            Table();
-        }
+       
 
         //public void Table()
         //{

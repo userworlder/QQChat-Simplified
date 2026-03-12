@@ -40,9 +40,9 @@ namespace QQClient.UI
             QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
             string ip = "127.0.0.1";
             int port = 8888;
-            bool con = client.Connect(ip, port);
-            if (con)
-            {
+         //   bool con = client.Connect(ip, port);
+          //  if (con)
+          //  {
                 //是否为空
                 if (textBox1.Text != "" && textBox2.Text != "")
                 {
@@ -67,10 +67,10 @@ namespace QQClient.UI
                     MessageBox.Show("账户或密码不可为空");
                 }
             }
-            else
-            {
-                MessageBox.Show("无法连接到服务器，请重试");
-            }
-        }
+       //     else
+           // {
+          //      MessageBox.Show("无法连接到服务器，请重试");
+          //  }
+       // }
     }
 }
