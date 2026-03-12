@@ -30,46 +30,47 @@ namespace QQClient.UI
             QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
             string ip = "127.0.0.1";
             int port = 8888;
-           // bool con = client.Connect(ip, port);
-           // if (con) 
-            //{
-                string nickname = textBox1.Text;
-                string account = textBox2.Text;
-                string password = textBox3.Text;
-                if (account != "" && nickname == "")
+
+            string nickname = textBox1.Text;
+            string account = textBox2.Text;
+            string password = textBox3.Text;
+            if (account != "" && nickname == "")
+            {
+                textBox1.Text = account;
+                nickname = account;
+            }
+            else if (password == "" || account == "")
+            {
+                label_warn.Text = "账号或密码不可为空";
+                label_warn.Visible = true;
+            }
+            else if (client.SearchId(account, account))
+            {
+                label_warn.Text = "已存在该账号,请尝试新的账号";
+                label_warn.Visible = true;
+            }
+            else
+            {
+                bool x = client.Register(account, password, nickname);
+                if (x)
                 {
-                    nickname = account;
-                }
-                if (password == "" || account == "")
-                {
-                    label_warn.Text = "账号或密码不可为空";
-                    label_warn.Visible = true;
+                    MessageBox.Show("注册成功");
+                    this.Close();
                 }
                 else
                 {
-                    bool x=client.Register( account, password,nickname);
-                    if (x)
-                    {
-                        MessageBox.Show("注册成功");
-                        this.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("注册失败");
-                        label_warn.Text = "请尝试其他账号密码";
-                        label_warn.Visible = true;
-                    }
-                    
+                    MessageBox.Show("注册失败");
+                    label_warn.Text = "请尝试其他账号密码";
+                    label_warn.Visible = true;
                 }
 
             }
-            //else
-           // {
-          //      MessageBox.Show("无法连接到服务器，请重试");
-           // }
-           
-       // }
 
-        
+        }
+
+
+
+
+
     }
 }

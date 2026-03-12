@@ -28,18 +28,45 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.panelBubble = new System.Windows.Forms.Panel();
+            this.lblMessage = new System.Windows.Forms.Label();
+            this.panelBubble.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // panelBubble
+            // 
+            this.panelBubble.Controls.Add(this.lblMessage);
+            this.panelBubble.Location = new System.Drawing.Point(17, 3);
+            this.panelBubble.MaximumSize = new System.Drawing.Size(200, 0);
+            this.panelBubble.Name = "panelBubble";
+            this.panelBubble.Size = new System.Drawing.Size(200, 50);
+            this.panelBubble.TabIndex = 0;
+            // 
+            // lblMessage
+            // 
+            this.lblMessage.AutoSize = true;
+            this.lblMessage.Location = new System.Drawing.Point(19, 16);
+            this.lblMessage.Name = "lblMessage";
+            this.lblMessage.Size = new System.Drawing.Size(80, 18);
+            this.lblMessage.TabIndex = 0;
+            this.lblMessage.Text = "对话文本";
             // 
             // message_bubble
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.panelBubble);
             this.Name = "message_bubble";
             this.Size = new System.Drawing.Size(244, 56);
+            this.panelBubble.ResumeLayout(false);
+            this.panelBubble.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Panel panelBubble;
+        private System.Windows.Forms.Label lblMessage;
     }
 }
