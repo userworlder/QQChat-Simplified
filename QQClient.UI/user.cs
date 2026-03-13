@@ -30,29 +30,29 @@ namespace QQClient.UI
 
             //    };
 
-            foreach (var friend in testFriends)
-            {
-                // 创建 ContactItem 实例a
-                var item = new ContactItem();
+            //foreach (var friend in testFriends)
+            //{
+            //    // 创建 ContactItem 实例a
+            //    var item = new ContactItem();
 
-                // 设置显示名称：如果有备注就用备注，否则用 FriendUserId
-                item.DisplayName =friend.SenderId.ToString();
+            //    // 设置显示名称：如果有备注就用备注，否则用 FriendUserId
+            //    item.DisplayName =friend.SenderId.ToString();
 
-                // 设置最后消息：这里用固定文本模拟，你可以用其他内容
-                item.LastMessage = friend.Content.ToString();
+            //    // 设置最后消息：这里用固定文本模拟，你可以用其他内容
+            //    item.LastMessage = friend.Content.ToString();
 
-                // 设置时间：用 AddTime 格式化为简短时间
-                item.Time = friend.SendTime.ToString("HH:mm");
+            //    // 设置时间：用 AddTime 格式化为简短时间
+            //    item.Time = friend.SendTime.ToString("HH:mm");
 
-                // （可选）如果有头像，可以设置
-                // item.Avatar = Properties.Resources.default_avatar;
+            //    // （可选）如果有头像，可以设置
+            //    // item.Avatar = Properties.Resources.default_avatar;
 
-                // 设置宽度适应 FlowLayoutPanel（考虑滚动条）
-                item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? 20 : 0);
+            //    // 设置宽度适应 FlowLayoutPanel（考虑滚动条）
+            //    item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? 20 : 0);
 
-                // 添加到 FlowLayoutPanel
-                private_chat.Controls.Add(item);
-            }
+            //    // 添加到 FlowLayoutPanel
+            //    private_chat.Controls.Add(item);
+            //}
 
             this.FormClosed += (sender, e) => login.Show();
         }
@@ -61,7 +61,10 @@ namespace QQClient.UI
         {
 
         }
-
+        void Load_Friend()
+        {
+            //获取Friend
+            List<Friend> friends = new List<Friend>();
             foreach (var friend in friends)
             {
                 // 创建 ContactItem 实例
@@ -92,6 +95,8 @@ namespace QQClient.UI
 
                 // 订阅点击事件（如果需要打开聊天窗口）
                 // item.Click += ContactItem_Click;
+            }
+
 
         }
 
