@@ -447,7 +447,7 @@ namespace QQServer.Communication
         private void HandleAddFriend(ChatPacket packet, ClientInfo senderInfo)
         {
             string fromUser = packet.Sender;
-            string toUser = packet.Receiver;
+            string toUser = packet.Content;
 
             Console.WriteLine($"添加好友请求: {fromUser} -> {toUser}");
 
