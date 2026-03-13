@@ -53,6 +53,20 @@ CREATE TABLE Messages (
 -- 创建发送者和接收者ID索引，加速消息查询
 CREATE INDEX IX_Messages_SenderId ON Messages(SenderId);
 CREATE INDEX IX_Messages_ReceiverId ON Messages(ReceiverId);
+
+-- FriendRequests 表
+CREATE TABLE FriendRequests (
+    RequestId NVARCHAR(50) PRIMARY KEY,--请求ID
+    FromUserId NVARCHAR(50) NOT NULL,--发送请求的用户ID
+    ToUserId NVARCHAR(50) NOT NULL,--接收请求的用户ID
+    Status INT NOT NULL DEFAULT 0,--状态：0=待处理，1=已接受，2=已拒绝
+    SendTime DATETIME NOT NULL DEFAULT GETDATE(),--发送时间
+    FOREIGN KEY (FromUserId) REFERENCES Users(UserId),
+    FOREIGN KEY (ToUserId) REFERENCES Users(UserId)
+);
+
+-- 创建接收者ID索引，加速查询好友请求
+CREATE INDEX IX_FriendRequests_ToUserId ON FriendRequests(ToUserId);
 GO
 
 -- -- 查看表结构

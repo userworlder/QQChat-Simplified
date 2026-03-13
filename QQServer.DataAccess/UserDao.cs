@@ -1,5 +1,6 @@
 using QQCommon.Models;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -38,6 +39,23 @@ namespace QQServer.DataAccess
                 return DataRowToUser(dt.Rows[0]);
             }
             return null;
+        }
+
+        // 根据关键字搜索用户
+        public List<User> SearchUsers(string keyword)
+        {
+            string sql = "SELECT * FROM Users WHERE Username LIKE @Keyword OR Nickname LIKE @Keyword";
+            SqlParameter[] parameters = {
+                new SqlParameter("@Keyword", "%" + keyword + "%")
+            };
+
+            DataTable dt = DbHelper.ExecuteQuery(sql, parameters);
+            List<User> users = new List<User>();
+            foreach (DataRow row in dt.Rows)
+            {
+                users.Add(DataRowToUser(row));
+            }
+            return users;
         }
 
         // 插入新用户（注册）
