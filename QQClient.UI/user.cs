@@ -31,7 +31,7 @@ namespace QQClient.UI
 
             foreach (var friend in testFriends)
             {
-                // 创建 ContactItem 实例
+                // 创建 ContactItem 实例a
                 var item = new ContactItem();
 
                 // 设置显示名称：如果有备注就用备注，否则用 FriendUserId
