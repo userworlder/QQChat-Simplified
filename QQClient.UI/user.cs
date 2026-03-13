@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using QQCommon.Models;
 namespace QQClient.UI
 {
     public partial class user : Form

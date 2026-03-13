@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QQCommon.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -25,20 +26,28 @@ namespace QQClient.UI
         private void button1_Click(object sender, EventArgs e)
         {
             friend_account=textBox1.Text;
-            QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
+            var client = GlobalClient.Current;
             if (textBox1.Text != "")
             {
                 friend_account = textBox1.Text;
                 //检验是否是这个人
-
-                bool x = client.AddFriend(self_account, friend_account);
-                if (x)
-                {   //打开界面
-                    MessageBox.Show("已添加好友");
+                bool check = client.SearchId(self_account, friend_account);
+                if (check)
+                {
+                    bool x = client.AddFriend(self_account, friend_account);
+                    if (x)
+                    {   //打开界面
+                        MessageBox.Show("已添加好友");
+                    }
+                    else
+                    {   //返回错误信息
+                        MessageBox.Show("添加失败，请检查账号");
+                    }
                 }
                 else
-                {   //返回错误信息
-                    MessageBox.Show("添加失败，请检查账号");
+                {
+                    label2.Text = "不存在该用户";
+                    label2.Visible = true;
                 }
             }
             else

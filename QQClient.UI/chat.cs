@@ -43,7 +43,7 @@ namespace QQClient.UI
             send_message =textBox1.Text;
             if (textBox1.Text.Length > 0)
             {
-                client.SendMessage()
+               // client.SendMessage();
             }
             else
             {

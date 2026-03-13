@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using QQCommon.Models;
 namespace QQClient.UI
 {
     public partial class register_new : Form
@@ -27,10 +27,7 @@ namespace QQClient.UI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
-            string ip = "127.0.0.1";
-            int port = 8888;
-
+            var client = GlobalClient.Current;
             string nickname = textBox1.Text;
             string account = textBox2.Text;
             string password = textBox3.Text;

@@ -82,6 +82,10 @@
       <Project>{874a39c7-b547-4241-9063-fba39209748f}</Project>
       <Name>QQClient.UI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QQCommon\QQCommon.csproj">
+      <Project>{b0124de9-65e7-4c16-885b-edebb2d0d09c}</Project>
+      <Name>QQCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
