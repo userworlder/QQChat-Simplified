@@ -32,16 +32,15 @@ namespace QQClient.UI
                 _isSelf = value;
                 if (value)
                 {
-                    panelBubble.BackColor = Color.LightGreen;   // 自己消息背景色
-                    panelBubble.Dock = DockStyle.Right;         // 靠右
+                    panel1.BackColor = Color.LightGreen;   // 自己消息背景色
+                    panel1.Dock = DockStyle.Right;         // 靠右
                 }
                 else
                 {
-                    panelBubble.BackColor = Color.LightGray;    // 对方消息背景色
-                    panelBubble.Dock = DockStyle.Left;          // 靠左
+                    panel1.BackColor = Color.LightGray;    // 对方消息背景色
+                    panel1.Dock = DockStyle.Left;          // 靠左
                 }
             }
         }
     }
 }
-   

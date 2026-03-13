@@ -28,45 +28,49 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panelBubble = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.lblMessage = new System.Windows.Forms.Label();
-            this.panelBubble.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panelBubble
+            // panel1
             // 
-            this.panelBubble.Controls.Add(this.lblMessage);
-            this.panelBubble.Location = new System.Drawing.Point(17, 3);
-            this.panelBubble.MaximumSize = new System.Drawing.Size(200, 0);
-            this.panelBubble.Name = "panelBubble";
-            this.panelBubble.Size = new System.Drawing.Size(200, 50);
-            this.panelBubble.TabIndex = 0;
+            this.panel1.AutoSize = true;
+            this.panel1.Controls.Add(this.lblMessage);
+            this.panel1.Location = new System.Drawing.Point(3, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Padding = new System.Windows.Forms.Padding(8, 5, 8, 5);
+            this.panel1.Size = new System.Drawing.Size(508, 61);
+            this.panel1.TabIndex = 0;
             // 
             // lblMessage
             // 
             this.lblMessage.AutoSize = true;
-            this.lblMessage.Location = new System.Drawing.Point(19, 16);
+            this.lblMessage.Location = new System.Drawing.Point(11, 22);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(80, 18);
+            this.lblMessage.Size = new System.Drawing.Size(44, 18);
             this.lblMessage.TabIndex = 0;
-            this.lblMessage.Text = "对话文本";
+            this.lblMessage.Text = "文本";
             // 
             // message_bubble
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.panelBubble);
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Controls.Add(this.panel1);
             this.Name = "message_bubble";
-            this.Size = new System.Drawing.Size(244, 56);
-            this.panelBubble.ResumeLayout(false);
-            this.panelBubble.PerformLayout();
+            this.Size = new System.Drawing.Size(514, 67);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panelBubble;
+        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label lblMessage;
     }
 }
