@@ -42,6 +42,61 @@ namespace QQServer.DataAccess
             return friends;
         }
 
+        // 根据用户ID和好友用户ID获取好友信息
+        public Friend GetFriendByUserIdAndFriendUserId(string userId, string friendUserId)
+        {
+            string sql = "SELECT * FROM Friends WHERE UserId = @UserId AND FriendUserId = @FriendUserId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@UserId", userId),
+                new SqlParameter("@FriendUserId", friendUserId)
+            };
+
+            DataTable dt = DbHelper.ExecuteQuery(sql, parameters);
+            if (dt.Rows.Count > 0)
+            {
+                return DataRowToFriend(dt.Rows[0]);
+            }
+            return null;
+        }
+
+        // 删除好友
+        public bool RemoveFriend(string userId, string friendUserId)
+        {
+            string sql = "DELETE FROM Friends WHERE UserId = @UserId AND FriendUserId = @FriendUserId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@UserId", userId),
+                new SqlParameter("@FriendUserId", friendUserId)
+            };
+
+            return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
+        }
+
+        // 更新好友备注
+        public bool UpdateFriendRemark(string userId, string friendUserId, string remark)
+        {
+            string sql = "UPDATE Friends SET Remark = @Remark WHERE UserId = @UserId AND FriendUserId = @FriendUserId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@UserId", userId),
+                new SqlParameter("@FriendUserId", friendUserId),
+                new SqlParameter("@Remark", remark ?? (object)DBNull.Value)
+            };
+
+            return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
+        }
+
+        // 更新好友分组
+        public bool UpdateFriendGroup(string userId, string friendUserId, string groupName)
+        {
+            string sql = "UPDATE Friends SET GroupName = @GroupName WHERE UserId = @UserId AND FriendUserId = @FriendUserId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@UserId", userId),
+                new SqlParameter("@FriendUserId", friendUserId),
+                new SqlParameter("@GroupName", groupName)
+            };
+
+            return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
+        }
+
         // 将DataRow转换为Friend对象
         private Friend DataRowToFriend(DataRow row)
         {
