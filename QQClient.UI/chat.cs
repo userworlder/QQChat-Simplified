@@ -1,5 +1,4 @@
-﻿using QQCommon.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,8 +12,7 @@ namespace QQClient.UI
 {
     public partial class chat : Form
     {
-        private string self_account=GlobalClient.CurrentUserId;
-        private string _friendAccount;  
+        private string _friendAccount;  // 改为 account
         private string _friendNickname;
         string send_message;
         public chat(string Account,string Name)
@@ -29,8 +27,8 @@ namespace QQClient.UI
         //打开主页
         private void label1_Click(object sender, EventArgs e)
         {
-            profile profile=new profile(self_account,_friendAccount);
-           // MessageBox.Show("打开简介");
+            //profile profile=new profile();
+            MessageBox.Show("打开简介");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -40,16 +38,16 @@ namespace QQClient.UI
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var client = GlobalClient.Current;
+            QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
 
             send_message =textBox1.Text;
-            if (send_message.Length > 0)
+            if (textBox1.Text.Length > 0)
             {
-               client.SendMessage(GlobalClient.CurrentUserId,_friendAccount,send_message);
+               // client.SendMessage();
             }
             else
             {
-                MessageBox.Show("请输入文本");
+
             }
         }
     }

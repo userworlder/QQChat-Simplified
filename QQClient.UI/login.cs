@@ -55,7 +55,6 @@ namespace QQClient.UI
                 if (x)
                 {   //打开界面
                     this.Hide();
-                    GlobalClient.CurrentUserId = username;
                     user user = new user(username, this);
                     user.Show();
                 }
