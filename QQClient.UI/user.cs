@@ -13,57 +13,96 @@ namespace QQClient.UI
     public partial class user : Form
     {
         string self_account;
-        public user(string user_account,Form login)
+        public user(string user_account, Form login)
         {
             InitializeComponent();
             self_account = user_account;
-            var testFriends = new List<QQCommon.Models.Message>
-//测试案例
-    {
-        new QQCommon.Models.Message
-        {
-            Content = "I am zhangsan",
-            SenderId = "张三",
-            SendTime = DateTime.Now.AddHours(-1)
-        },
-        
-    };
+            Load_Friend();
+            //            var testFriends = new List<QQCommon.Models.Message>
+            ////测试案例
+            //    {
+            //        new QQCommon.Models.Message
+            //        {
+            //            Content = "I am zhangsan",
+            //            SenderId = "张三",
+            //            SendTime = DateTime.Now.AddHours(-1)
+            //        },
 
-            foreach (var friend in testFriends)
-            {
-                // 创建 ContactItem 实例a
-                var item = new ContactItem();
+            //    };
 
-                // 设置显示名称：如果有备注就用备注，否则用 FriendUserId
-                item.DisplayName =friend.SenderId.ToString();
+            //            foreach (var friend in testFriends)
+            //            {
+            //                // 创建 ContactItem 实例a
+            //                var item = new ContactItem();
 
-                // 设置最后消息：这里用固定文本模拟，你可以用其他内容
-                item.LastMessage = friend.Content.ToString();
+            //                // 设置显示名称：如果有备注就用备注，否则用 FriendUserId
+            //                item.DisplayName =friend.SenderId.ToString();
 
-                // 设置时间：用 AddTime 格式化为简短时间
-                item.Time = friend.SendTime.ToString("HH:mm");
+            //                // 设置最后消息：这里用固定文本模拟，你可以用其他内容
+            //                item.LastMessage = friend.Content.ToString();
 
-                // （可选）如果有头像，可以设置
-                // item.Avatar = Properties.Resources.default_avatar;
+            //                // 设置时间：用 AddTime 格式化为简短时间
+            //                item.Time = friend.SendTime.ToString("HH:mm");
 
-                // 设置宽度适应 FlowLayoutPanel（考虑滚动条）
-                item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? 20 : 0);
+            //                // （可选）如果有头像，可以设置
+            //                // item.Avatar = Properties.Resources.default_avatar;
 
-                // 添加到 FlowLayoutPanel
-                private_chat.Controls.Add(item);
-            }
+            //                // 设置宽度适应 FlowLayoutPanel（考虑滚动条）
+            //                item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? 20 : 0);
+
+            //                // 添加到 FlowLayoutPanel
+            //                private_chat.Controls.Add(item);
+            //            }
 
             this.FormClosed += (sender, e) => login.Show();
         }
 
-        private void panel2_Paint(object sender, PaintEventArgs e)
+
+        private void Load_Friend()
         {
+            // 清空现有好友控件（防止重复加载）
+            private_chat.Controls.Clear();
 
-        }
+            // 获取当前登录用户ID（示例）
+            //string currentUserId = Global.CurrentUser.UserId;  // 假设你有一个全局变量
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
+            // 调用数据访问方法获取好友列表
+            List<Friend> friends = GetFriendsByUserId(self_account);
 
+            foreach (var friend in friends)
+            {
+                // 创建 ContactItem 实例
+                var item = new ContactItem();
+
+                // 设置显示名称：优先使用备注，否则使用好友昵称，再否则使用好友账号
+                //string displayName = !string.IsNullOrEmpty(friend.Remark) ? friend.Remark
+                //                   : (!string.IsNullOrEmpty(friend.FriendNickname) ? friend.FriendNickname
+                //                   : friend.FriendUserId);
+                string displayName = friend.FriendId.ToString();
+                item.DisplayName = displayName;
+
+                // 设置最后一条消息（可从 Messages 表查询最近的一条消息）
+                // 这里暂时留空或设置默认文本，你可以单独写一个方法获取最后消息
+                //item.LastMessage = GetLatestMessage(friend.FriendUserId, currentUserId);
+                item.LastMessage = "!!!";
+                // 设置时间（例如最后消息的时间或添加好友的时间）
+                // 这里先用 AddTime 格式化
+                item.Time = friend.AddTime.ToString("HH:mm");
+
+                // 存储好友的唯一标识（FriendUserId）到 Tag 中，方便点击时识别
+                item.Tag = friend.FriendUserId;
+
+                // （可选）如果有头像，设置 item.Avatar = ...;
+
+                // 设置宽度适应 FlowLayoutPanel
+                item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? SystemInformation.VerticalScrollBarWidth : 0);
+
+                // 订阅点击事件（如果需要打开聊天窗口）
+                // item.Click += ContactItem_Click;
+
+                // 添加到 FlowLayoutPanel
+                private_chat.Controls.Add(item);
+            }
         }
 
         private void public_chat_Paint(object sender, PaintEventArgs e)
@@ -82,7 +121,7 @@ namespace QQClient.UI
             public_chat.Visible = true;
             private_chat.Visible = false;
         }
-
+        //添加好友
         private void button3_Click(object sender, EventArgs e)
         {
             //this.Hide();

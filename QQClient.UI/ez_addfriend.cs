@@ -20,29 +20,38 @@ namespace QQClient.UI
         {
             InitializeComponent();
             this.self_account = self_account;
-            
+
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            friend_account=textBox1.Text;
+            friend_account = textBox1.Text;
             var client = GlobalClient.Current;
             if (textBox1.Text != "")
             {
                 friend_account = textBox1.Text;
-                //检验是否是这个人
+                //检验是否有这个人
                 bool check = client.SearchId(self_account, friend_account);
                 if (check)
                 {
-                    bool x = client.AddFriend(self_account, friend_account);
-                    if (x)
-                    {   //打开界面
-                        MessageBox.Show("已添加好友");
+                    if (self_account == friend_account)
+                    {
+                        label2.Text = "无法添加自己为好友";
+                        label2.Visible = true;
                     }
                     else
-                    {   //返回错误信息
-                        MessageBox.Show("添加失败，请检查账号");
+                    {
+                        bool x = client.AddFriend(self_account, friend_account);
+                        if (x)
+                        {   //打开界面
+                            MessageBox.Show("已添加好友");
+                        }
+                        else
+                        {   //返回错误信息
+                            MessageBox.Show("添加失败，请检查账号");
+                        }
                     }
+
                 }
                 else
                 {
