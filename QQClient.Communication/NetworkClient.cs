@@ -332,7 +332,7 @@ namespace QQClient.Communication
         }
 
         public bool SendMessage(string username, string receiver, string content)
-        {
+        {//
             try
             {
                 var packet = new ChatPacket

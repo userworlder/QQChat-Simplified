@@ -28,7 +28,7 @@ namespace QQClient.Host
             bool con = client.Connect(ip, port);
             if (con)
             {
-                // 将 client 传给 login 窗体
+                //
                 GlobalClient.Current = client;
                 Application.Run(new QQClient.UI.login());
             }
