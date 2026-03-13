@@ -63,6 +63,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Group.cs" />
+    <Compile Include="Models\GroupMember.cs" />
+    <Compile Include="Models\GroupMessage.cs" />
     <Compile Include="Interfaces\IFriendService.cs" />
     <Compile Include="Interfaces\IMessageService.cs" />
     <Compile Include="Interfaces\INetworkClient.cs" />
