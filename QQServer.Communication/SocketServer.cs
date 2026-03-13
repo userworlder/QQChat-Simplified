@@ -6,6 +6,7 @@ using QQCommon.Protocols;
 using QQServer.Business;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -165,11 +166,11 @@ namespace QQServer.Communication
                 Console.WriteLine($"[ReceivePacketFromClient] 收到JSON: {json}");
                 return ChatPacket.FromJson(json);
             }
-            catch(Exception ex)
+            catch (IOException ex) when (ex.InnerException is SocketException se &&
+                                 se.SocketErrorCode == SocketError.TimedOut)
             {
-                Console.WriteLine($"[ReceivePacketFromClient] 异常: {ex.GetType().Name} - {ex.Message}");
-                Console.WriteLine($"[ReceivePacketFromClient] 堆栈: {ex.StackTrace}");
-                return null; // 异常视为断开
+                // 将超时异常包装为 TimeoutException 抛出
+                throw new TimeoutException("接收数据超时", ex);
             }
         }
         // 处理单个客户端

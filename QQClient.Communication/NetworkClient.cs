@@ -103,6 +103,7 @@ namespace QQClient.Communication
 
         public void Disconnect()
         {
+            Console.WriteLine($"[Disconnect] 被调用，调用堆栈: {Environment.StackTrace}");
             _isRunning = false;
 
             // 取消所有等待的请求
@@ -193,33 +194,65 @@ namespace QQClient.Communication
         // 接收循环（运行在独立线程）
         private void ReceiveLoop()
         {
+            Console.WriteLine("[ReceiveLoop] 线程启动");
             while (_isRunning && IsConnected())
             {
                 try
                 {
-                    var packet = ReceivePacketInternal();
-                    if (packet == null) break;
+                    // 等待数据可用，避免无数据时频繁 Read 导致超时异常
+                    while (_isRunning && IsConnected() && !_stream.DataAvailable)
+                    {
+                        Thread.Sleep(10); // 短暂休眠，降低 CPU 占用
+                    }
+                    if (!_isRunning || !IsConnected()) break;
 
-                    // 检查是否为某个挂起请求的响应
+                    // 尝试读取一个完整的数据包
+                    var packet = ReceivePacketInternal();
+                    if (packet == null)
+                    {
+                        Console.WriteLine("[ReceiveLoop] ReceivePacketInternal 返回 null，连接已关闭");
+                        break;
+                    }
+
+                    // 判断是请求响应还是服务器推送
                     if (!string.IsNullOrEmpty(packet.MessageId) &&
                         _pendingRequests.TryRemove(packet.MessageId, out var tcs))
                     {
-                        tcs.TrySetResult(packet);
+                        tcs.TrySetResult(packet); // 完成等待的请求
                     }
                     else
                     {
-                        // 是服务器推送的消息，触发事件
-                        OnMessageReceived(packet);
+                        OnMessageReceived(packet); // 触发推送消息事件
                     }
+                }
+                catch (TimeoutException)
+                {
+                    // 超时是正常的，说明在 ReadTimeout 内没有完整数据到达
+                    // 继续等待下一轮
+                    Console.WriteLine("[ReceiveLoop] 读取超时，继续等待");
+                    continue;
+                }
+                catch (IOException ex) when (ex.InnerException is SocketException se &&
+                                             se.SocketErrorCode == SocketError.TimedOut)
+                {
+                    // 另一种超时情况
+                    Console.WriteLine("[ReceiveLoop] 套接字超时，继续等待");
+                    continue;
+                }
+                catch (ObjectDisposedException)
+                {
+                    Console.WriteLine("[ReceiveLoop] 流已关闭，退出循环");
+                    break;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"接收循环异常: {ex.Message}");
+                    // 其他致命异常，记录并退出
+                    Console.WriteLine($"[ReceiveLoop] 致命异常: {ex.GetType().Name} - {ex.Message}");
                     break;
                 }
             }
 
-            // 连接断开，触发事件并清理
+            Console.WriteLine("[ReceiveLoop] 退出循环");
             OnConnectionChanged(false, "连接已断开");
             Disconnect();
         }
