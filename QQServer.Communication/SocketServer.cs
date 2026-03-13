@@ -403,7 +403,7 @@ namespace QQServer.Communication
             Console.WriteLine($"查询所有好友请求: {userId}");
 
             // 调用业务层获取好友列表
-            var friends = _friendService.GetAllFriends(userId); // 需要实现此方法
+            var friends = _friendService.GetFriendList(userId); // 需要实现此方法
 
             ChatPacket response;
             if (friends != null)
