@@ -1,5 +1,6 @@
-﻿using QQCommon.Interfaces;
+using QQCommon.Interfaces;
 using QQCommon.Models;
+using QQServer.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +11,43 @@ namespace QQServer.Business
 {
     public class MessageService : IMessageService
     {
-        List<Message> IMessageService.GetChatHistory(string userId1, string userId2, int limit)
+        private readonly MessageDao messageDao;
+
+        public MessageService()
         {
-            throw new NotImplementedException();
+            messageDao = new MessageDao();
         }
 
-        List<Message> IMessageService.GetUnreadMessages(string userId)
+        public bool SendMessage(Message message)
         {
-            throw new NotImplementedException();
+            // 生成消息ID
+            message.MessageId = Guid.NewGuid().ToString();
+            message.SendTime = DateTime.Now;
+            message.IsRead = false;
+
+            // 使用MessageDao发送消息
+            return messageDao.SendMessage(message);
         }
 
-        bool IMessageService.SendMessage(Message message)
+        public List<Message> GetChatHistory(string userId1, string userId2, int limit = 50)
         {
-            throw new NotImplementedException();
+            // 使用MessageDao获取聊天记录
+            List<Message> messages = messageDao.GetMessagesBetweenUsers(userId1, userId2);
+
+            // 限制返回的消息数量
+            if (messages.Count > limit)
+            {
+                return messages.Skip(messages.Count - limit).ToList();
+            }
+
+            return messages;
+        }
+
+        public List<Message> GetUnreadMessages(string userId)
+        {
+            // 这里可以实现获取未读消息的逻辑
+            // 目前暂时返回空列表
+            return new List<Message>();
         }
     }
 }
