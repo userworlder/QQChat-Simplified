@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using QQCommon.Models;
 namespace QQClient.UI
 {
     public partial class login : Form
@@ -37,8 +37,14 @@ namespace QQClient.UI
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
+            //QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
             //是否为空
+            var client = GlobalClient.Current;
+            if (client == null)
+            {
+                MessageBox.Show("网络客户端未初始化");
+                return;
+            }
             if (textBox1.Text != "" && textBox2.Text != "")
             {
                 string username = textBox1.Text;
