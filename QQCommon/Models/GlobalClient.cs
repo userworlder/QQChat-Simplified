@@ -11,5 +11,6 @@ namespace QQCommon.Models
     {
         // 静态属性，保存全局唯一的 INetworkClient 实例
         public static INetworkClient Current { get; set; }
+        public static string CurrentUserId { get; set; }
     }
 }
