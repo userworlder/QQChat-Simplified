@@ -354,7 +354,6 @@ namespace QQServer.Communication
             string content = packet.Content;
 
             Console.WriteLine($"查询请求请求: {content}");
-
             // 调用业务层验证登录
             var user = _userService.SearchUser(content);
 
@@ -395,6 +394,14 @@ namespace QQServer.Communication
             // 发送响应
             SendToClient(response, senderInfo);
 
+        }
+        private void SearchIdAll(ChatPacket packet,ClientInfo clientInfo)
+        {
+            string fromUser = packet.Sender;
+            string toUser = packet.Content;
+            Console.WriteLine($"查询{fromUser}的所有好友");
+            // 调用业务层验证登录
+            //var user = _userService.SearchAllUser(content);
         }
         // 处理聊天消息 - 完整实现
         private void HandleChatMessage(ChatPacket packet, ClientInfo senderInfo)
@@ -442,7 +449,7 @@ namespace QQServer.Communication
             };
             SendToClient(ack, senderInfo);
         }
-
+        
         // 处理添加好友请求
         private void HandleAddFriend(ChatPacket packet, ClientInfo senderInfo)
         {

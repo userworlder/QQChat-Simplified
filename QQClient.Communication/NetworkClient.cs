@@ -41,7 +41,19 @@ namespace QQClient.Communication
             var response = WaitForResponse(packet.MessageId, MessageType.SearchIdResponse);
             return response != null && response.Content == "SUCCESS";
         }
-
+        public List<User> SearchAllId(string fromUserId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.SearchId,
+                Sender = fromUserId,
+                Timestamp = DateTime.Now,
+                MessageId = Guid.NewGuid().ToString() // 添加唯一ID用于匹配响应
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.SearchIdResponse);
+            return null;
+        }
         public bool AddFriend(string fromUserId, string toUserId)
         {
             var packet = new ChatPacket
