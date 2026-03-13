@@ -230,7 +230,9 @@ namespace QQServer.Communication
                 case MessageType.SearchId:
                     SearchIdChat(packet,clientInfo);
                     break;
-
+                case MessageType.SearchAllFriendsRequest:
+                    HandleSearchAllFriends(packet, clientInfo);
+                    break;
                 default:
                     Console.WriteLine($"未知消息类型: {packet.Type}");
                     break;
@@ -395,13 +397,43 @@ namespace QQServer.Communication
             SendToClient(response, senderInfo);
 
         }
-        private void SearchIdAll(ChatPacket packet,ClientInfo clientInfo)
+        private void HandleSearchAllFriends(ChatPacket packet, ClientInfo clientInfo)
         {
-            string fromUser = packet.Sender;
-            string toUser = packet.Content;
-            Console.WriteLine($"查询{fromUser}的所有好友");
-            // 调用业务层验证登录
-            //var user = _userService.SearchAllUser(content);
+            string userId = packet.Sender;
+            Console.WriteLine($"查询所有好友请求: {userId}");
+
+            // 调用业务层获取好友列表
+            var friends = _friendService.GetAllFriends(userId); // 需要实现此方法
+
+            ChatPacket response;
+            if (friends != null)
+            {
+                string friendsJson = JsonConvert.SerializeObject(friends);
+                response = new ChatPacket
+                {
+                    Type = MessageType.SearchAllFriendsResponse,
+                    Sender = "Server",
+                    Receiver = userId,
+                    MessageId = packet.MessageId,
+                    Content = "SUCCESS",
+                    Timestamp = DateTime.Now
+                };
+                response.Extras["FriendsList"] = friendsJson;
+            }
+            else
+            {
+                response = new ChatPacket
+                {
+                    Type = MessageType.SearchAllFriendsResponse,
+                    Sender = "Server",
+                    Receiver = userId,
+                    MessageId = packet.MessageId,
+                    Content = "FAILED",
+                    Timestamp = DateTime.Now
+                };
+            }
+
+            SendToClient(response, clientInfo);
         }
         // 处理聊天消息 - 完整实现
         private void HandleChatMessage(ChatPacket packet, ClientInfo senderInfo)

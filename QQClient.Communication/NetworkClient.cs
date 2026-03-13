@@ -41,18 +41,28 @@ namespace QQClient.Communication
             var response = WaitForResponse(packet.MessageId, MessageType.SearchIdResponse);
             return response != null && response.Content == "SUCCESS";
         }
-        public List<User> SearchAllId(string fromUserId)
+        public List<Friend> SearchAllFriends(string userId)
         {
             var packet = new ChatPacket
             {
-                Type = MessageType.SearchId,
-                Sender = fromUserId,
+                Type = MessageType.SearchAllFriendsRequest,
+                Sender = userId,
                 Timestamp = DateTime.Now,
-                MessageId = Guid.NewGuid().ToString() // 添加唯一ID用于匹配响应
+                MessageId = Guid.NewGuid().ToString()
             };
+
             SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.SearchIdResponse);
-            return null;
+            var response = WaitForResponse(packet.MessageId, MessageType.SearchAllFriendsResponse);
+
+            if (response != null && response.Content == "SUCCESS")
+            {
+                // 从响应包的 Extras 中获取好友列表 JSON
+                if (response.Extras.TryGetValue("FriendsList", out string friendsJson))
+                {
+                    return JsonConvert.DeserializeObject<List<Friend>>(friendsJson);
+                }
+            }
+            return null; // 或返回空列表
         }
         public bool AddFriend(string fromUserId, string toUserId)
         {

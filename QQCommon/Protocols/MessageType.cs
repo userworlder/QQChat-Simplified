@@ -29,6 +29,8 @@ namespace QQCommon.Protocols
         MessageRead = 303,      // 消息已读确认
         SearchId=304,
         SearchIdResponse=305,
+        SearchAllFriendsRequest=306,
+        SearchAllFriendsResponse=307,
 
         // 系统消息 (400系列)
         Heartbeat = 401,        // 心跳包（保证连接不中断）
