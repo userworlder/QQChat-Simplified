@@ -22,17 +22,47 @@ namespace QQClient.UI
             this._friendNickname = Name;
             this.Text = $"与 {_friendNickname} 聊天中";  // 窗口标题显示昵称
             label1.Text = _friendNickname;
-            this.Load += Chat_Load;                                       
-        }
+            this.Resize += (s, e) => AdjustMessageWidths();
+            
+            this.Shown+=(s,e)=> chat_Load(s,e);
+            this.Shown += (s, e) =>
+            {
+                // 添加一条对方消息
+                var msg1 = new message_bubble
+                {
+                    MessageText = "这是对方的消息",
+                    IsSelf = false,
+                    Width = flowLayoutPanel1.ClientSize.Width
+                };
+                flowLayoutPanel1.Controls.Add(msg1);
 
-        private void Chat_Load(object sender, EventArgs e)
+                // 添加一条自己消息
+                var msg2 = new message_bubble
+                {
+                    MessageText = "这是自己的消息",
+                    IsSelf = true,
+                    Width = flowLayoutPanel1.ClientSize.Width
+                };
+                flowLayoutPanel1.Controls.Add(msg2);
+            };
+            this.Shown += (s, e) =>
+            {
+                AddReceivedMessage("你好！我是 " + _friendNickname);
+                AddSentMessage("嗨，最近怎么样？");
+                AddReceivedMessage("还不错，你呢？");
+                AddSentMessage("我也挺好，正在测试聊天界面。");
+            };
+        }
+        private void chat_Load(object sender, EventArgs e)
         {
-            // 模拟几条历史消息
-            AddReceivedMessage("你好！我是 " + _friendNickname);
-            AddSentMessage("嗨，最近怎么样？");
-            AddReceivedMessage("还不错，你呢？");
-            AddSentMessage("我也挺好，正在测试聊天界面。");
-            AddReceivedMessage("看起来不错，消息气泡正常显示了！");
+            var testMsg = new message_bubble
+            {
+                MessageText = "测试",
+                IsSelf = false,
+                Width = flowLayoutPanel1.ClientSize.Width,
+                BackColor = Color.Red   // 临时设置，看控件是否出现
+            };
+            flowLayoutPanel1.Controls.Add(testMsg);
         }
         private void AdjustMessageWidths()
         {

@@ -15,7 +15,13 @@ namespace QQClient.UI
         public message_bubble()
         {
             InitializeComponent();
+
+            // 当气泡面板大小变化时，调整整个控件的高度
+            this.panelBubble.Resize += (s, e) => this.Height = panelBubble.Height;
+            this.Height = 50; // 临时强制高度，用于测试
         }
+
+        // 消息文本属性
         public string MessageText
         {
             get => lblMessage.Text;
@@ -32,15 +38,17 @@ namespace QQClient.UI
                 _isSelf = value;
                 if (value)
                 {
-                    panel1.BackColor = Color.LightGreen;   // 自己消息背景色
-                    panel1.Dock = DockStyle.Right;         // 靠右
+                    panelBubble.BackColor = Color.LightGreen;   // 自己消息背景色
+                   // panelBubble.Dock = DockStyle.Right;         // 靠右
                 }
                 else
                 {
-                    panel1.BackColor = Color.LightGray;    // 对方消息背景色
-                    panel1.Dock = DockStyle.Left;          // 靠左
+                    panelBubble.BackColor = Color.LightGray;    // 对方消息背景色
+                   // panelBubble.Dock = DockStyle.Left;          // 靠左
                 }
             }
         }
     }
 }
+
+
