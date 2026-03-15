@@ -25,19 +25,19 @@ namespace QQClient.Host
             int port = 8888;
             // 创建唯一的 NetworkClient 实例
             var client = new NetworkClient();
-            //bool con = client.Connect(ip, port);
-            //if (con)
-            //{
-            //    //
-            //    GlobalClient.Current = client;
-            //    Application.Run(new QQClient.UI.login());
-            //}
-            //else
-            //{
-            //    MessageBox.Show("连接服务器失败");
-            //}
-            Application.Run(new QQClient.UI.chat_new("1","1"));
-            // Application.Run(new QQClient.UI.user());
+            bool con = client.Connect(ip, port);
+            if (con)
+            {
+                //
+                GlobalClient.Current = client;
+                Application.Run(new QQClient.UI.login());
+            }
+            else
+            {
+                MessageBox.Show("连接服务器失败");
+            }
+            //Application.Run(new QQClient.UI.chat_new("1", "1"));
+           // Application.Run(new QQClient.UI.user());
         }
     }
 }
