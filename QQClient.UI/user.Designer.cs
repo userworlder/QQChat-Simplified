@@ -39,10 +39,14 @@
             this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.button3 = new System.Windows.Forms.Button();
+            this.request = new System.Windows.Forms.FlowLayoutPanel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
             this.paneltab.SuspendLayout();
             this.panel1.SuspendLayout();
             this.public_chat.SuspendLayout();
             this.private_chat.SuspendLayout();
+            this.request.SuspendLayout();
             this.SuspendLayout();
             // 
             // paneltab
@@ -62,7 +66,7 @@
             this.button2.TabIndex = 1;
             this.button2.Text = "群聊";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.btn_publicmode);
             // 
             // button1
             // 
@@ -72,12 +76,13 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "私聊";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.btn_privatemode);
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.public_chat);
             this.panel1.Controls.Add(this.private_chat);
+            this.panel1.Controls.Add(this.public_chat);
+            this.panel1.Controls.Add(this.request);
             this.panel1.Location = new System.Drawing.Point(0, 169);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(347, 460);
@@ -89,7 +94,7 @@
             this.public_chat.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.public_chat.Controls.Add(this.label1);
             this.public_chat.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.public_chat.Location = new System.Drawing.Point(3, 4);
+            this.public_chat.Location = new System.Drawing.Point(53, 37);
             this.public_chat.Name = "public_chat";
             this.public_chat.Size = new System.Drawing.Size(344, 457);
             this.public_chat.TabIndex = 0;
@@ -112,7 +117,7 @@
             this.private_chat.BackColor = System.Drawing.SystemColors.Info;
             this.private_chat.Controls.Add(this.label2);
             this.private_chat.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.private_chat.Location = new System.Drawing.Point(4, 4);
+            this.private_chat.Location = new System.Drawing.Point(25, 64);
             this.private_chat.Name = "private_chat";
             this.private_chat.Size = new System.Drawing.Size(343, 456);
             this.private_chat.TabIndex = 0;
@@ -141,13 +146,42 @@
             this.button3.TabIndex = 2;
             this.button3.Text = "添加好友";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.btn_addfriend);
+            // 
+            // request
+            // 
+            this.request.BackColor = System.Drawing.Color.Tan;
+            this.request.Controls.Add(this.label3);
+            this.request.Location = new System.Drawing.Point(84, 4);
+            this.request.Name = "request";
+            this.request.Size = new System.Drawing.Size(343, 456);
+            this.request.TabIndex = 1;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(80, 18);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "验证消息";
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(241, 42);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(106, 35);
+            this.button4.TabIndex = 3;
+            this.button4.Text = "验证消息";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.btn_requestmode);
             // 
             // user
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(367, 628);
+            this.ClientSize = new System.Drawing.Size(349, 628);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.paneltab);
@@ -159,6 +193,8 @@
             this.public_chat.PerformLayout();
             this.private_chat.ResumeLayout(false);
             this.private_chat.PerformLayout();
+            this.request.ResumeLayout(false);
+            this.request.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -175,5 +211,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.FlowLayoutPanel request;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button4;
     }
 }

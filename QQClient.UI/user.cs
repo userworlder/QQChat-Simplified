@@ -13,16 +13,22 @@ namespace QQClient.UI
     public partial class user : Form
     {
         string self_account;
+        //panel的坐标
+        int panel_x;
+        int panel_y;
         public user()
         {
             InitializeComponent();
+            panel_x = panel1.Left;
+            panel_y = panel1.Top;
+            Load_Panel();
         }
         public user(string user_account, Form login)
         {
             InitializeComponent();
             self_account = user_account;
             Load_Friend();
-            //            var testFriends = new List<QQCommon.Models.Message>
+            /*            var testFriends = new List<QQCommon.Models.Message>
             ////测试案例
             //    {
             //        new QQCommon.Models.Message
@@ -57,13 +63,18 @@ namespace QQClient.UI
             //    // 添加到 FlowLayoutPanel
             //    private_chat.Controls.Add(item);
             //}
-
+            */
             this.FormClosed += (sender, e) => login.Show();
         }
-
-        private void panel2_Paint(object sender, PaintEventArgs e)
+        //加载界面的位置
+        void Load_Panel()
         {
-
+            private_chat.Left = 0;
+            private_chat.Top = 0;
+            public_chat.Left = 0;
+            public_chat.Top = 0;
+            request.Left = 0;
+            request.Top = 0;
         }
         void Load_Friend()
         {
@@ -109,25 +120,34 @@ namespace QQClient.UI
 
         }
         //私聊模式
-        private void button1_Click(object sender, EventArgs e)
+        private void btn_privatemode(object sender, EventArgs e)
         {
             public_chat.Visible = false;
             private_chat.Visible = true;
+            request.Visible = false;
         }
         //群聊模式
-        private void button2_Click(object sender, EventArgs e)
+        private void btn_publicmode(object sender, EventArgs e)
         {
             public_chat.Visible = true;
             private_chat.Visible = false;
+            request.Visible = false;
         }
-
-        private void button3_Click(object sender, EventArgs e)
+        //验证消息
+        private void btn_requestmode(object sender, EventArgs e)
         {
-            //this.Hide();
-            //add_friend add = new add_friend(self_account);  
+            public_chat.Visible = false;
+            private_chat.Visible = false;
+            request.Visible = true;
+        }
+        //添加好友
+        private void btn_addfriend(object sender, EventArgs e)
+        {      
             ez_addfriend add = new ez_addfriend(self_account);
             add.ShowDialog();
         }
+
+        
 
         // 加载私聊列表
         //    private void LoadPrivateChats()
