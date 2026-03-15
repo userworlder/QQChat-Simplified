@@ -42,13 +42,13 @@ namespace QQClient.UI
             AddSentMessage("再发一条。");
 
             // 调试：输出每个控件的高度
-            foreach (Control ctrl in flowMessages.Controls)
-            {
-                if (ctrl is message_bubble msg)
-                {
-                    MessageBox.Show($"消息: {msg.MessageText}\n控件高度: {msg.Height}\nPanelBubble高度: {msg.Controls[0].Height}");
-                }
-            }
+            //foreach (Control ctrl in flowMessages.Controls)
+            //{
+            //    if (ctrl is message_bubble msg)
+            //    {
+            //        MessageBox.Show($"消息: {msg.MessageText}\n控件高度: {msg.Height}\nPanelBubble高度: {msg.Controls[0].Height}");
+            //    }
+            //}
         }
 
 
