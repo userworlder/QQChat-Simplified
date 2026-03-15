@@ -25,7 +25,20 @@ namespace QQServer.DataAccess
 
             return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
         }
-
+        public List<Message> GetUnreadMessages(string userId)
+        {
+            string sql = "SELECT * FROM Messages WHERE ReceiverId = @UserId AND IsRead = 0 ORDER BY SendTime";
+            SqlParameter[] parameters = {
+        new SqlParameter("@UserId", userId)
+    };
+            DataTable dt = DbHelper.ExecuteQuery(sql, parameters);
+            List<Message> messages = new List<Message>();
+            foreach (DataRow row in dt.Rows)
+            {
+                messages.Add(DataRowToMessage(row));
+            }
+            return messages;
+        }
         // 获取用户的消息列表（与特定用户的聊天记录）
         public List<Message> GetMessagesBetweenUsers(string userId1, string userId2)
         {

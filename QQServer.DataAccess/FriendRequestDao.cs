@@ -12,7 +12,7 @@ namespace QQServer.DataAccess
         public bool AddFriendRequest(string fromUserId, string toUserId)
         {
             string sql = "INSERT INTO FriendRequests (RequestId, FromUserId, ToUserId, Status, SendTime) " +
-                         "VALUES (@RequestId, @FromUserId, @ToUserId, @Status, @SendTime)";
+                         "VALUES (@RequestId, @FromUserId,@Status, @ToUserId, @SendTime)";
             SqlParameter[] parameters = {
                 new SqlParameter("@RequestId", Guid.NewGuid().ToString()),
                 new SqlParameter("@FromUserId", fromUserId),

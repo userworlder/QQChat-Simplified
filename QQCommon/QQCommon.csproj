@@ -79,7 +79,9 @@
     <Compile Include="Protocols\MessageType.cs" />
     <Compile Include="Utils\JsonHelper.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="ReadMe.txt" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

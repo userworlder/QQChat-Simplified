@@ -41,7 +41,30 @@ namespace QQClient.Communication
             var response = WaitForResponse(packet.MessageId, MessageType.SearchIdResponse);
             return response != null && response.Content == "SUCCESS";
         }
+        public List<Friend> SearchAllFriends(string userId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.SearchAllFriendsRequest,
+                Sender = userId,
+                Timestamp = DateTime.Now,
+                MessageId = Guid.NewGuid().ToString()
+            };
 
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.SearchAllFriendsResponse);
+
+            if (response != null && response.Content == "SUCCESS")
+            {
+                // 从响应包的 Extras 中获取好友列表 JSON
+                if (response.Extras.TryGetValue("FriendsList", out string friendsJson))
+                {
+                    return JsonConvert.DeserializeObject<List<Friend>>(friendsJson);
+                }
+            }
+            return null; // 或返回空列表
+        }
+        //返回的是执行加好友操作是否成功，与成功添加好友没有关系
         public bool AddFriend(string fromUserId, string toUserId)
         {
             var packet = new ChatPacket
@@ -57,7 +80,64 @@ namespace QQClient.Communication
             var response = WaitForResponse(packet.MessageId, MessageType.AddFriendResponse);
             return response != null && response.Content == "SUCCESS";
         }
+        public bool AcceptFriendRequest(string fromUserId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.AcceptFriendRequest,
+                Sender = GlobalClient.CurrentUserId, // 当前登录用户（接受者）
+                Content = fromUserId,                 // 发起者账号
+                Timestamp = DateTime.Now,
+                MessageId = Guid.NewGuid().ToString()
+            };
 
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.AcceptFriendResponse);
+            return response != null && response.Content == "SUCCESS";
+        }
+        public bool RejectFriendRequest(string fromUserId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.RejectFriendRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Content = fromUserId,
+                Timestamp = DateTime.Now,
+                MessageId = Guid.NewGuid().ToString()
+            };
+
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.RejectFriendResponse);
+            return response != null && response.Content == "SUCCESS";
+        }
+        public List<Message> GetOfflineMessages(out List<string> friendRequests)
+        {
+            friendRequests = null;
+            var packet = new ChatPacket
+            {
+                Type = MessageType.GetOfflineMessagesRequest,
+                Sender = GlobalClient.CurrentUserId, // 需确保已设置
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.GetOfflineMessagesResponse);
+
+            if (response != null && response.Content == "SUCCESS")
+            {
+                List<Message> messages = null;
+                if (response.Extras.TryGetValue("OfflineMessages", out string msgJson))
+                {
+                    messages = JsonConvert.DeserializeObject<List<Message>>(msgJson);
+                }
+                if (response.Extras.TryGetValue("FriendRequests", out string reqJson))
+                {
+                    friendRequests = JsonConvert.DeserializeObject<List<string>>(reqJson);
+                }
+                return messages;
+            }
+            return null;
+        }
         private bool IsConnected()
         {
             if (_tcpClient == null || !_tcpClient.Connected)

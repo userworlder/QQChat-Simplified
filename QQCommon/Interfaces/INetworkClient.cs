@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QQCommon.Models;
 
 namespace QQCommon.Interfaces
 {
@@ -29,6 +30,11 @@ namespace QQCommon.Interfaces
 
         //Id查询
         bool SearchId(string fromUserId,string userId);
+
+        bool AcceptFriendRequest(string fromUserId);
+        bool RejectFriendRequest(string fromUserId);
+
+        List<Message> GetOfflineMessages(out List<string> friendRequests);
 
         // 事件：收到消息
         event EventHandler<MessageReceivedEventArgs> MessageReceived;

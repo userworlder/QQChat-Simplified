@@ -231,12 +231,100 @@ namespace QQServer.Communication
                     SearchIdChat(packet,clientInfo);
                     break;
 
+                case MessageType.SearchAllFriendsRequest:
+                    HandleSearchAllFriends(packet, clientInfo);
+                    break;
+
+                case MessageType.GetOfflineMessagesRequest:
+                    HandleGetOfflineMessages(packet, clientInfo);
+                    break;
+
+                case MessageType.AcceptFriendRequest:
+                    HandleAcceptFriendRequest(packet, clientInfo);
+                    break;
+
+                case MessageType.RejectFriendRequest:
+                    HandleRejectFriendRequest(packet, clientInfo);
+                    break;
+
                 default:
                     Console.WriteLine($"未知消息类型: {packet.Type}");
                     break;
             }
         }
+        private void HandleAcceptFriendRequest(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string fromUserId = packet.Content; // 发起请求的用户
+            string toUserId = clientInfo.Username; // 当前登录用户（接受者）
 
+            Console.WriteLine($"接受好友请求: {toUserId} 接受 {fromUserId}");
+
+            // 调用业务层接受请求，内部会更新请求状态并创建双向好友关系
+            bool success = _friendService.AcceptFriendRequest(fromUserId, toUserId);
+
+            // 构造响应包
+            ChatPacket response = new ChatPacket
+            {
+                Type = MessageType.AcceptFriendResponse,
+                Sender = "Server",
+                Receiver = toUserId,
+                MessageId = packet.MessageId,
+                Content = success ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            SendToClient(response, clientInfo);
+
+            if (success)
+            {
+                // 通知原发起者（fromUserId）好友请求已被接受
+                // 使用 FriendStatusUpdate 类型，Content 设为 "FRIEND_ACCEPTED"
+                ChatPacket notify = new ChatPacket
+                {
+                    Type = MessageType.FriendStatusUpdate,
+                    Sender = toUserId,
+                    Receiver = fromUserId,
+                    Content = "FRIEND_ACCEPTED",
+                    Timestamp = DateTime.Now
+                };
+                SendToUser(notify, fromUserId);
+            }
+        }
+        private void HandleRejectFriendRequest(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string fromUserId = packet.Content; // 发起请求的用户
+            string toUserId = clientInfo.Username; // 当前登录用户（拒绝者）
+
+            Console.WriteLine($"拒绝好友请求: {toUserId} 拒绝 {fromUserId}");
+
+            // 调用业务层拒绝请求，更新请求状态为“已拒绝”
+            bool success = _friendService.RejectFriendRequest(fromUserId, toUserId);
+
+            // 构造响应包
+            ChatPacket response = new ChatPacket
+            {
+                Type = MessageType.RejectFriendResponse,
+                Sender = "Server",
+                Receiver = toUserId,
+                MessageId = packet.MessageId,
+                Content = success ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            SendToClient(response, clientInfo);
+
+            if (success)
+            {
+                // 可选：通知原发起者请求被拒绝
+                ChatPacket notify = new ChatPacket
+                {
+                    Type = MessageType.FriendStatusUpdate,
+                    Sender = toUserId,
+                    Receiver = fromUserId,
+                    Content = "FRIEND_REJECTED",
+                    Timestamp = DateTime.Now
+                };
+                SendToUser(notify, fromUserId);
+            }
+        }
         // 处理登录请求
         private void HandleLogin(ChatPacket packet, ClientInfo clientInfo)
         {
@@ -348,13 +436,13 @@ namespace QQServer.Communication
                 SendToClient(response, clientInfo);
             }
         }
+
         private void SearchIdChat(ChatPacket packet, ClientInfo senderInfo)
         {
             string sender = packet.Sender;
             string content = packet.Content;
 
             Console.WriteLine($"查询请求请求: {content}");
-
             // 调用业务层验证登录
             var user = _userService.SearchUser(content);
 
@@ -395,6 +483,79 @@ namespace QQServer.Communication
             // 发送响应
             SendToClient(response, senderInfo);
 
+        }
+        private void HandleGetOfflineMessages(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string userId = clientInfo.UserId; // 登录后已设置
+            Console.WriteLine($"处理离线消息请求: {userId}");
+
+            // 获取未读私聊消息
+            var unreadMessages = _messageService.GetUnreadMessages(userId);
+
+            // 获取待处理的好友请求（FromUserId 列表）
+            var friendRequests = _friendService.GetFriendRequests(userId);
+
+            // 获取未读群消息
+            // var unreadGroupMessages = _groupMessageService.GetUnreadMessages(userId);
+
+            var response = new ChatPacket
+            {
+                Type = MessageType.GetOfflineMessagesResponse,
+                Sender = "Server",
+                Receiver = userId,
+                MessageId = packet.MessageId,
+                Content = "SUCCESS",
+                Timestamp = DateTime.Now
+            };
+
+            // 将数据序列化放入 Extras
+            if (unreadMessages != null && unreadMessages.Count > 0)
+                response.Extras["OfflineMessages"] = JsonConvert.SerializeObject(unreadMessages);
+
+            if (friendRequests != null && friendRequests.Count > 0)
+                response.Extras["FriendRequests"] = JsonConvert.SerializeObject(friendRequests);
+
+            // 发送响应
+            SendToClient(response, clientInfo);
+        }
+
+        private void HandleSearchAllFriends(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string userId = packet.Sender;
+            Console.WriteLine($"查询所有好友请求: {userId}");
+
+            // 调用业务层获取好友列表
+            var friends = _friendService.GetFriendList(userId); // 需要实现此方法
+
+            ChatPacket response;
+            if (friends != null)
+            {
+                string friendsJson = JsonConvert.SerializeObject(friends);
+                response = new ChatPacket
+                {
+                    Type = MessageType.SearchAllFriendsResponse,
+                    Sender = "Server",
+                    Receiver = userId,
+                    MessageId = packet.MessageId,
+                    Content = "SUCCESS",
+                    Timestamp = DateTime.Now
+                };
+                response.Extras["FriendsList"] = friendsJson;
+            }
+            else
+            {
+                response = new ChatPacket
+                {
+                    Type = MessageType.SearchAllFriendsResponse,
+                    Sender = "Server",
+                    Receiver = userId,
+                    MessageId = packet.MessageId,
+                    Content = "FAILED",
+                    Timestamp = DateTime.Now
+                };
+            }
+
+            SendToClient(response, clientInfo);
         }
         // 处理聊天消息 - 完整实现
         private void HandleChatMessage(ChatPacket packet, ClientInfo senderInfo)
@@ -442,7 +603,7 @@ namespace QQServer.Communication
             };
             SendToClient(ack, senderInfo);
         }
-
+        
         // 处理添加好友请求
         private void HandleAddFriend(ChatPacket packet, ClientInfo senderInfo)
         {

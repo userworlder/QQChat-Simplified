@@ -70,35 +70,35 @@ namespace QQClient.UI
                 // 创建 ContactItem 实例
                 var item = new ContactItem();
 
-                // 设置显示名称：优先使用备注，否则使用好友昵称，再否则使用好友账号
-                //string displayName = !string.IsNullOrEmpty(friend.Remark) ? friend.Remark
-                //                   : (!string.IsNullOrEmpty(friend.FriendNickname) ? friend.FriendNickname
-                //                   : friend.FriendUserId);
-                string displayName = friend.FriendId.ToString();
-                item.DisplayName = displayName;
+            //    // 设置显示名称：优先使用备注，否则使用好友昵称，再否则使用好友账号
+            //    //string displayName = !string.IsNullOrEmpty(friend.Remark) ? friend.Remark
+            //    //                   : (!string.IsNullOrEmpty(friend.FriendNickname) ? friend.FriendNickname
+            //    //                   : friend.FriendUserId);
+            //    string displayName = friend.FriendId.ToString();
+            //    item.DisplayName = displayName;
 
-                // 设置最后一条消息（可从 Messages 表查询最近的一条消息）
-                // 这里暂时留空或设置默认文本，你可以单独写一个方法获取最后消息
-                //item.LastMessage = GetLatestMessage(friend.FriendUserId, currentUserId);
-                item.LastMessage = "!!!";
-                // 设置时间（例如最后消息的时间或添加好友的时间）
-                // 这里先用 AddTime 格式化
-                item.Time = friend.AddTime.ToString("HH:mm");
+            //    // 设置最后一条消息（可从 Messages 表查询最近的一条消息）
+            //    // 这里暂时留空或设置默认文本，你可以单独写一个方法获取最后消息
+            //    //item.LastMessage = GetLatestMessage(friend.FriendUserId, currentUserId);
+            //    item.LastMessage = "!!!";
+            //    // 设置时间（例如最后消息的时间或添加好友的时间）
+            //    // 这里先用 AddTime 格式化
+            //    item.Time = friend.AddTime.ToString("HH:mm");
 
                 // 存储好友的唯一标识（FriendUserId）到 Tag 中，方便点击时识别
                 item.Tag = friend.FriendUserId;
 
-                // （可选）如果有头像，设置 item.Avatar = ...;
+            //    // （可选）如果有头像，设置 item.Avatar = ...;
 
-                // 设置宽度适应 FlowLayoutPanel
-                item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? SystemInformation.VerticalScrollBarWidth : 0);
+            //    // 设置宽度适应 FlowLayoutPanel
+            //    item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? SystemInformation.VerticalScrollBarWidth : 0);
 
                 // 订阅点击事件（如果需要打开聊天窗口）
                 // item.Click += ContactItem_Click;
             }
 
 
-        }
+        //}
 
         private void public_chat_Paint(object sender, PaintEventArgs e)
         {
