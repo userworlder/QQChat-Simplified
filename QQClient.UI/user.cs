@@ -27,7 +27,11 @@ namespace QQClient.UI
         {
             InitializeComponent();
             self_account = user_account;
+            panel_x = panel1.Left;
+            panel_y = panel1.Top;
+            Load_Panel();
             Load_Friend();
+            LoadPendingRequests();
             /*            var testFriends = new List<QQCommon.Models.Message>
             ////测试案例
             //    {
@@ -76,6 +80,7 @@ namespace QQClient.UI
             request.Left = 0;
             request.Top = 0;
         }
+        //加载好友列表
         void Load_Friend()
         {
             //获取Friend
@@ -114,7 +119,65 @@ namespace QQClient.UI
 
 
         }
+        private void LoadPendingRequests()
+        {
+            var client = GlobalClient.Current;
+            if (client == null) return;
 
+            // 调用方法，获取好友请求列表
+            var offlineMessages = client.GetOfflineMessages(out List<string> requestUsers);
+
+            // 如果请求列表不为空，则填充界面
+            if (requestUsers != null && requestUsers.Count > 0)
+            {
+                request.Controls.Clear();
+                foreach (var fromUserId in requestUsers)
+                {
+                    var item = new FriendItem(fromUserId);
+                    item.AcceptClicked += OnAcceptRequest;
+                    item.RejectClicked += OnRejectRequest;
+                    request.Controls.Add(item);
+                }
+            }
+            else
+            {
+                // 没有请求时显示提示（可选）
+                Label lblEmpty = new Label { Text = "暂无好友请求", AutoSize = true };
+                request.Controls.Add(lblEmpty);
+            }
+        }
+       
+
+        private void OnAcceptRequest(object sender, string fromUserId)
+        {
+            var client = GlobalClient.Current;
+            bool success = client.AcceptFriendRequest(fromUserId);
+            if (success)
+            {
+                // 从 FlowLayoutPanel 中移除该项
+                request.Controls.Remove((UserControl)sender);
+                MessageBox.Show($"已同意 {fromUserId} 的好友请求");
+            }
+            else
+            {
+                MessageBox.Show("同意失败，请稍后重试");
+            }
+        }
+
+        private void OnRejectRequest(object sender, string fromUserId)
+        {
+            var client = GlobalClient.Current;
+            bool success = client.RejectFriendRequest(fromUserId);
+            if (success)
+            {
+                request.Controls.Remove((UserControl)sender);
+                MessageBox.Show($"已拒绝 {fromUserId} 的好友请求");
+            }
+            else
+            {
+                MessageBox.Show("拒绝失败");
+            }
+        }
         private void public_chat_Paint(object sender, PaintEventArgs e)
         {
 

@@ -70,6 +70,12 @@
     <Compile Include="ez_addfriend.Designer.cs">
       <DependentUpon>ez_addfriend.cs</DependentUpon>
     </Compile>
+    <Compile Include="FriendItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FriendItem.Designer.cs">
+      <DependentUpon>FriendItem.cs</DependentUpon>
+    </Compile>
     <Compile Include="message_bubble.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -136,6 +142,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ez_addfriend.resx">
       <DependentUpon>ez_addfriend.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FriendItem.resx">
+      <DependentUpon>FriendItem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="login.resx">
       <DependentUpon>login.cs</DependentUpon>

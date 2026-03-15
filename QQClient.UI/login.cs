@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using QQCommon.Models;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 namespace QQClient.UI
 {
     public partial class login : Form
@@ -69,5 +70,10 @@ namespace QQClient.UI
             }
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            user user = new user("1", this);
+            user.Show();
+        }
     }
 }
