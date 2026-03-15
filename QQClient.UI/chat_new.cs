@@ -22,11 +22,8 @@ namespace QQClient.UI
             _friendNickname = friendNickname;
             lblFriendName.Text = friendNickname;
             this.Text = $"与 {friendNickname} 聊天中";
-
-            // 订阅事件
-            //this.Load += ChatNew_Load;
+            // 订阅事件       
             this.Load += chat_new_Load;  // 注意方法名不要写错，且没有括号
-
             //flowMessages.Resize += (s, e) => AdjustMessageWidths();
             //btnSend.Click += BtnSend_Click;
             //btnClear.Click += BtnClear_Click;
@@ -36,19 +33,19 @@ namespace QQClient.UI
         {
             flowMessages.Controls.Clear();
 
-            AddReceivedMessage("你好，这是一条对方的消息，可能比较长，用来测试自动换行和高度自适应。");
-            AddSentMessage("这是我的消息，应该显示在右侧。");
-            AddReceivedMessage("另一条对方消息。");
-            AddSentMessage("再发一条。");
+            AddReceivedMessage("这是一条对方短消息");
+            AddSentMessage("这是我的短消息");
+            AddReceivedMessage("这是一条对方非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长的信息消息的。");
+            AddSentMessage("这是一条非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长我的信息。");
 
             // 调试：输出每个控件的高度
-            foreach (Control ctrl in flowMessages.Controls)
-            {
-                if (ctrl is message_bubble msg)
-                {
-                    MessageBox.Show($"消息: {msg.MessageText}\n控件高度: {msg.Height}\nPanelBubble高度: {msg.Controls[0].Height}");
-                }
-            }
+            //foreach (Control ctrl in flowMessages.Controls)
+            //{
+            //    if (ctrl is message_bubble msg)
+            //    {
+            //        MessageBox.Show($"消息: {msg.MessageText}\n控件高度: {msg.Height}\nPanelBubble高度: {msg.Controls[0].Height}");
+            //    }
+            //}
         }
 
 

@@ -37,7 +37,7 @@ namespace QQClient.UI
                     bool x = client.AddFriend(self_account, friend_account);
                     if (x)
                     {   //打开界面
-                        MessageBox.Show("已添加好友");
+                        MessageBox.Show("已发送好友申请");
                     }
                     else
                     {   //返回错误信息
