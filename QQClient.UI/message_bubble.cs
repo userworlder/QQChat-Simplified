@@ -17,7 +17,6 @@ namespace QQClient.UI
             InitializeComponent();
 
             // 当气泡面板大小变化时，调整整个控件的高度
-          //  this.panelBubble.Resize += (s, e) => this.Height = panelBubble.Height;
             this.Resize += (s, e) => UpdatePosition();
             panelBubble.Resize += (s, e) => UpdatePosition(); // 以防 panel 大小变化
         }
@@ -26,12 +25,14 @@ namespace QQClient.UI
             if (_isSelf)
             {
                 panelBubble.BackColor = Color.LightGreen;
-                panelBubble.Left = this.ClientSize.Width - panelBubble.Width;
+                panelBubble.Dock = DockStyle.Right;
+                // panelBubble.Left = this.ClientSize.Width - panelBubble.Width;
             }
             else
             {
                 panelBubble.BackColor = Color.LightGray;
-                panelBubble.Left = 0;
+                panelBubble.Dock = DockStyle.Left;
+                //panelBubble.Left = 0;
             }
         }
 
@@ -53,14 +54,14 @@ namespace QQClient.UI
                 if (value)
                 {
                     panelBubble.BackColor = Color.LightGreen;   // 自己消息背景色
-                    panelBubble.Left = this.ClientSize.Width - panelBubble.Width;
-                    //panelBubble.Dock = DockStyle.Right;         // 靠右
+                   // panelBubble.Left = this.ClientSize.Width - panelBubble.Width;
+                    panelBubble.Dock = DockStyle.Right;         // 靠右
                 }
                 else
                 {
                     panelBubble.BackColor = Color.LightGray;    // 对方消息背景色
-                    panelBubble.Left = 0;
-                    // panelBubble.Dock = DockStyle.Left;          // 靠左
+                  //  panelBubble.Left = 0;
+                    panelBubble.Dock = DockStyle.Left;          // 靠左
                 }
             }
         }

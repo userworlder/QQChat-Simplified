@@ -42,14 +42,14 @@
             this.panelBubble.MaximumSize = new System.Drawing.Size(400, 0);
             this.panelBubble.Name = "panelBubble";
             this.panelBubble.Padding = new System.Windows.Forms.Padding(8, 5, 8, 5);
-            this.panelBubble.Size = new System.Drawing.Size(400, 39);
+            this.panelBubble.Size = new System.Drawing.Size(200, 28);
             this.panelBubble.TabIndex = 0;
             // 
             // lblMessage
             // 
             this.lblMessage.AutoSize = true;
             this.lblMessage.BackColor = System.Drawing.Color.Transparent;
-            this.lblMessage.Location = new System.Drawing.Point(23, 16);
+            this.lblMessage.Location = new System.Drawing.Point(11, 5);
             this.lblMessage.MaximumSize = new System.Drawing.Size(380, 0);
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(44, 18);
@@ -73,8 +73,7 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Panel panelBubble;
         private System.Windows.Forms.Label lblMessage;
+        private System.Windows.Forms.Panel panelBubble;
     }
 }
