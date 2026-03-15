@@ -14,7 +14,6 @@ namespace QQCommon.Interfaces
 
         // 获取两个用户之间的聊天记录
         List<Message> GetChatHistory(string userId1, string userId2, int limit = 50);
-
         // 获取未读消息
         List<Message> GetUnreadMessages(string userId);
     }

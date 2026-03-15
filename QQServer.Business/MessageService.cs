@@ -17,7 +17,6 @@ namespace QQServer.Business
         {
             messageDao = new MessageDao();
         }
-
         public bool SendMessage(Message message)
         {
             // 生成消息ID
@@ -45,9 +44,7 @@ namespace QQServer.Business
 
         public List<Message> GetUnreadMessages(string userId)
         {
-            // 这里可以实现获取未读消息的逻辑
-            // 目前暂时返回空列表
-            return new List<Message>();
+            return messageDao.GetUnreadMessages(userId);
         }
     }
 }

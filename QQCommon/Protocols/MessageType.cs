@@ -22,6 +22,10 @@ namespace QQCommon.Protocols
         FriendListRequest = 203,
         FriendListResponse = 204,
         FriendStatusUpdate = 205,//好友列表更新
+        AcceptFriendRequest = 206,
+        AcceptFriendResponse = 207,
+        RejectFriendRequest = 208,
+        RejectFriendResponse = 209,
 
         // 消息相关 (300系列)
         ChatMessage = 301,
@@ -31,6 +35,8 @@ namespace QQCommon.Protocols
         SearchIdResponse=305,
         SearchAllFriendsRequest=306,
         SearchAllFriendsResponse=307,
+        GetOfflineMessagesRequest = 308,   // 客户端请求离线消息
+        GetOfflineMessagesResponse = 309,    // 服务器返回离线数据
 
         // 系统消息 (400系列)
         Heartbeat = 401,        // 心跳包（保证连接不中断）

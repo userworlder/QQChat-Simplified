@@ -30,6 +30,9 @@ namespace QQCommon.Interfaces
         //Id查询
         bool SearchId(string fromUserId,string userId);
 
+        bool AcceptFriendRequest(string fromUserId);
+        bool RejectFriendRequest(string fromUserId);
+
         // 事件：收到消息
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
