@@ -25,7 +25,19 @@ namespace QQServer.Business
         public bool AddFriendRequest(string fromUser, string toUser)
         {
             // 使用FriendRequestDao发送好友请求
-            return friendRequestDao.AddFriendRequest(fromUser, toUser);
+            try
+            {
+                Console.WriteLine($"[FriendService] 开始添加好友请求: {fromUser} -> {toUser}");
+                bool result = friendRequestDao.AddFriendRequest(fromUser, toUser);
+                Console.WriteLine($"[FriendService] 添加好友请求结果: {result}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[FriendService] 添加好友请求异常: {ex.Message}");
+                Console.WriteLine($"[FriendService] 异常堆栈: {ex.StackTrace}");
+                return false;
+            }
         }
 
         public bool AcceptFriendRequest(string fromUser, string toUser)

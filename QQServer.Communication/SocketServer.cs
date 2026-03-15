@@ -609,12 +609,15 @@ namespace QQServer.Communication
         {
             string fromUser = packet.Sender;
             string toUser = packet.Content;
-
+            Console.WriteLine($"========== 处理添加好友请求 ==========");
+            Console.WriteLine($"发送者: {fromUser}");
+            Console.WriteLine($"接收者: {toUser}");
+            Console.WriteLine($"消息ID: {packet.MessageId}");
             Console.WriteLine($"添加好友请求: {fromUser} -> {toUser}");
-
+            Console.WriteLine($"[SocketServer] 调用 FriendService.AddFriendRequest({fromUser}, {toUser})");
             // 调用业务层处理好友请求
             bool success = _friendService.AddFriendRequest(fromUser, toUser);
-
+            Console.WriteLine($"[SocketServer] FriendService 返回结果: {success}");
             var response = new ChatPacket
             {
                 Type = MessageType.AddFriendResponse,
@@ -624,7 +627,7 @@ namespace QQServer.Communication
                 Content = success ? "SUCCESS" : "FAILED",
                 Timestamp = DateTime.Now
             };
-
+            Console.WriteLine($"[SocketServer] 发送响应给 {fromUser}, Content: {response.Content}");
             SendToClient(response, senderInfo);
 
             // 如果接收者在线，通知他有好友请求
