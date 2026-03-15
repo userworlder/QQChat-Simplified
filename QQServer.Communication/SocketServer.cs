@@ -230,18 +230,23 @@ namespace QQServer.Communication
                 case MessageType.SearchId:
                     SearchIdChat(packet,clientInfo);
                     break;
+
                 case MessageType.SearchAllFriendsRequest:
                     HandleSearchAllFriends(packet, clientInfo);
                     break;
+
                 case MessageType.GetOfflineMessagesRequest:
                     HandleGetOfflineMessages(packet, clientInfo);
                     break;
+
                 case MessageType.AcceptFriendRequest:
                     HandleAcceptFriendRequest(packet, clientInfo);
                     break;
+
                 case MessageType.RejectFriendRequest:
                     HandleRejectFriendRequest(packet, clientInfo);
                     break;
+
                 default:
                     Console.WriteLine($"未知消息类型: {packet.Type}");
                     break;
@@ -490,7 +495,7 @@ namespace QQServer.Communication
             // 获取待处理的好友请求（FromUserId 列表）
             var friendRequests = _friendService.GetFriendRequests(userId);
 
-            // 获取未读群消息（如果有群功能）
+            // 获取未读群消息
             // var unreadGroupMessages = _groupMessageService.GetUnreadMessages(userId);
 
             var response = new ChatPacket

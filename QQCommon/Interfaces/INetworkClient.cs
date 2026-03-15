@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QQCommon.Models;
 
 namespace QQCommon.Interfaces
 {
@@ -32,6 +33,8 @@ namespace QQCommon.Interfaces
 
         bool AcceptFriendRequest(string fromUserId);
         bool RejectFriendRequest(string fromUserId);
+
+        List<Message> GetOfflineMessages(out List<string> friendRequests);
 
         // 事件：收到消息
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
