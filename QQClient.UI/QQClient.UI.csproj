@@ -52,10 +52,10 @@
     <Compile Include="add_friend.Designer.cs">
       <DependentUpon>add_friend.cs</DependentUpon>
     </Compile>
-    <Compile Include="chat.cs">
+    <Compile Include="broken\chat.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="chat.Designer.cs">
+    <Compile Include="broken\chat.Designer.cs">
       <DependentUpon>chat.cs</DependentUpon>
     </Compile>
     <Compile Include="chat_new.cs">
@@ -70,10 +70,10 @@
     <Compile Include="ez_addfriend.Designer.cs">
       <DependentUpon>ez_addfriend.cs</DependentUpon>
     </Compile>
-    <Compile Include="FriendItem.cs">
+    <Compile Include="user_control\FriendItem.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FriendItem.Designer.cs">
+    <Compile Include="user_control\FriendItem.Designer.cs">
       <DependentUpon>FriendItem.cs</DependentUpon>
     </Compile>
     <Compile Include="login_new.cs">
@@ -82,23 +82,23 @@
     <Compile Include="login_new.Designer.cs">
       <DependentUpon>login_new.cs</DependentUpon>
     </Compile>
-    <Compile Include="message_bubble.cs">
+    <Compile Include="user_control\message_bubble.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="message_bubble.Designer.cs">
+    <Compile Include="user_control\message_bubble.Designer.cs">
       <DependentUpon>message_bubble.cs</DependentUpon>
     </Compile>
-    <Compile Include="Picture.cs" />
+    <Compile Include="broken\Picture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="register.cs">
+    <Compile Include="broken\register.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="register.Designer.cs">
+    <Compile Include="broken\register.Designer.cs">
       <DependentUpon>register.cs</DependentUpon>
     </Compile>
     <Compile Include="register_new.cs">
@@ -107,10 +107,10 @@
     <Compile Include="register_new.Designer.cs">
       <DependentUpon>register_new.cs</DependentUpon>
     </Compile>
-    <Compile Include="ContactItem.cs">
+    <Compile Include="user_control\ContactItem.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ContactItem.Designer.cs">
+    <Compile Include="user_control\ContactItem.Designer.cs">
       <DependentUpon>ContactItem.cs</DependentUpon>
     </Compile>
     <Compile Include="user.cs">
@@ -134,7 +134,7 @@
     <EmbeddedResource Include="add_friend.resx">
       <DependentUpon>add_friend.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="chat.resx">
+    <EmbeddedResource Include="broken\chat.resx">
       <DependentUpon>chat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="chat_new.resx">
@@ -143,26 +143,26 @@
     <EmbeddedResource Include="ez_addfriend.resx">
       <DependentUpon>ez_addfriend.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FriendItem.resx">
+    <EmbeddedResource Include="user_control\FriendItem.resx">
       <DependentUpon>FriendItem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="login_new.resx">
       <DependentUpon>login_new.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="message_bubble.resx">
+    <EmbeddedResource Include="user_control\message_bubble.resx">
       <DependentUpon>message_bubble.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="register.resx">
+    <EmbeddedResource Include="broken\register.resx">
       <DependentUpon>register.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="register_new.resx">
       <DependentUpon>register_new.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ContactItem.resx">
+    <EmbeddedResource Include="user_control\ContactItem.resx">
       <DependentUpon>ContactItem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="user.resx">
@@ -178,9 +178,6 @@
   <ItemGroup>
     <EmbeddedResource Include="picture\login_btn.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="broken\" />
-    <Folder Include="usercontrol\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

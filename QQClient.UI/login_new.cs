@@ -18,6 +18,12 @@ namespace QQClient.UI
             InitializeComponent();
         }
 
+        private void label3_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            register_new register = new register_new(this);
+            register.ShowDialog();
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             textBox1.Text = "1";
@@ -30,7 +36,7 @@ namespace QQClient.UI
             textBox2.Text = "wxb";
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void pictureBox2_Click(object sender, EventArgs e)
         {
             // QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
             //是否为空
@@ -63,13 +69,6 @@ namespace QQClient.UI
             {   //返回错误信息
                 MessageBox.Show("账户或密码不可为空");
             }
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-            this.Hide();
-            register_new register = new register_new(this);
-            register.ShowDialog();
         }
     }
 }
