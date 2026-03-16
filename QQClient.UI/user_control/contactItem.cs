@@ -34,7 +34,7 @@ namespace QQClient.UI
         public ContactItem()
         {
             InitializeComponent();           
-            this.Click += contactItem_Click;
+            //this.Click += contactItem_Click;
             //所有的控件也会被视为点击
             //foreach (Control ctrl in this.Controls)
             //{
@@ -53,7 +53,7 @@ namespace QQClient.UI
             string displayname = clickedItem.DisplayName;  // 联系人昵称
 
             // 3. 创建聊天窗口实例
-            chat chat = new chat(account,displayname);
+            chat_new chat = new chat_new(account,displayname);
 
             // 4. 显示聊天窗口（允许同时打开多个聊天窗口）
             chat.Show();
