@@ -7,12 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using QQCommon.Interfaces;
 using QQCommon.Models;
+using QQCommon.Protocols;
 namespace QQClient.UI
 {
     public partial class user : Form
     {
         string self_account;
+        string fromUserId;
         //panel的坐标
         int panel_x;
         int panel_y;
@@ -29,48 +32,44 @@ namespace QQClient.UI
             self_account = user_account;
             panel_x = panel1.Left;
             panel_y = panel1.Top;
+            this.Text = user_account;
+            GlobalClient.Current.MessageReceived += OnMessageReceived;
             Load_Panel();
-            //MessageBox.Show(GlobalClient.CurrentUserId);
             Load_Friend();
             LoadPendingRequests();
-            /*            var testFriends = new List<QQCommon.Models.Message>
-            ////测试案例
-            //    {
-            //        new QQCommon.Models.Message
-            //        {
-            //            Content = "I am zhangsan",
-            //            SenderId = "张三",
-            //            SendTime = DateTime.Now.AddHours(-1)
-            //        },
-
-            //    };
-
-            //foreach (var friend in testFriends)
-            //{
-            //    // 创建 ContactItem 实例a
-            //    var item = new ContactItem();
-
-            //    // 设置显示名称：如果有备注就用备注，否则用 FriendUserId
-            //    item.DisplayName =friend.SenderId.ToString();
-
-            //    // 设置最后消息：这里用固定文本模拟，你可以用其他内容
-            //    item.LastMessage = friend.Content.ToString();
-
-            //    // 设置时间：用 AddTime 格式化为简短时间
-            //    item.Time = friend.SendTime.ToString("HH:mm");
-
-            //    // （可选）如果有头像，可以设置
-            //    // item.Avatar = Properties.Resources.default_avatar;
-
-            //    // 设置宽度适应 FlowLayoutPanel（考虑滚动条）
-            //    item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? 20 : 0);
-
-            //    // 添加到 FlowLayoutPanel
-            //    private_chat.Controls.Add(item);
-            //}
-            */
             this.FormClosed += (sender, e) => login.Show();
         }
+        private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
+        {
+            // 根据包的类型判断是否为好友请求
+            if (e.Packet.Type == MessageType.AddFriendRequest) // 假设有这样一个类型
+            {
+                string fromUserId = e.Packet.Sender; // 发起者账号
+                                                     // 切换到 UI 线程添加请求项
+                this.Invoke((MethodInvoker)delegate
+                {
+                    AddFriendRequest(fromUserId);
+                });
+            }
+            // 可能还需要处理其他消息类型，比如新消息等
+        }
+
+        private void AddFriendRequest(string fromUserId)
+        {
+            //MessageBox.Show(fromUserId);
+            // 检查是否已经存在相同请求
+            foreach (Control ctrl in request.Controls)
+            {
+                if (ctrl is FriendItem exist_item && exist_item.FromUserId == fromUserId)
+                    return;
+            }
+            MessageBox.Show(fromUserId);
+            var item = new FriendItem(fromUserId);
+            item.AcceptClicked += OnAcceptRequest;
+            item.RejectClicked += OnRejectRequest;
+            request.Controls.Add(item);
+        }
+
         //加载界面的位置
         void Load_Panel()
         {
@@ -86,21 +85,20 @@ namespace QQClient.UI
         {
             //获取Friend
             var client = GlobalClient.Current;
-            //List<Friend> friends=new List<Friend>();
-            MessageBox.Show(GlobalClient.CurrentUserId);
+            //List<Friend> friends=new List<Friend>();           
             List<Friend> friends = client.SearchAllFriends(GlobalClient.CurrentUserId);
             foreach (var friend in friends)
             {
                 // 创建 ContactItem 实例
-                var item = new ContactItem();            
+                var item = new ContactItem();
                 //string displayName = friend.FriendNickName.ToString();
                 //item.DisplayName = displayName;
                 //string account= friend.FriendUserName.ToString();
                 //item.Account = account;
                 //    // 设置最后一条消息（可从 Messages 表查询最近的一条消息）
                 //    // 这里暂时留空或设置默认文本，你可以单独写一个方法获取最后消息
-                  //  item.LastMessage = GetLatestMessage(friend.FriendUserId, currentUserId);
-                    item.LastMessage = "!!!";
+                //  item.LastMessage = GetLatestMessage(friend.FriendUserId, currentUserId);
+                item.LastMessage = "!!!";
                 //    // 设置时间（例如最后消息的时间或添加好友的时间）
                 //    // 这里先用 AddTime 格式化
                 //    item.Time = friend.AddTime.ToString("HH:mm");
@@ -176,7 +174,7 @@ namespace QQClient.UI
                 MessageBox.Show("拒绝失败，请稍后重试");
             }
         }
-      
+
         //私聊模式
         private void btn_privatemode(object sender, EventArgs e)
         {
@@ -207,7 +205,7 @@ namespace QQClient.UI
 
 
 
-  
+
     }
 }
 
