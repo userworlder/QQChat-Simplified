@@ -28,3 +28,18 @@
 		UI界面调用RejectFriendRequest发送 RejectFriendRequest 包
 	6）在用户登录成功后，主动请求离线消息和好友请求，将离线期间收到的好友请求添加到待处理列表中。
 		在用户登录成功、主界面加载前（或加载后），主动调用一个方法（ GetOfflineNotifications）发送 GetNotificationListRequest 包，请求离线期间未处理的好友请求（及离线消息）。收到响应后，解析出待处理请求列表(List<string> friendRequest和List<Message> messages)，并将其添加到UI的通知列表中。
+
+3/16：
+当前正在做的功能：
+	好友列表实现过程：
+	1）在 user 窗体加载时（构造函数或 Load 事件），调用 client.SearchAllFriends 获取好友列表。
+	2）服务器返回 SearchAllFriendsResponse，Extras 中包含好友列表 JSON。
+	3）反序列化为 List<Friend>，遍历列表，为每个好友创建一个 ContactItem 控件：
+	4）设置 DisplayName 为好友备注或昵称。
+	5）设置 Account 为好友账号。
+	6）设置 LastMessage 为最后一条消息的预览（可从本地缓存或服务器获取）。
+	7）设置 Time 为最后消息时间。
+	8）将 ContactItem 添加到 private_chat 流式布局面板。
+	9）点击 ContactItem 时，触发其 Click 事件（已在 ContactItem 中实现），打开对应的 chat 窗体，传入好友账号和昵称。
+	10）订阅 NetworkClient.MessageReceived 事件，当收到新消息时，更新对应好友项的 LastMessage 和 Time，并可增加未读消息计数（显示红点）。
+	11）群聊列表类似，但需从服务器获取群组列表，使用不同的数据源。

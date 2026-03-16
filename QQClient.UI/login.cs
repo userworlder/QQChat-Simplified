@@ -76,5 +76,10 @@ namespace QQClient.UI
             textBox1.Text = "1";
             textBox2.Text = "1";
         }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

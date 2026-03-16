@@ -45,7 +45,8 @@ namespace QQClient.UI
             if (e.Packet.Type == MessageType.AddFriendRequest) // 假设有这样一个类型
             {
                 string fromUserId = e.Packet.Sender; // 发起者账号
-                                                     // 切换到 UI 线程添加请求项
+                //MessageBox.Show(fromUserId);
+                // 切换到 UI 线程添加请求项
                 this.Invoke((MethodInvoker)delegate
                 {
                     AddFriendRequest(fromUserId);
@@ -63,7 +64,7 @@ namespace QQClient.UI
                 if (ctrl is FriendItem exist_item && exist_item.FromUserId == fromUserId)
                     return;
             }
-            MessageBox.Show(fromUserId);
+            //MessageBox.Show(fromUserId);
             var item = new FriendItem(fromUserId);
             item.AcceptClicked += OnAcceptRequest;
             item.RejectClicked += OnRejectRequest;

@@ -20,6 +20,7 @@ namespace QQClient.UI
             InitializeComponent();
             label1.Text = fromUserId;
             //订阅点击事件
+            this.FromUserId = fromUserId;
             btn_accept.Click += btn_accept_Click;
             btn_reject.Click += btn_reject_Click;
         }
