@@ -45,7 +45,7 @@
             // 
             // pnlTop
             // 
-            this.pnlTop.BackColor = System.Drawing.Color.Red;
+            this.pnlTop.BackColor = System.Drawing.Color.White;
             this.pnlTop.Controls.Add(this.lblFriendName);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
@@ -107,7 +107,7 @@
             // txtInput
             // 
             this.txtInput.AcceptsReturn = true;
-            this.txtInput.BackColor = System.Drawing.Color.Red;
+            this.txtInput.BackColor = System.Drawing.Color.WhiteSmoke;
             this.txtInput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtInput.Location = new System.Drawing.Point(0, 0);
             this.txtInput.Multiline = true;
@@ -128,7 +128,7 @@
             // flowMessages
             // 
             this.flowMessages.AutoScroll = true;
-            this.flowMessages.BackColor = System.Drawing.Color.Pink;
+            this.flowMessages.BackColor = System.Drawing.Color.WhiteSmoke;
             this.flowMessages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowMessages.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowMessages.Location = new System.Drawing.Point(0, 0);

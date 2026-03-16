@@ -30,8 +30,8 @@ namespace QQClient.Host
                MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
-                //Application.Run(new QQClient.UI.chat_new("1", "1"));
-               Application.Run(new QQClient.UI.user());
+                Application.Run(new QQClient.UI.chat_new("1", "1"));
+               //Application.Run(new QQClient.UI.user());
             }
             else
             {

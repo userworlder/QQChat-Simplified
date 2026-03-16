@@ -12,6 +12,9 @@ namespace QQClient.UI
 {
     public partial class chat_new : Form
     {
+        //供外部窗体使用的账号，用于识别唯一窗口
+        public string FriendAccount => _friendAccount;
+
         private string _friendAccount;
         private string _friendNickname;
 
@@ -60,7 +63,7 @@ namespace QQClient.UI
             flowMessages.Controls.Add(msg);
             flowMessages.ScrollControlIntoView(msg);
             AdjustMessageWidths();
-            System.Diagnostics.Debug.WriteLine($"添加消息: {text}, 宽度: {msg.Width}");
+           // System.Diagnostics.Debug.WriteLine($"添加消息: {text}, 宽度: {msg.Width}");
         }
 
         private void AddSentMessage(string text)
@@ -74,7 +77,7 @@ namespace QQClient.UI
             flowMessages.Controls.Add(msg);
             flowMessages.ScrollControlIntoView(msg);
             AdjustMessageWidths();
-            System.Diagnostics.Debug.WriteLine($"添加消息: {text}, 宽度: {msg.Width}");
+            //System.Diagnostics.Debug.WriteLine($"添加消息: {text}, 宽度: {msg.Width}");
         }
 
         private void AdjustMessageWidths()
@@ -98,12 +101,12 @@ namespace QQClient.UI
 
         private void btnSend_Click_1(object sender, EventArgs e)
         {
-
+            MessageBox.Show("发送消息");
         }
 
         private void btnClear_Click_1(object sender, EventArgs e)
         {
-
+            txtInput.Text = "";
         }
     }
 }
