@@ -42,6 +42,7 @@ namespace QQClient.Host
                 {
                     //
                     GlobalClient.Current = client;
+                   
                     Application.Run(new QQClient.UI.login());
                 }
                 else

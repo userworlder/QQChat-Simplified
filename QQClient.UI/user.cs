@@ -30,6 +30,7 @@ namespace QQClient.UI
             panel_x = panel1.Left;
             panel_y = panel1.Top;
             Load_Panel();
+            //MessageBox.Show(GlobalClient.CurrentUserId);
             Load_Friend();
             LoadPendingRequests();
             /*            var testFriends = new List<QQCommon.Models.Message>
@@ -86,6 +87,7 @@ namespace QQClient.UI
             //获取Friend
             var client = GlobalClient.Current;
             //List<Friend> friends=new List<Friend>();
+            MessageBox.Show(GlobalClient.CurrentUserId);
             List<Friend> friends = client.SearchAllFriends(GlobalClient.CurrentUserId);
             foreach (var friend in friends)
             {
