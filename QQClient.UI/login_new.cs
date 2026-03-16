@@ -1,44 +1,38 @@
-﻿using System;
+﻿using QQCommon.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using QQCommon.Models;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+
 namespace QQClient.UI
 {
-    public partial class login : Form
+    public partial class login_new : Form
     {
-        public login()
+        public login_new()
         {
             InitializeComponent();
-
-            //  pictureBox1.Image = ImageHelper.Load("login.png");
-            // pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            register_new register = new register_new(this);
-            register.ShowDialog();
+            textBox1.Text = "1";
+            textBox2.Text = "1";
         }
 
-
-
-        //private void button1_Click(object sender, EventArgs e)
-        //{
-
-        //}
-
-        private void pictureBox2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
-            //QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
+            textBox1.Text = "wxb";
+            textBox2.Text = "wxb";
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            // QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
             //是否为空
             var client = GlobalClient.Current;
             if (client == null)
@@ -71,16 +65,11 @@ namespace QQClient.UI
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void label3_Click(object sender, EventArgs e)
         {
-            textBox1.Text = "1";
-            textBox2.Text = "1";
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            textBox1.Text = "wxb";
-            textBox2.Text = "wxb";
+            this.Hide();
+            register_new register = new register_new(this);
+            register.ShowDialog();
         }
     }
 }

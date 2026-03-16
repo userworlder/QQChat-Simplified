@@ -486,7 +486,7 @@ namespace QQServer.Communication
         }
         private void HandleGetOfflineMessages(ChatPacket packet, ClientInfo clientInfo)
         {
-            string userId = clientInfo.UserId; // 登录后已设置
+            string userId = packet.Sender; // 登录后已设置
             Console.WriteLine($"处理离线消息请求: {userId}");
 
             // 获取未读私聊消息
@@ -525,7 +525,7 @@ namespace QQServer.Communication
             Console.WriteLine($"查询所有好友请求: {userId}");
 
             // 调用业务层获取好友列表
-            var friends = _friendService.GetFriendList(userId); // 需要实现此方法
+            var friends = _friendService.GetFriendList(userId); 
 
             ChatPacket response;
             if (friends != null)
