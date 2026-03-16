@@ -34,7 +34,7 @@ namespace QQClient.Communication
                 Sender = fromUserId,
                 Content = userId,
                 Timestamp = DateTime.Now,
-                MessageId = Guid.NewGuid().ToString() // 添加唯一ID用于匹配响应
+                MessageId = Guid.NewGuid().ToString() // 添加唯一ID，用于匹配响应
             };
 
             SendPacket(packet);
