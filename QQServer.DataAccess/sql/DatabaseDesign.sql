@@ -1,75 +1,365 @@
--- QQChat 数据库
-
--- 创建数据库
-CREATE DATABASE QQChat;
+USE [master]
 GO
-
-USE QQChat;
+/****** Object:  Database [QQChat]    Script Date: 2026/3/16 10:51:29 ******/
+CREATE DATABASE [QQChat]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'QQChat', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\QQChat.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'QQChat_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\QQChat_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
 GO
-
--- Users 表
-CREATE TABLE Users (
-    UserId NVARCHAR(50) PRIMARY KEY,--用户ID
-    Username NVARCHAR(50) UNIQUE NOT NULL,--用户名字
-    Password NVARCHAR(100) NOT NULL,--密码
-    Nickname NVARCHAR(50) NOT NULL,--昵称
-    Avatar NVARCHAR(MAX),--头像路径
-    Signature NVARCHAR(200),--个性签名
-    IsOnline BIT DEFAULT 0,--在线状态
-    LastLoginTime DATETIME,--最后登录时间
-    RegisterTime DATETIME NOT NULL DEFAULT GETDATE()--注册时间
-);
-
--- 创建用户名索引，加速搜索
-CREATE INDEX IX_Users_Username ON Users(Username);
-
--- Friends 表
-CREATE TABLE Friends (
-    FriendId NVARCHAR(50) PRIMARY KEY,--好友ID
-    UserId NVARCHAR(50) NOT NULL,--用户ID
-    FriendUserId NVARCHAR(50) NOT NULL,--好友关系ID
-    Remark NVARCHAR(50),--备注名称
-    GroupName NVARCHAR(50) DEFAULT '我的好友',--分组
-    AddTime DATETIME NOT NULL DEFAULT GETDATE(),--加入时间
-    FOREIGN KEY (UserId) REFERENCES Users(UserId),
-    FOREIGN KEY (FriendUserId) REFERENCES Users(UserId)
-);
-
--- 创建用户ID索引，加速查询好友列表
-CREATE INDEX IX_Friends_UserId ON Friends(UserId);
-
--- Messages 表
-CREATE TABLE Messages (
-    MessageId NVARCHAR(50) PRIMARY KEY,--消息ID
-    SenderId NVARCHAR(50) NOT NULL,--发送者ID
-    ReceiverId NVARCHAR(50) NOT NULL,--接受者ID
-    Content NVARCHAR(MAX) NOT NULL,--消息内容
-    SendTime DATETIME NOT NULL DEFAULT GETDATE(),--发送时间
-    IsRead BIT DEFAULT 0,--已读
-    MessageType INT NOT NULL DEFAULT 1, -- 1=文本，2=图片，3=文件
-    FOREIGN KEY (SenderId) REFERENCES Users(UserId)
-);
-
--- 创建发送者和接收者ID索引，加速消息查询
-CREATE INDEX IX_Messages_SenderId ON Messages(SenderId);
-CREATE INDEX IX_Messages_ReceiverId ON Messages(ReceiverId);
-
--- FriendRequests 表
-CREATE TABLE FriendRequests (
-    RequestId NVARCHAR(50) PRIMARY KEY,--请求ID
-    FromUserId NVARCHAR(50) NOT NULL,--发送请求的用户ID
-    ToUserId NVARCHAR(50) NOT NULL,--接收请求的用户ID
-    Status INT NOT NULL DEFAULT 0,--状态：0=待处理，1=已接受，2=已拒绝
-    SendTime DATETIME NOT NULL DEFAULT GETDATE(),--发送时间
-    FOREIGN KEY (FromUserId) REFERENCES Users(UserId),
-    FOREIGN KEY (ToUserId) REFERENCES Users(UserId)
-);
-
--- 创建接收者ID索引，加速查询好友请求
-CREATE INDEX IX_FriendRequests_ToUserId ON FriendRequests(ToUserId);
+ALTER DATABASE [QQChat] SET COMPATIBILITY_LEVEL = 160
 GO
-
--- -- 查看表结构
--- EXEC sp_help Users;
--- EXEC sp_help Friends;
--- EXEC sp_help Messages;
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [QQChat].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [QQChat] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [QQChat] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [QQChat] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [QQChat] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [QQChat] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [QQChat] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [QQChat] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [QQChat] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [QQChat] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [QQChat] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [QQChat] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [QQChat] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [QQChat] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [QQChat] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [QQChat] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [QQChat] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [QQChat] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [QQChat] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [QQChat] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [QQChat] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [QQChat] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [QQChat] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [QQChat] SET RECOVERY FULL 
+GO
+ALTER DATABASE [QQChat] SET  MULTI_USER 
+GO
+ALTER DATABASE [QQChat] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [QQChat] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [QQChat] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [QQChat] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [QQChat] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [QQChat] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'QQChat', N'ON'
+GO
+ALTER DATABASE [QQChat] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [QQChat] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [QQChat]
+GO
+/****** Object:  Table [dbo].[FriendRequests]    Script Date: 2026/3/16 10:51:29 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[FriendRequests](
+	[RequestId] [nvarchar](50) NOT NULL,
+	[FromUserName] [nvarchar](50) NOT NULL,
+	[ToUserName] [nvarchar](50) NOT NULL,
+	[Status] [int] NOT NULL,
+	[SendTime] [datetime] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[RequestId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[FriendRequests_Backup_20260316]    Script Date: 2026/3/16 10:51:29 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[FriendRequests_Backup_20260316](
+	[RequestId] [nvarchar](50) NOT NULL,
+	[FromUserId] [nvarchar](50) NOT NULL,
+	[ToUserId] [nvarchar](50) NOT NULL,
+	[Status] [int] NOT NULL,
+	[SendTime] [datetime] NOT NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Friends]    Script Date: 2026/3/16 10:51:29 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Friends](
+	[UserName] [nvarchar](50) NOT NULL,
+	[FriendUserName] [nvarchar](50) NOT NULL,
+	[FriendNickName] [nvarchar](50) NULL,
+	[Remark] [nvarchar](100) NULL,
+	[GroupName] [nvarchar](50) NOT NULL,
+	[AddTime] [datetime] NOT NULL,
+ CONSTRAINT [PK_Friends] PRIMARY KEY CLUSTERED 
+(
+	[UserName] ASC,
+	[FriendUserName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[GroupMembers]    Script Date: 2026/3/16 10:51:29 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GroupMembers](
+	[GroupMemberId] [nvarchar](50) NOT NULL,
+	[GroupId] [nvarchar](50) NOT NULL,
+	[UserId] [nvarchar](50) NOT NULL,
+	[Nickname] [nvarchar](50) NULL,
+	[Role] [int] NULL,
+	[JoinTime] [datetime] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[GroupMemberId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[GroupMessages]    Script Date: 2026/3/16 10:51:29 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GroupMessages](
+	[MessageId] [nvarchar](50) NOT NULL,
+	[GroupId] [nvarchar](50) NOT NULL,
+	[SenderId] [nvarchar](50) NOT NULL,
+	[Content] [nvarchar](max) NOT NULL,
+	[SendTime] [datetime] NOT NULL,
+	[MessageType] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[MessageId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Groups]    Script Date: 2026/3/16 10:51:29 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Groups](
+	[GroupId] [nvarchar](50) NOT NULL,
+	[GroupName] [nvarchar](100) NOT NULL,
+	[GroupAvatar] [nvarchar](max) NULL,
+	[CreatorId] [nvarchar](50) NOT NULL,
+	[CreateTime] [datetime] NOT NULL,
+	[Description] [nvarchar](500) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[GroupId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Messages]    Script Date: 2026/3/16 10:51:29 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Messages](
+	[MessageId] [nvarchar](50) NOT NULL,
+	[SenderId] [nvarchar](50) NOT NULL,
+	[ReceiverId] [nvarchar](50) NOT NULL,
+	[Content] [nvarchar](max) NOT NULL,
+	[SendTime] [datetime] NOT NULL,
+	[IsRead] [bit] NULL,
+	[MessageType] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[MessageId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Users]    Script Date: 2026/3/16 10:51:29 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[UserId] [nvarchar](50) NOT NULL,
+	[Username] [nvarchar](50) NOT NULL,
+	[Password] [nvarchar](100) NOT NULL,
+	[Nickname] [nvarchar](50) NOT NULL,
+	[Avatar] [nvarchar](max) NULL,
+	[Signature] [nvarchar](200) NULL,
+	[IsOnline] [bit] NULL,
+	[LastLoginTime] [datetime] NULL,
+	[RegisterTime] [datetime] NOT NULL,
+	[Birthday] [nvarchar](50) NULL,
+	[Sex] [nchar](10) NULL,
+	[Nation] [nchar](10) NULL,
+	[Age] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[Username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_FriendRequests_FromUserName]    Script Date: 2026/3/16 10:51:29 ******/
+CREATE NONCLUSTERED INDEX [IX_FriendRequests_FromUserName] ON [dbo].[FriendRequests]
+(
+	[FromUserName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_FriendRequests_ToUserName]    Script Date: 2026/3/16 10:51:29 ******/
+CREATE NONCLUSTERED INDEX [IX_FriendRequests_ToUserName] ON [dbo].[FriendRequests]
+(
+	[ToUserName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_GroupMembers_GroupId]    Script Date: 2026/3/16 10:51:29 ******/
+CREATE NONCLUSTERED INDEX [IX_GroupMembers_GroupId] ON [dbo].[GroupMembers]
+(
+	[GroupId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_GroupMembers_UserId]    Script Date: 2026/3/16 10:51:29 ******/
+CREATE NONCLUSTERED INDEX [IX_GroupMembers_UserId] ON [dbo].[GroupMembers]
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_GroupMessages_GroupId]    Script Date: 2026/3/16 10:51:29 ******/
+CREATE NONCLUSTERED INDEX [IX_GroupMessages_GroupId] ON [dbo].[GroupMessages]
+(
+	[GroupId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Messages_ReceiverId]    Script Date: 2026/3/16 10:51:29 ******/
+CREATE NONCLUSTERED INDEX [IX_Messages_ReceiverId] ON [dbo].[Messages]
+(
+	[ReceiverId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Messages_SenderId]    Script Date: 2026/3/16 10:51:29 ******/
+CREATE NONCLUSTERED INDEX [IX_Messages_SenderId] ON [dbo].[Messages]
+(
+	[SenderId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Users_Username]    Script Date: 2026/3/16 10:51:29 ******/
+CREATE NONCLUSTERED INDEX [IX_Users_Username] ON [dbo].[Users]
+(
+	[Username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[FriendRequests] ADD  DEFAULT ((0)) FOR [Status]
+GO
+ALTER TABLE [dbo].[GroupMembers] ADD  DEFAULT ((0)) FOR [Role]
+GO
+ALTER TABLE [dbo].[GroupMembers] ADD  DEFAULT (getdate()) FOR [JoinTime]
+GO
+ALTER TABLE [dbo].[GroupMessages] ADD  DEFAULT (getdate()) FOR [SendTime]
+GO
+ALTER TABLE [dbo].[GroupMessages] ADD  DEFAULT ((1)) FOR [MessageType]
+GO
+ALTER TABLE [dbo].[Groups] ADD  DEFAULT (getdate()) FOR [CreateTime]
+GO
+ALTER TABLE [dbo].[Messages] ADD  DEFAULT (getdate()) FOR [SendTime]
+GO
+ALTER TABLE [dbo].[Messages] ADD  DEFAULT ((0)) FOR [IsRead]
+GO
+ALTER TABLE [dbo].[Messages] ADD  DEFAULT ((1)) FOR [MessageType]
+GO
+ALTER TABLE [dbo].[Users] ADD  DEFAULT ((0)) FOR [IsOnline]
+GO
+ALTER TABLE [dbo].[Users] ADD  DEFAULT (getdate()) FOR [RegisterTime]
+GO
+ALTER TABLE [dbo].[FriendRequests]  WITH CHECK ADD  CONSTRAINT [FK_FriendRequests_FromUser] FOREIGN KEY([FromUserName])
+REFERENCES [dbo].[Users] ([Username])
+GO
+ALTER TABLE [dbo].[FriendRequests] CHECK CONSTRAINT [FK_FriendRequests_FromUser]
+GO
+ALTER TABLE [dbo].[FriendRequests]  WITH CHECK ADD  CONSTRAINT [FK_FriendRequests_ToUser] FOREIGN KEY([ToUserName])
+REFERENCES [dbo].[Users] ([Username])
+GO
+ALTER TABLE [dbo].[FriendRequests] CHECK CONSTRAINT [FK_FriendRequests_ToUser]
+GO
+ALTER TABLE [dbo].[Friends]  WITH CHECK ADD  CONSTRAINT [FK_Friends_FriendUser] FOREIGN KEY([FriendUserName])
+REFERENCES [dbo].[Users] ([Username])
+GO
+ALTER TABLE [dbo].[Friends] CHECK CONSTRAINT [FK_Friends_FriendUser]
+GO
+ALTER TABLE [dbo].[Friends]  WITH CHECK ADD  CONSTRAINT [FK_Friends_User] FOREIGN KEY([UserName])
+REFERENCES [dbo].[Users] ([Username])
+GO
+ALTER TABLE [dbo].[Friends] CHECK CONSTRAINT [FK_Friends_User]
+GO
+ALTER TABLE [dbo].[GroupMembers]  WITH CHECK ADD FOREIGN KEY([GroupId])
+REFERENCES [dbo].[Groups] ([GroupId])
+GO
+ALTER TABLE [dbo].[GroupMembers]  WITH CHECK ADD FOREIGN KEY([UserId])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[GroupMessages]  WITH CHECK ADD FOREIGN KEY([GroupId])
+REFERENCES [dbo].[Groups] ([GroupId])
+GO
+ALTER TABLE [dbo].[GroupMessages]  WITH CHECK ADD FOREIGN KEY([SenderId])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Groups]  WITH CHECK ADD FOREIGN KEY([CreatorId])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Messages]  WITH CHECK ADD FOREIGN KEY([SenderId])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+USE [master]
+GO
+ALTER DATABASE [QQChat] SET  READ_WRITE 
+GO

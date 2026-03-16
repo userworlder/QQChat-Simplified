@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QQCommon.Interfaces;
 using QQCommon.Models;
 using QQServer.DataAccess;
+using System;
+using System.Collections.Generic;
 
 namespace QQServer.Business
 {
@@ -24,48 +21,38 @@ namespace QQServer.Business
 
         public bool AddFriendRequest(string fromUser, string toUser)
         {
-            // 使用FriendRequestDao发送好友请求
-            try
-            {
-                Console.WriteLine($"[FriendService] 开始添加好友请求: {fromUser} -> {toUser}");
-                bool result = friendRequestDao.AddFriendRequest(fromUser, toUser);
-                Console.WriteLine($"[FriendService] 添加好友请求结果: {result}");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[FriendService] 添加好友请求异常: {ex.Message}");
-                Console.WriteLine($"[FriendService] 异常堆栈: {ex.StackTrace}");
+            if (fromUser == toUser) return false;
+            if (userDao.GetUserByUsername(fromUser) == null || userDao.GetUserByUsername(toUser) == null)
                 return false;
-            }
+            if (friendDao.GetFriendByUserNames(fromUser, toUser) != null)
+                return false; // 已是好友
+            // 可选：检查是否已有待处理请求（可自行实现）
+            return friendRequestDao.AddFriendRequest(fromUser, toUser);
         }
 
         public bool AcceptFriendRequest(string fromUser, string toUser)
         {
-            // 首先更新好友请求状态为已接受
-            bool updateStatus = friendRequestDao.AcceptFriendRequest(fromUser, toUser);
-            if (!updateStatus)
-            {
+            if (!friendRequestDao.AcceptFriendRequest(fromUser, toUser))
                 return false;
-            }
 
-            // 然后创建双向好友关系
-            Friend friend1 = new Friend
+            var fromUserInfo = userDao.GetUserByUsername(fromUser);
+            var toUserInfo = userDao.GetUserByUsername(toUser);
+
+            var friend1 = new Friend
             {
-                FriendId = Guid.NewGuid().ToString(),
-                UserId = fromUser,
-                FriendUserId = toUser,
-                Remark = string.Empty,
+                UserName = fromUser,
+                FriendUserName = toUser,
+                FriendNickName = toUserInfo?.Nickname,
+                Remark = "",
                 GroupName = "好友",
                 AddTime = DateTime.Now
             };
-
-            Friend friend2 = new Friend
+            var friend2 = new Friend
             {
-                FriendId = Guid.NewGuid().ToString(),
-                UserId = toUser,
-                FriendUserId = fromUser,
-                Remark = string.Empty,
+                UserName = toUser,
+                FriendUserName = fromUser,
+                FriendNickName = fromUserInfo?.Nickname,
+                Remark = "",
                 GroupName = "好友",
                 AddTime = DateTime.Now
             };
@@ -75,49 +62,42 @@ namespace QQServer.Business
 
         public bool RejectFriendRequest(string fromUser, string toUser)
         {
-            // 使用FriendRequestDao拒绝好友请求
             return friendRequestDao.RejectFriendRequest(fromUser, toUser);
         }
 
-        public bool RemoveFriend(string userId, string friendUserId)
+        public bool RemoveFriend(string userName, string friendUserName)
         {
-            // 删除好友，需要删除双向好友关系
-            return friendDao.RemoveFriend(userId, friendUserId) && friendDao.RemoveFriend(friendUserId, userId);
+            return friendDao.RemoveFriend(userName, friendUserName) &&
+                   friendDao.RemoveFriend(friendUserName, userName);
         }
 
-        public List<Friend> GetFriendList(string userId)
+        public List<Friend> GetFriendList(string userName)
         {
-            // 使用FriendDao获取用户的好友列表
-            return friendDao.GetFriendsByUserId(userId);
+            return friendDao.GetFriendsByUserName(userName);
         }
 
-        public Friend GetFriendInfo(string userId, string friendUserId)
+        public Friend GetFriendInfo(string userName, string friendUserName)
         {
-            // 使用FriendDao获取好友详细信息
-            return friendDao.GetFriendByUserIdAndFriendUserId(userId, friendUserId);
+            return friendDao.GetFriendByUserNames(userName, friendUserName);
         }
 
-        public bool UpdateFriendRemark(string userId, string friendUserId, string remark)
+        public bool UpdateFriendRemark(string userName, string friendUserName, string remark)
         {
-            // 使用FriendDao更新好友备注
-            return friendDao.UpdateFriendRemark(userId, friendUserId, remark);
+            return friendDao.UpdateFriendRemark(userName, friendUserName, remark);
         }
 
-        public bool MoveFriendToGroup(string userId, string friendUserId, string groupName)
+        public bool MoveFriendToGroup(string userName, string friendUserName, string groupName)
         {
-            // 使用FriendDao更新好友分组
-            return friendDao.UpdateFriendGroup(userId, friendUserId, groupName);
+            return friendDao.UpdateFriendGroup(userName, friendUserName, groupName);
         }
 
-        public List<string> GetFriendRequests(string userId)
+        public List<string> GetFriendRequests(string userName)
         {
-            // 使用FriendRequestDao获取用户的好友请求列表
-            return friendRequestDao.GetFriendRequests(userId);
+            return friendRequestDao.GetFriendRequests(userName);
         }
 
         public List<User> SearchUsers(string keyword)
         {
-            // 使用UserDao搜索用户
             return userDao.SearchUsers(keyword);
         }
     }

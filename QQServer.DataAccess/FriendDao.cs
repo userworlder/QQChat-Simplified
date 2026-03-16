@@ -11,12 +11,15 @@ namespace QQServer.DataAccess
         // 添加好友
         public bool AddFriend(Friend friend)
         {
-            string sql = "INSERT INTO Friends (FriendId, UserId, FriendUserId, Remark, GroupName, AddTime) " +
-                         "VALUES (@FriendId, @UserId, @FriendUserId, @Remark, @GroupName, @AddTime)";
+            string sql = @"INSERT INTO Friends 
+                (UserName, FriendUserName, FriendNickName, Remark, GroupName, AddTime) 
+                VALUES 
+                (@UserName, @FriendUserName, @FriendNickName, @Remark, @GroupName, @AddTime)";
+
             SqlParameter[] parameters = {
-                new SqlParameter("@FriendId", friend.FriendId),
-                new SqlParameter("@UserId", friend.UserId),
-                new SqlParameter("@FriendUserId", friend.FriendUserId),
+                new SqlParameter("@UserName", friend.UserName),
+                new SqlParameter("@FriendUserName", friend.FriendUserName),
+                new SqlParameter("@FriendNickName", friend.FriendNickName ?? (object)DBNull.Value),
                 new SqlParameter("@Remark", friend.Remark ?? (object)DBNull.Value),
                 new SqlParameter("@GroupName", friend.GroupName),
                 new SqlParameter("@AddTime", friend.AddTime)
@@ -26,11 +29,11 @@ namespace QQServer.DataAccess
         }
 
         // 获取用户的好友列表
-        public List<Friend> GetFriendsByUserId(string userId)
+        public List<Friend> GetFriendsByUserName(string userName)
         {
-            string sql = "SELECT * FROM Friends WHERE UserId = @UserId";
+            string sql = "SELECT * FROM Friends WHERE UserName = @UserName";
             SqlParameter[] parameters = {
-                new SqlParameter("@UserId", userId)
+                new SqlParameter("@UserName", userName)
             };
 
             DataTable dt = DbHelper.ExecuteQuery(sql, parameters);
@@ -42,13 +45,13 @@ namespace QQServer.DataAccess
             return friends;
         }
 
-        // 根据用户ID和好友用户ID获取好友信息
-        public Friend GetFriendByUserIdAndFriendUserId(string userId, string friendUserId)
+        // 根据用户名和好友用户名获取好友信息
+        public Friend GetFriendByUserNames(string userName, string friendUserName)
         {
-            string sql = "SELECT * FROM Friends WHERE UserId = @UserId AND FriendUserId = @FriendUserId";
+            string sql = "SELECT * FROM Friends WHERE UserName = @UserName AND FriendUserName = @FriendUserName";
             SqlParameter[] parameters = {
-                new SqlParameter("@UserId", userId),
-                new SqlParameter("@FriendUserId", friendUserId)
+                new SqlParameter("@UserName", userName),
+                new SqlParameter("@FriendUserName", friendUserName)
             };
 
             DataTable dt = DbHelper.ExecuteQuery(sql, parameters);
@@ -60,24 +63,24 @@ namespace QQServer.DataAccess
         }
 
         // 删除好友
-        public bool RemoveFriend(string userId, string friendUserId)
+        public bool RemoveFriend(string userName, string friendUserName)
         {
-            string sql = "DELETE FROM Friends WHERE UserId = @UserId AND FriendUserId = @FriendUserId";
+            string sql = "DELETE FROM Friends WHERE UserName = @UserName AND FriendUserName = @FriendUserName";
             SqlParameter[] parameters = {
-                new SqlParameter("@UserId", userId),
-                new SqlParameter("@FriendUserId", friendUserId)
+                new SqlParameter("@UserName", userName),
+                new SqlParameter("@FriendUserName", friendUserName)
             };
 
             return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
         }
 
         // 更新好友备注
-        public bool UpdateFriendRemark(string userId, string friendUserId, string remark)
+        public bool UpdateFriendRemark(string userName, string friendUserName, string remark)
         {
-            string sql = "UPDATE Friends SET Remark = @Remark WHERE UserId = @UserId AND FriendUserId = @FriendUserId";
+            string sql = "UPDATE Friends SET Remark = @Remark WHERE UserName = @UserName AND FriendUserName = @FriendUserName";
             SqlParameter[] parameters = {
-                new SqlParameter("@UserId", userId),
-                new SqlParameter("@FriendUserId", friendUserId),
+                new SqlParameter("@UserName", userName),
+                new SqlParameter("@FriendUserName", friendUserName),
                 new SqlParameter("@Remark", remark ?? (object)DBNull.Value)
             };
 
@@ -85,12 +88,12 @@ namespace QQServer.DataAccess
         }
 
         // 更新好友分组
-        public bool UpdateFriendGroup(string userId, string friendUserId, string groupName)
+        public bool UpdateFriendGroup(string userName, string friendUserName, string groupName)
         {
-            string sql = "UPDATE Friends SET GroupName = @GroupName WHERE UserId = @UserId AND FriendUserId = @FriendUserId";
+            string sql = "UPDATE Friends SET GroupName = @GroupName WHERE UserName = @UserName AND FriendUserName = @FriendUserName";
             SqlParameter[] parameters = {
-                new SqlParameter("@UserId", userId),
-                new SqlParameter("@FriendUserId", friendUserId),
+                new SqlParameter("@UserName", userName),
+                new SqlParameter("@FriendUserName", friendUserName),
                 new SqlParameter("@GroupName", groupName)
             };
 
@@ -102,9 +105,9 @@ namespace QQServer.DataAccess
         {
             return new Friend
             {
-                FriendId = row["FriendId"].ToString(),
-                UserId = row["UserId"].ToString(),
-                FriendUserId = row["FriendUserId"].ToString(),
+                UserName = row["UserName"].ToString(),
+                FriendUserName = row["FriendUserName"].ToString(),
+                FriendNickName = row["FriendNickName"] is DBNull ? null : row["FriendNickName"].ToString(),
                 Remark = row["Remark"] is DBNull ? null : row["Remark"].ToString(),
                 GroupName = row["GroupName"].ToString(),
                 AddTime = Convert.ToDateTime(row["AddTime"])

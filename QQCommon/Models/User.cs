@@ -18,6 +18,11 @@ namespace QQCommon.Models
         public bool IsOnline { get; set; }
         public DateTime LastLoginTime { get; set; }
         public DateTime RegisterTime { get; set; }
+        public string Birthday { get; set; }
+        public string Sex {  get; set; }
+        public string Nation { get; set; }
+        public int Age { get; set; }
+
     }
 
 }

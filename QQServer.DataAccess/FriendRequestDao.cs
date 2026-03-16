@@ -1,4 +1,3 @@
-using QQCommon.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -8,21 +7,21 @@ namespace QQServer.DataAccess
 {
     public class FriendRequestDao
     {
-        // 发送好友请求
-        public bool AddFriendRequest(string fromUserId, string toUserId)
+        public bool AddFriendRequest(string fromUserName, string toUserName)
         {
-            string sql = "INSERT INTO FriendRequests (RequestId, FromUserId, ToUserId, Status, SendTime) " +
-                         "VALUES (@RequestId, @FromUserId, @ToUserId, @Status, @SendTime)";
+            string sql = @"INSERT INTO FriendRequests (RequestId, FromUserName, ToUserName, Status, SendTime) 
+                   VALUES (@RequestId, @FromUserName, @ToUserName, @Status, @SendTime)";
 
+            // 使用 AddWithValue 方式，简单直接
             using (SqlConnection conn = DbHelper.GetConnection())
             {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@RequestId", Guid.NewGuid().ToString());
-                    cmd.Parameters.AddWithValue("@FromUserId", fromUserId);
-                    cmd.Parameters.AddWithValue("@ToUserId", toUserId);
-                    cmd.Parameters.AddWithValue("@Status", 0);
+                    cmd.Parameters.AddWithValue("@FromUserName", fromUserName);
+                    cmd.Parameters.AddWithValue("@ToUserName", toUserName);
+                    cmd.Parameters.AddWithValue("@Status", 0);  // 直接传整数
                     cmd.Parameters.AddWithValue("@SendTime", DateTime.Now);
 
                     int result = cmd.ExecuteNonQuery();
@@ -31,44 +30,34 @@ namespace QQServer.DataAccess
             }
         }
 
-        // 获取用户的好友请求列表
-        public List<string> GetFriendRequests(string userId)
+        public List<string> GetFriendRequests(string userName)
         {
-            string sql = "SELECT FromUserId FROM FriendRequests WHERE ToUserId = @UserId AND Status = 0";
-            SqlParameter[] parameters = {
-                new SqlParameter("@UserId", userId)
-            };
-
+            string sql = "SELECT FromUserName FROM FriendRequests WHERE ToUserName = @UserName AND Status = 0";
+            SqlParameter[] parameters = { new SqlParameter("@UserName", userName) };
             DataTable dt = DbHelper.ExecuteQuery(sql, parameters);
-            List<string> requestIds = new List<string>();
+            List<string> result = new List<string>();
             foreach (DataRow row in dt.Rows)
-            {
-                requestIds.Add(row["FromUserId"].ToString());
-            }
-            return requestIds;
+                result.Add(row["FromUserName"].ToString());
+            return result;
         }
 
-        // 接受好友请求
-        public bool AcceptFriendRequest(string fromUserId, string toUserId)
+        public bool AcceptFriendRequest(string fromUserName, string toUserName)
         {
-            string sql = "UPDATE FriendRequests SET Status = 1 WHERE FromUserId = @FromUserId AND ToUserId = @ToUserId AND Status = 0";
+            string sql = "UPDATE FriendRequests SET Status = 1 WHERE FromUserName = @FromUserName AND ToUserName = @ToUserName AND Status = 0";
             SqlParameter[] parameters = {
-                new SqlParameter("@FromUserId", fromUserId),
-                new SqlParameter("@ToUserId", toUserId)
+                new SqlParameter("@FromUserName", fromUserName),
+                new SqlParameter("@ToUserName", toUserName)
             };
-
             return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
         }
 
-        // 拒绝好友请求
-        public bool RejectFriendRequest(string fromUserId, string toUserId)
+        public bool RejectFriendRequest(string fromUserName, string toUserName)
         {
-            string sql = "UPDATE FriendRequests SET Status = 2 WHERE FromUserId = @FromUserId AND ToUserId = @ToUserId AND Status = 0";
+            string sql = "UPDATE FriendRequests SET Status = 2 WHERE FromUserName = @FromUserName AND ToUserName = @ToUserName AND Status = 0";
             SqlParameter[] parameters = {
-                new SqlParameter("@FromUserId", fromUserId),
-                new SqlParameter("@ToUserId", toUserId)
+                new SqlParameter("@FromUserName", fromUserName),
+                new SqlParameter("@ToUserName", toUserName)
             };
-
             return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
         }
     }
