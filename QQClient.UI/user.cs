@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using QQCommon.Interfaces;
 using QQCommon.Models;
 using QQCommon.Protocols;
+//防止关键字的冲突
+using Msg = QQCommon.Models.Message;
 namespace QQClient.UI
 {
     public partial class user : Form
@@ -36,7 +38,8 @@ namespace QQClient.UI
             GlobalClient.Current.MessageReceived += OnMessageReceived;
             Load_Panel();
             Load_Friend();
-            LoadPendingRequests();
+            Load_PendingRequests();
+            Load_OfflineMessages();
             this.FormClosed += (sender, e) => login.Show();
         }
         private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
@@ -111,7 +114,7 @@ namespace QQClient.UI
 
 
         }
-        private void LoadPendingRequests()
+        private void Load_PendingRequests()
         {
             var client = GlobalClient.Current;
             if (client == null) return;
@@ -140,7 +143,28 @@ namespace QQClient.UI
             }
         }
 
+        private void Load_OfflineMessages()
+        {
+            List<string> friendRequests;
+            var client= GlobalClient.Current;
+            var offlineMessages = client.GetOfflineMessages(out friendRequests);
 
+            // 将离线消息存入缓存
+            if (offlineMessages != null)
+            {
+                MessageBox.Show($"收到了 {offlineMessages.Count} 条消息");
+                foreach (var msg in offlineMessages)
+                {
+                    // 确定对话对方：如果我是发送者，对方是接收者；否则对方是发送者
+                    string otherId = msg.SenderId == GlobalClient.CurrentUserId ? msg.ReceiverId : msg.SenderId;
+
+                    if (!GlobalClient.MessageCache.ContainsKey(otherId))
+                        GlobalClient.MessageCache[otherId] = new List<Msg>();
+
+                    GlobalClient.MessageCache[otherId].Add(msg);
+                }
+            }
+        }
         private void OnAcceptRequest(object sender, string fromUserId)
         {
             var client = GlobalClient.Current;

@@ -31,9 +31,11 @@
             this.pnlTop = new System.Windows.Forms.Panel();
             this.lblFriendName = new System.Windows.Forms.Label();
             this.pnlBottom = new System.Windows.Forms.Panel();
+            this.btn_test = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.pnlInput = new System.Windows.Forms.Panel();
+            this.lbl_warn = new System.Windows.Forms.Label();
             this.txtInput = new System.Windows.Forms.TextBox();
             this.pnlMessages = new System.Windows.Forms.Panel();
             this.flowMessages = new System.Windows.Forms.FlowLayoutPanel();
@@ -67,6 +69,7 @@
             // pnlBottom
             // 
             this.pnlBottom.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.pnlBottom.Controls.Add(this.btn_test);
             this.pnlBottom.Controls.Add(this.btnSend);
             this.pnlBottom.Controls.Add(this.btnClear);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -74,6 +77,16 @@
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(800, 48);
             this.pnlBottom.TabIndex = 2;
+            // 
+            // btn_test
+            // 
+            this.btn_test.Location = new System.Drawing.Point(498, 13);
+            this.btn_test.Name = "btn_test";
+            this.btn_test.Size = new System.Drawing.Size(91, 32);
+            this.btn_test.TabIndex = 5;
+            this.btn_test.Text = "测试发送";
+            this.btn_test.UseVisualStyleBackColor = true;
+            this.btn_test.Click += new System.EventHandler(this.btn_test_Click);
             // 
             // btnSend
             // 
@@ -97,12 +110,24 @@
             // 
             // pnlInput
             // 
+            this.pnlInput.Controls.Add(this.lbl_warn);
             this.pnlInput.Controls.Add(this.txtInput);
             this.pnlInput.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlInput.Location = new System.Drawing.Point(0, 299);
             this.pnlInput.Name = "pnlInput";
             this.pnlInput.Size = new System.Drawing.Size(800, 103);
             this.pnlInput.TabIndex = 3;
+            // 
+            // lbl_warn
+            // 
+            this.lbl_warn.AutoSize = true;
+            this.lbl_warn.ForeColor = System.Drawing.Color.Red;
+            this.lbl_warn.Location = new System.Drawing.Point(607, 73);
+            this.lbl_warn.Name = "lbl_warn";
+            this.lbl_warn.Size = new System.Drawing.Size(80, 18);
+            this.lbl_warn.TabIndex = 1;
+            this.lbl_warn.Text = "警告文本";
+            this.lbl_warn.Visible = false;
             // 
             // txtInput
             // 
@@ -169,5 +194,7 @@
         private System.Windows.Forms.TextBox txtInput;
         private System.Windows.Forms.Panel pnlMessages;
         private System.Windows.Forms.FlowLayoutPanel flowMessages;
+        private System.Windows.Forms.Label lbl_warn;
+        private System.Windows.Forms.Button btn_test;
     }
 }
