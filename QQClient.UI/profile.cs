@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,7 +18,7 @@ namespace QQClient.UI
         string origin_nickname;
         string origin_signature;
         string origin_password;
-        public profile(string self_account,string friend_account)
+        public profile(string self_account, string friend_account)
         {
             //所有文本框初始均为只读状态
             InitializeComponent();
@@ -31,26 +32,10 @@ namespace QQClient.UI
             else
             {   //无法修改字段，隐藏修改按钮和密码
                 //Load();
-                update.Visible = false;                
-                label5.Visible = false;
+                lbl_update.Visible = false;
+                label4.Visible = false;
                 textBox4.Visible = false;
             }
-        }
-        //进入编辑资料状态
-        private void update_Click(object sender, EventArgs e)
-        {
-            //允许修改除账号外的所有数据
-            textBox2.ReadOnly = false;
-            textBox3.ReadOnly = false;
-            textBox4.ReadOnly = false;
-            //显示按钮
-            finish_btn.Visible=true;
-            cancel_btn.Visible=true;
-            //记忆原有的资料
-            origin_account = textBox1.Text;
-            origin_nickname = textBox2.Text;
-            origin_signature = textBox3.Text;
-            origin_password = textBox4.Text;
         }
         //读取个人资料并获取
         void Load(User user)
@@ -67,16 +52,14 @@ namespace QQClient.UI
             //textBox3.Text =getSinature(id);
             //textBox4.Text =getPassword(id);
         }
-        //获取并更新数据
-        private void finish_btn_Click(object sender, EventArgs e)
+        private void btn_accept_Click(object sender, EventArgs e)
         {
-            string new_nickname=textBox2.Text;
-            string new_signature=textBox3.Text;
-            string new_password=textBox4.Text;
-            //Update()
+            string new_nickname = textBox2.Text;
+            string new_signature = textBox3.Text;
+            string new_password = textBox4.Text;
         }
 
-        private void cancel_btn_Click(object sender, EventArgs e)
+        private void btn_cancel_Click(object sender, EventArgs e)
         {
             //恢复数据
             textBox2.Text = origin_nickname;
@@ -87,8 +70,24 @@ namespace QQClient.UI
             textBox3.ReadOnly = true;
             textBox4.ReadOnly = true;
             //隐藏按钮
-            finish_btn.Visible = false;
-            cancel_btn.Visible = false;
+            btn_accept.Visible = false;
+            btn_cancel.Visible = false;
+        }
+
+        private void lbl_update_Click(object sender, EventArgs e)
+        {
+            //允许修改除账号外的所有数据
+            textBox2.ReadOnly = false;
+            textBox3.ReadOnly = false;
+            textBox4.ReadOnly = false;
+            //显示按钮
+            btn_accept.Visible = true;
+            btn_cancel.Visible = true;
+            //记忆原有的资料
+            origin_account = textBox1.Text;
+            origin_nickname = textBox2.Text;
+            origin_signature = textBox3.Text;
+            origin_password = textBox4.Text;
         }
     }
 }
