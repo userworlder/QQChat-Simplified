@@ -20,9 +20,7 @@ namespace QQClient.UI
 
         private void label3_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            register_new register = new register_new(this);
-            register.ShowDialog();
+            
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -69,6 +67,13 @@ namespace QQClient.UI
             {   //返回错误信息
                 MessageBox.Show("账户或密码不可为空");
             }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            register_new register = new register_new(this);
+            register.ShowDialog();
         }
     }
 }

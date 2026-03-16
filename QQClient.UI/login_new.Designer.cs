@@ -126,6 +126,7 @@
             this.label1.Size = new System.Drawing.Size(84, 18);
             this.label1.TabIndex = 10;
             this.label1.Text = "注册账号";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // login_new
             // 

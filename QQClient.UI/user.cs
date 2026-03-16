@@ -88,6 +88,7 @@ namespace QQClient.UI
             var client = GlobalClient.Current;
             //List<Friend> friends=new List<Friend>();           
             List<Friend> friends = client.SearchAllFriends(GlobalClient.CurrentUserId);
+
             foreach (var friend in friends)
             {
                 // 创建 ContactItem 实例
@@ -103,14 +104,9 @@ namespace QQClient.UI
                 //    // 设置时间（例如最后消息的时间或添加好友的时间）
                 //    // 这里先用 AddTime 格式化
                 //    item.Time = friend.AddTime.ToString("HH:mm");
-
-                // 存储好友的唯一标识（FriendUserId）到 Tag 中，方便点击时识别
-                //item.Tag = friend.FriendUserId;
-
-
                 // 设置宽度适应 FlowLayoutPanel
                 item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? SystemInformation.VerticalScrollBarWidth : 0);
-
+                private_chat.Controls.Add(item);
             }
 
 
