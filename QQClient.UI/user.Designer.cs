@@ -121,7 +121,7 @@
             this.public_chat.TabIndex = 0;
             this.public_chat.Visible = false;
             this.public_chat.WrapContents = false;
-            this.public_chat.Paint += new System.Windows.Forms.PaintEventHandler(this.public_chat_Paint);
+            //this.public_chat.Paint += new System.Windows.Forms.PaintEventHandler(this.public_chat_Paint);
             // 
             // label1
             // 

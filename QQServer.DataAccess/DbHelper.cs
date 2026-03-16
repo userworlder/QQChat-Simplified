@@ -7,8 +7,8 @@ namespace QQServer.DataAccess
     public class DbHelper
     {
         // 数据库连接字符串
-        private static readonly string ConnectionString = "Data Source=.;Initial Catalog=QQChat;Integrated Security=True;";
-
+        //private static readonly string ConnectionString = "Data Source=.;Initial Catalog=QQChat;Integrated Security=True;";
+        private static readonly string ConnectionString = "Data Source=LAPTOP-9JMTHEU8\\SQLEXPRESS;Initial Catalog=QQChat;Integrated Security=True;";
         // 获取数据库连接
         public static SqlConnection GetConnection()
         {

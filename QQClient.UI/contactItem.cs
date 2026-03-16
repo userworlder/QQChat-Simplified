@@ -33,7 +33,13 @@ namespace QQClient.UI
         public string Nickname { get; set; }
         public ContactItem()
         {
-            InitializeComponent();
+            InitializeComponent();           
+            this.Click += contactItem_Click;
+            //所有的控件也会被视为点击
+            //foreach (Control ctrl in this.Controls)
+            //{
+            //    ctrl.Click += contactItem_Click;
+            //}
         }
         //点击好友时触发的事件
         private void contactItem_Click(object sender, EventArgs e)
@@ -42,14 +48,14 @@ namespace QQClient.UI
             ContactItem clickedItem = sender as ContactItem;
             if (clickedItem == null) return;
 
-            // 2. 获取联系人信息（假设 ContactItem 中有 FriendId 和 FriendName 属性）
+            // 2. 获取联系人信息
             string account=clickedItem.Account;
             string displayname = clickedItem.DisplayName;  // 联系人昵称
 
-            // 3. 创建聊天窗口实例（假设你的聊天窗口名为 ChatForm）
+            // 3. 创建聊天窗口实例
             chat chat = new chat(account,displayname);
 
-            // 4. 显示聊天窗口（非模态，允许同时打开多个聊天窗口）
+            // 4. 显示聊天窗口（允许同时打开多个聊天窗口）
             chat.Show();
 
            

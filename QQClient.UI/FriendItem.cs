@@ -19,13 +19,14 @@ namespace QQClient.UI
         {
             InitializeComponent();
             label1.Text = fromUserId;
-
+            //订阅点击事件
             btn_accept.Click += btn_accept_Click;
             btn_reject.Click += btn_reject_Click;
         }
 
         private void btn_accept_Click(object sender, EventArgs e)
         {
+            //触发点击事件后触发自定义事件AcceptClicked，其对应事件在对应窗体中编写
             // 非空则执行invoke
             AcceptClicked?.Invoke(this, FromUserId);
         }

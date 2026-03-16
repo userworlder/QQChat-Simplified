@@ -72,8 +72,8 @@ namespace QQClient.UI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            user user = new user("1", this);
-            user.Show();
+            textBox1.Text = "1";
+            textBox2.Text = "1";
         }
     }
 }

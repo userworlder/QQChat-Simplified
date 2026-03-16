@@ -84,37 +84,32 @@ namespace QQClient.UI
         void Load_Friend()
         {
             //获取Friend
-            List<Friend> friends = new List<Friend>();
+            var client = GlobalClient.Current;
+            //List<Friend> friends=new List<Friend>();
+            List<Friend> friends = client.SearchAllFriends(GlobalClient.CurrentUserId);
             foreach (var friend in friends)
             {
                 // 创建 ContactItem 实例
-                var item = new ContactItem();
-
-                //    // 设置显示名称：优先使用备注，否则使用好友昵称，再否则使用好友账号
-                //    //string displayName = !string.IsNullOrEmpty(friend.Remark) ? friend.Remark
-                //    //                   : (!string.IsNullOrEmpty(friend.FriendNickname) ? friend.FriendNickname
-                //    //                   : friend.FriendUserId);
-                //    string displayName = friend.FriendId.ToString();
-                //    item.DisplayName = displayName;
-
+                var item = new ContactItem();            
+                //string displayName = friend.FriendNickName.ToString();
+                //item.DisplayName = displayName;
+                //string account= friend.FriendUserName.ToString();
+                //item.Account = account;
                 //    // 设置最后一条消息（可从 Messages 表查询最近的一条消息）
                 //    // 这里暂时留空或设置默认文本，你可以单独写一个方法获取最后消息
-                //    //item.LastMessage = GetLatestMessage(friend.FriendUserId, currentUserId);
-                //    item.LastMessage = "!!!";
+                  //  item.LastMessage = GetLatestMessage(friend.FriendUserId, currentUserId);
+                    item.LastMessage = "!!!";
                 //    // 设置时间（例如最后消息的时间或添加好友的时间）
                 //    // 这里先用 AddTime 格式化
                 //    item.Time = friend.AddTime.ToString("HH:mm");
 
                 // 存储好友的唯一标识（FriendUserId）到 Tag 中，方便点击时识别
-                item.Tag = friend.FriendUserId;
+                //item.Tag = friend.FriendUserId;
 
-                //    // （可选）如果有头像，设置 item.Avatar = ...;
 
-                //    // 设置宽度适应 FlowLayoutPanel
-                //    item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? SystemInformation.VerticalScrollBarWidth : 0);
+                // 设置宽度适应 FlowLayoutPanel
+                item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? SystemInformation.VerticalScrollBarWidth : 0);
 
-                // 订阅点击事件（如果需要打开聊天窗口）
-                // item.Click += ContactItem_Click;
             }
 
 
@@ -134,6 +129,7 @@ namespace QQClient.UI
                 foreach (var fromUserId in requestUsers)
                 {
                     var item = new FriendItem(fromUserId);
+                    //AcceptClicked的对应事件
                     item.AcceptClicked += OnAcceptRequest;
                     item.RejectClicked += OnRejectRequest;
                     request.Controls.Add(item);
@@ -146,7 +142,7 @@ namespace QQClient.UI
                 request.Controls.Add(lblEmpty);
             }
         }
-       
+
 
         private void OnAcceptRequest(object sender, string fromUserId)
         {
@@ -175,13 +171,10 @@ namespace QQClient.UI
             }
             else
             {
-                MessageBox.Show("拒绝失败");
+                MessageBox.Show("拒绝失败，请稍后重试");
             }
         }
-        private void public_chat_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
+      
         //私聊模式
         private void btn_privatemode(object sender, EventArgs e)
         {
@@ -205,73 +198,14 @@ namespace QQClient.UI
         }
         //添加好友
         private void btn_addfriend(object sender, EventArgs e)
-        {      
+        {
             ez_addfriend add = new ez_addfriend(self_account);
             add.ShowDialog();
         }
 
-        
 
-        // 加载私聊列表
-        //    private void LoadPrivateChats()
-        //    {
-        //        private_chat.Controls.Clear();
 
-        //        // 示例数据（实际应从数据源获取）
-        //        var privateChats = new[]
-        //        {
-        //    new { Name = "张三", LastMsg = "你好", Time = "10:30", Unread = 3 },
-        //    new { Name = "李四", LastMsg = "在吗？", Time = "昨天", Unread = 0 }
-        //};
-
-        //        foreach (var chat in privateChats)
-        //        {
-        //            // 创建 contactItem 实例
-        //            var item = new ContactItem
-        //            {
-        //                DisplayName = chat.Name,
-        //                LastMessage = chat.LastMsg,
-        //                Time = chat.Time,
-        //               // UnreadCount = chat.Unread,
-        //                //Avatar = Properties.Resources.default_avatar // 头像资源
-        //            };
-
-        //            // 设置宽度适应 FlowLayoutPanel（考虑滚动条）
-        //            item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? 20 : 0);
-
-        //            // 订阅点击事件（假设 contactItem 有 Clicked 事件）
-        //            //item.Clicked += (s, e) =>
-        //            //{
-        //            //    var clickedItem = (contactItem)s;
-        //            //    MessageBox.Show($"打开与 {clickedItem.DisplayName} 的聊天");
-        //            //    // 这里打开聊天窗口
-        //            //};
-
-        //            // 添加到 FlowLayoutPanel
-        //            private_chat.Controls.Add(item);
-        //        }
-        //    }
-
-        // 加载群聊列表（类似）
-        //private void LoadGroupChats()
-        //{
-        //    flowGroup.Controls.Clear();
-        //    // 群聊数据...
-        //    foreach (var chat in groupChats)
-        //    {
-        //        var item = new contactItem
-        //        {
-        //            DisplayName = chat.Name,
-        //            LastMessage = chat.LastMsg,
-        //            Time = chat.Time,
-        //            UnreadCount = chat.Unread,
-        //            Avatar = Properties.Resources.group_avatar
-        //        };
-        //        item.Width = flowGroup.ClientSize.Width - (flowGroup.VerticalScroll.Visible ? 20 : 0);
-        //        item.Clicked += (s, e) => MessageBox.Show($"打开群聊 {((contactItem)s).DisplayName}");
-        //        flowGroup.Controls.Add(item);
-        //    }
-        //}
+  
     }
 }
 

@@ -33,6 +33,7 @@ namespace QQCommon.Interfaces
 
         bool AcceptFriendRequest(string fromUserId);
         bool RejectFriendRequest(string fromUserId);
+        List<Friend> SearchAllFriends(string userId);
 
         List<Message> GetOfflineMessages(out List<string> friendRequests);
 
