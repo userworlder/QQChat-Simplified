@@ -101,7 +101,7 @@ namespace QQClient.UI
                 //    item.Time = friend.AddTime.ToString("HH:mm");
 
                 // 存储好友的唯一标识（FriendUserId）到 Tag 中，方便点击时识别
-                item.Tag = friend.FriendUserId;
+                //item.Tag = friend.FriendUserName;
 
                 //    // （可选）如果有头像，设置 item.Avatar = ...;
 

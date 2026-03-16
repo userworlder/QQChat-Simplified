@@ -61,8 +61,11 @@ namespace QQServer.DataAccess
         // 插入新用户（注册）
         public bool InsertUser(User user)
         {
-            string sql = "INSERT INTO Users (UserId, Username, Password, Nickname, Avatar, Signature, RegisterTime) " +
-                         "VALUES (@UserId, @Username, @Password, @Nickname, @Avatar, @Signature, @RegisterTime)";
+            string sql = @"INSERT INTO Users 
+                (UserId, Username, Password, Nickname, Avatar, Signature, RegisterTime, Birthday, Sex, Nation, Age) 
+                VALUES 
+                (@UserId, @Username, @Password, @Nickname, @Avatar, @Signature, @RegisterTime, @Birthday, @Sex, @Nation, @Age)";
+
             SqlParameter[] parameters = {
                 new SqlParameter("@UserId", user.UserId),
                 new SqlParameter("@Username", user.Username),
@@ -70,7 +73,11 @@ namespace QQServer.DataAccess
                 new SqlParameter("@Nickname", user.Nickname),
                 new SqlParameter("@Avatar", user.Avatar ?? (object)DBNull.Value),
                 new SqlParameter("@Signature", user.Signature ?? (object)DBNull.Value),
-                new SqlParameter("@RegisterTime", user.RegisterTime)
+                new SqlParameter("@RegisterTime", user.RegisterTime),
+                new SqlParameter("@Birthday", user.Birthday ?? (object)DBNull.Value),
+                new SqlParameter("@Sex", user.Sex ?? (object)DBNull.Value),
+                new SqlParameter("@Nation", user.Nation ?? (object)DBNull.Value),
+                new SqlParameter("@Age", user.Age)
             };
 
             return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
@@ -102,7 +109,11 @@ namespace QQServer.DataAccess
                 Signature = row["Signature"] is DBNull ? null : row["Signature"].ToString(),
                 IsOnline = Convert.ToBoolean(row["IsOnline"]),
                 LastLoginTime = row["LastLoginTime"] is DBNull ? DateTime.MinValue : Convert.ToDateTime(row["LastLoginTime"]),
-                RegisterTime = Convert.ToDateTime(row["RegisterTime"])
+                RegisterTime = Convert.ToDateTime(row["RegisterTime"]),
+                Birthday = row["Birthday"] is DBNull ? null : row["Birthday"].ToString(),
+                Sex = row["Sex"] is DBNull ? null : row["Sex"].ToString(),
+                Nation = row["Nation"] is DBNull ? null : row["Nation"].ToString(),
+                Age = row["Age"] is DBNull ? 0 : Convert.ToInt32(row["Age"])
             };
         }
     }

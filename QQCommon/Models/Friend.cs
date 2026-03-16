@@ -8,9 +8,9 @@ namespace QQCommon.Models
 {
     public class Friend
     {
-        public string FriendId { get; set; }
-        public string UserId { get; set; }
-        public string FriendUserId { get; set; }
+        public string FriendNickName { get; set; }//好友昵称
+        public string UserName { get; set; }//账号
+        public string FriendUserName { get; set; }//好友账号
         public string Remark { get; set; }      // 备注
         public string GroupName { get; set; }   // 分组名
         public DateTime AddTime { get; set; }
