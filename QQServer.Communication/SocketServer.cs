@@ -569,7 +569,7 @@ namespace QQServer.Communication
             // 1. 保存消息到数据库
             var message = new Message
             {
-                SenderId = senderInfo.UserId,
+                SenderId = packet.Sender,
                 ReceiverId = receiver, // 可能是用户名或"ALL"
                 Content = content,
                 SendTime = packet.Timestamp,
