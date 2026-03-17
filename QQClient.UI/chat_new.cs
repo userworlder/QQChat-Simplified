@@ -72,7 +72,7 @@ namespace QQClient.UI
             AddSentMessage("这是我的短消息");
             AddReceivedMessage("这是一条对方非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长的信息消息的。");
             AddSentMessage("这是一条非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长我的信息。");
-
+            //AddReceivedMessage("这是一段包含空格的测试文本，应该会换行，因为有很多单词并且设置了最大宽度。");
             // 调试：输出每个控件的高度
             //foreach (Control ctrl in flowMessages.Controls)
             //{
