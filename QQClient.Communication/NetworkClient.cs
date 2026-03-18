@@ -326,8 +326,8 @@ namespace QQClient.Communication
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine($"[ReceiveLoop] 致命异常: {ex.GetType().Name} - {ex.Message}\n{ex.StackTrace}");
                     // 其他致命异常，记录并退出
-                    Console.WriteLine($"[ReceiveLoop] 致命异常: {ex.GetType().Name} - {ex.Message}");
                     break;
                 }
             }
@@ -438,6 +438,7 @@ namespace QQClient.Communication
 
         protected virtual void OnMessageReceived(ChatPacket packet)
         {
+            Console.WriteLine($"[OnMessageReceived] Type={packet.Type}, Sender={packet.Sender}, Content={packet.Content}");
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs(packet));
         }
 
