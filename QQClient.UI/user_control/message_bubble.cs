@@ -20,6 +20,7 @@ namespace QQClient.UI
             this.Resize += (s, e) => UpdatePosition();
             panelBubble.Resize += (s, e) => UpdatePosition(); // 以防 panel 大小变化
         }
+        //检测是否是自己来确定出现的方位/颜色
         private void UpdatePosition()
         {
             if (_isSelf)

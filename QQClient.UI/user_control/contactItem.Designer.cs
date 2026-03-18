@@ -69,7 +69,7 @@
             this.Controls.Add(this.label_name);
             this.Name = "contactItem";
             this.Size = new System.Drawing.Size(344, 77);
-            this.Click += new System.EventHandler(this.contactItem_Click);
+            //this.Click += new System.EventHandler(this.contactItem_Click);
             this.ResumeLayout(false);
             this.PerformLayout();
 

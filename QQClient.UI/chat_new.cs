@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using Msg = QQCommon.Models.Message;
 namespace QQClient.UI
 {
     public partial class chat_new : Form
@@ -27,7 +27,7 @@ namespace QQClient.UI
             lblFriendName.Text = friendNickname;
             this.Text = $"与 {friendNickname} 聊天中";
             // 订阅事件       
-            this.Load += chat_new_Load;  // 注意方法名不要写错，且没有括号
+            //this.Load += chat_new_Load;  // 注意方法名不要写错，且没有括号
             Show_OfflineMessages();
           
         }
@@ -72,7 +72,7 @@ namespace QQClient.UI
             AddSentMessage("这是我的短消息");
             AddReceivedMessage("这是一条对方非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长的信息消息的。");
             AddSentMessage("这是一条非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长我的信息。");
-
+            //AddReceivedMessage("这是一段包含空格的测试文本，应该会换行，因为有很多单词并且设置了最大宽度。");
             // 调试：输出每个控件的高度
             //foreach (Control ctrl in flowMessages.Controls)
             //{
@@ -84,7 +84,7 @@ namespace QQClient.UI
         }
 
 
-        private void AddReceivedMessage(string text)
+        public void AddReceivedMessage(string text)
         {
             var msg = new message_bubble
             {
@@ -98,7 +98,7 @@ namespace QQClient.UI
             // System.Diagnostics.Debug.WriteLine($"添加消息: {text}, 宽度: {msg.Width}");
         }
 
-        private void AddSentMessage(string text)
+        public void AddSentMessage(string text)
         {
             var msg = new message_bubble
             {
@@ -135,27 +135,40 @@ namespace QQClient.UI
         private void btnSend_Click_1(object sender, EventArgs e)
         {
             var client = GlobalClient.Current;
-            //MessageBox.Show("发送消息");
             string text = txtInput.Text;
-            //检测空白消息
-            if (string.IsNullOrWhiteSpace(text) || text == "")
+            if (string.IsNullOrWhiteSpace(text))
             {
                 lbl_warn.Visible = true;
                 lbl_warn.Text = "请输入文本";
+                return;
+            }
+
+            bool x = client.SendMessage(GlobalClient.CurrentUserId, _friendAccount, text);
+            if (x)
+            {
+                // 将发送的消息存入缓存
+                var msg = new Msg
+                {
+                    MessageId = Guid.NewGuid().ToString(), // 如果没有实际ID，可以生成临时ID
+                    SenderId = GlobalClient.CurrentUserId,
+                    ReceiverId = _friendAccount,
+                    Content = text,
+                    SendTime = DateTime.Now,
+                    IsRead = true,       // 自己发送的消息默认已读
+                    MessageType = 1
+                };
+
+                if (!GlobalClient.MessageCache.ContainsKey(_friendAccount))
+                    GlobalClient.MessageCache[_friendAccount] = new List<Msg>();
+                GlobalClient.MessageCache[_friendAccount].Add(msg);
+
+                AddSentMessage(text);
+                txtInput.Clear();
+                lbl_warn.Visible = false;
             }
             else
             {
-                bool x = client.SendMessage(GlobalClient.CurrentUserId, _friendAccount, text);
-                if (x)
-                {
-                    AddSentMessage(text);
-                    txtInput.Clear(); // 清空输入框
-                    lbl_warn.Visible = false; // 清除警告
-                }
-                else
-                {
-                    MessageBox.Show("发送失败，请稍后重试给");
-                }
+                MessageBox.Show("发送失败，请稍后重试");
             }
 
         }
@@ -169,7 +182,7 @@ namespace QQClient.UI
         {
             string text = $"这是{GlobalClient.CurrentUserId}发给{_friendAccount}的快捷消息";
             txtInput.Text = text;
-            AddSentMessage(text);
+            //AddSentMessage(text);
         }
     }
 }
