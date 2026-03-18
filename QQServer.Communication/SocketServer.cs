@@ -247,9 +247,138 @@ namespace QQServer.Communication
                     HandleRejectFriendRequest(packet, clientInfo);
                     break;
 
+                case MessageType.GetHistoryMessagesRequest:
+                    HandleGetHistoryMessages(packet, clientInfo);
+                    break;
+                case MessageType.MarkMessagesReadRequest:
+                    HandleMarkMessagesRead(packet, clientInfo);
+                    break;
+                case MessageType.GetUserInfoRequest:
+                    HandleGetUserInfo(packet, clientInfo);
+                    break;
+                case MessageType.UpdateUserInfoRequest:
+                    HandleUpdateUserInfo(packet, clientInfo);
+                    break;
+
                 default:
                     Console.WriteLine($"未知消息类型: {packet.Type}");
                     break;
+            }
+        }
+        private void HandleGetHistoryMessages(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string userId = packet.Sender;          // 当前用户
+            string friendId = packet.Content;       // 好友用户名
+            Console.WriteLine($"获取历史消息: {userId} 与 {friendId}");
+
+            var messages = _messageService.GetChatHistory(userId, friendId);
+            var response = new ChatPacket
+            {
+                Type = MessageType.GetHistoryMessagesResponse,
+                Sender = "Server",
+                Receiver = userId,
+                MessageId = packet.MessageId,
+                Content = messages != null ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            if (messages != null)
+            {
+                string json = JsonConvert.SerializeObject(messages);
+                response.Extras["Messages"] = json;
+            }
+            SendToClient(response, clientInfo);
+        }
+
+        private void HandleMarkMessagesRead(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string userId = packet.Sender;      // 当前用户（接收者）
+            string friendId = packet.Content;   // 好友用户名（发送者）
+            Console.WriteLine($"标记已读: {userId} 来自 {friendId} 的消息");
+
+            _messageService.MarkMessagesAsRead(userId, friendId);
+
+            var response = new ChatPacket
+            {
+                Type = MessageType.MarkMessagesReadResponse,
+                Sender = "Server",
+                Receiver = userId,
+                MessageId = packet.MessageId,
+                Content = "SUCCESS",
+                Timestamp = DateTime.Now
+            };
+            SendToClient(response, clientInfo);
+        }
+
+        private void HandleGetUserInfo(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string targetUserId = packet.Content;   // 要查询的用户名
+            Console.WriteLine($"获取用户信息: {targetUserId}");
+
+            var user = _userService.GetUserByUsername(targetUserId);
+            var response = new ChatPacket
+            {
+                Type = MessageType.GetUserInfoResponse,
+                Sender = "Server",
+                Receiver = packet.Sender,
+                MessageId = packet.MessageId,
+                Content = user != null ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            if (user != null)
+            {
+                string json = JsonConvert.SerializeObject(user);
+                response.Extras["UserInfo"] = json;
+            }
+            SendToClient(response, clientInfo);
+        }
+
+        private void HandleUpdateUserInfo(ChatPacket packet, ClientInfo clientInfo)
+        {
+            try
+            {
+                User updatedUser = JsonConvert.DeserializeObject<User>(packet.Content);
+                // 防止越权：仅允许修改自己的信息
+                if (updatedUser.Username != clientInfo.Username)
+                {
+                    Console.WriteLine($"警告：用户 {clientInfo.Username} 尝试修改他人信息 {updatedUser.Username}");
+                    var failResponse = new ChatPacket
+                    {
+                        Type = MessageType.UpdateUserInfoResponse,
+                        Sender = "Server",
+                        Receiver = packet.Sender,
+                        MessageId = packet.MessageId,
+                        Content = "FORBIDDEN",
+                        Timestamp = DateTime.Now
+                    };
+                    SendToClient(failResponse, clientInfo);
+                    return;
+                }
+
+                bool success = _userService.UpdateUser(updatedUser);
+                var response = new ChatPacket
+                {
+                    Type = MessageType.UpdateUserInfoResponse,
+                    Sender = "Server",
+                    Receiver = packet.Sender,
+                    MessageId = packet.MessageId,
+                    Content = success ? "SUCCESS" : "FAILED",
+                    Timestamp = DateTime.Now
+                };
+                SendToClient(response, clientInfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"更新用户信息异常: {ex.Message}");
+                var errorResponse = new ChatPacket
+                {
+                    Type = MessageType.UpdateUserInfoResponse,
+                    Sender = "Server",
+                    Receiver = packet.Sender,
+                    MessageId = packet.MessageId,
+                    Content = "ERROR",
+                    Timestamp = DateTime.Now
+                };
+                SendToClient(errorResponse, clientInfo);
             }
         }
         private void HandleAcceptFriendRequest(ChatPacket packet, ClientInfo clientInfo)

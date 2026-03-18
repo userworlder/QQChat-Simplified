@@ -11,7 +11,8 @@ namespace QQCommon.Interfaces
     {
         // 发送消息，返回是否成功
         bool SendMessage(Message message);
-
+        List<Message> GetChatHistory(string userId1, string userId2);
+        void MarkMessagesAsRead(string receiverId, string senderId);
         // 获取两个用户之间的聊天记录
         List<Message> GetChatHistory(string userId1, string userId2, int limit = 50);
         // 获取未读消息

@@ -15,7 +15,11 @@ namespace QQCommon.Protocols
         RegisterResponse = 104,
         UserInfoRequest = 105,//获取信息请求
         UserInfoResponse = 106,
-
+        // 用户信息获取与更新
+        GetUserInfoRequest = 114,
+        GetUserInfoResponse = 115,
+        UpdateUserInfoRequest = 116,
+        UpdateUserInfoResponse = 117,
         // 好友相关 (200系列)
         AddFriendRequest = 201,
         AddFriendResponse = 202,
@@ -37,6 +41,12 @@ namespace QQCommon.Protocols
         SearchAllFriendsResponse=307,
         GetOfflineMessagesRequest = 308,   // 客户端请求离线消息
         GetOfflineMessagesResponse = 309,    // 服务器返回离线数据
+        // 历史消息
+        GetHistoryMessagesRequest = 310,
+        GetHistoryMessagesResponse = 311,
+        // 标记已读
+        MarkMessagesReadRequest = 312,
+        MarkMessagesReadResponse = 313,
 
         // 系统消息 (400系列)
         Heartbeat = 401,        // 心跳包（保证连接不中断）

@@ -9,6 +9,31 @@ namespace QQServer.DataAccess
     public class UserDao
     {
         // 根据用户名和密码查询用户（登录）
+        public bool UpdateUserByUsername(User user)
+        {
+            string sql = @"UPDATE Users SET 
+                        Nickname = @Nickname, 
+                        Signature = @Signature, 
+                        Password = @Password,
+                        Avatar = @Avatar,
+                        Birthday = @Birthday,
+                        Sex = @Sex,
+                        Nation = @Nation,
+                        Age = @Age
+                        WHERE Username = @Username";
+            SqlParameter[] parameters = {
+                new SqlParameter("@Nickname", user.Nickname),
+                new SqlParameter("@Signature", user.Signature ?? (object)DBNull.Value),
+                new SqlParameter("@Password", user.Password),
+                new SqlParameter("@Avatar", user.Avatar ?? (object)DBNull.Value),
+                new SqlParameter("@Birthday", user.Birthday ?? (object)DBNull.Value),
+                new SqlParameter("@Sex", user.Sex ?? (object)DBNull.Value),
+                new SqlParameter("@Nation", user.Nation ?? (object)DBNull.Value),
+                new SqlParameter("@Age", user.Age),
+                new SqlParameter("@Username", user.Username)
+            };
+            return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
+        }
         public User GetUserByUsernameAndPassword(string username, string password)
         {
             string sql = "SELECT * FROM Users WHERE Username = @Username AND Password = @Password";

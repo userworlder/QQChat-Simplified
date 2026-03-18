@@ -41,7 +41,15 @@ namespace QQServer.Business
 
             return messages;
         }
+        public List<Message> GetChatHistory(string userId1, string userId2)
+        {
+            return messageDao.GetMessagesBetweenUsers(userId1, userId2);
+        }
 
+        public void MarkMessagesAsRead(string receiverId, string senderId)
+        {
+            messageDao.MarkMessagesAsRead(receiverId, senderId);
+        }
         public List<Message> GetUnreadMessages(string userId)
         {
             return messageDao.GetUnreadMessages(userId);
