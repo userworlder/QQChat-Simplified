@@ -16,34 +16,70 @@ namespace QQClient.UI
         {
             InitializeComponent();
 
-            // 当气泡面板大小变化时，调整整个控件的高度
-            this.Resize += (s, e) => UpdatePosition();
-            panelBubble.Resize += (s, e) => UpdatePosition(); // 以防 panel 大小变化
+            // 确保控件初始时不自动调整宽度（宽度由父容器决定），高度手动控制
+            this.AutoSize = false;
+            this.Height = panelBubble.Height;   // 初始高度设为气泡高度
+
+            // 监听 panelBubble 大小变化，调整整个控件的高度
+            panelBubble.Resize += (s, e) => UpdateHeight();
+
+            // 监听文本变化（通过属性设置）或父容器大小变化
+            this.Resize += (s, e) => UpdateBubblePosition();
+            
         }
         //检测是否是自己来确定出现的方位/颜色
-        private void UpdatePosition()
+        // 更新控件高度为 panelBubble 的高度
+        private void UpdateHeight()
         {
+            if (this.Height != panelBubble.Height)
+            {
+                this.Height = panelBubble.Height;
+            }
+        }
+
+        // 根据是否自己消息，更新气泡的位置（靠左或靠右）
+        private void UpdateBubblePosition()
+        {
+            // panelBubble 的 Left 需要根据自身宽度和父容器宽度计算
+            int newLeft;
             if (_isSelf)
             {
-                panelBubble.BackColor = Color.LightGreen;
-                panelBubble.Dock = DockStyle.Right;
-                // panelBubble.Left = this.ClientSize.Width - panelBubble.Width;
+                // 自己消息：靠右，留出右边距（可根据需要调整）
+                newLeft = this.ClientSize.Width - panelBubble.Width - 5; // 右边距5像素
             }
             else
             {
-                panelBubble.BackColor = Color.LightGray;
-                panelBubble.Dock = DockStyle.Left;
-                //panelBubble.Left = 0;
+                // 对方消息：靠左，留出左边距
+                newLeft = 5;
             }
+
+            // 避免无限循环：仅当位置变化时才设置
+            if (panelBubble.Left != newLeft)
+            {
+                panelBubble.Left = newLeft;
+            }
+
+            // 同时确保 lblMessage 在 panelBubble 内位于 Padding 区域
+            // 由于 panelBubble 开启了 AutoSize，其大小已包含 Padding，但 lblMessage 需要手动定位到 Padding 起始点
+            //Point expectedLocation = new Point(panelBubble.Padding.Left, panelBubble.Padding.Top);
+            //if (lblMessage.Location != expectedLocation)
+            //{
+            //    lblMessage.Location = expectedLocation;
+            //}
         }
+
 
         // 消息文本属性
         public string MessageText
         {
             get => lblMessage.Text;
-            set => lblMessage.Text = value;
+            set
+            {
+                lblMessage.Text = value;
+                // 文本变化可能导致气泡大小变化，触发重新计算高度和位置
+                PerformLayout();
+            }
         }
-
         // 是否为自己发送的消息
         private bool _isSelf;
         public bool IsSelf
@@ -54,19 +90,59 @@ namespace QQClient.UI
                 _isSelf = value;
                 if (value)
                 {
-                    panelBubble.BackColor = Color.LightGreen;   // 自己消息背景色
-                   // panelBubble.Left = this.ClientSize.Width - panelBubble.Width;
-                    panelBubble.Dock = DockStyle.Right;         // 靠右
+                    // 自己消息：蓝底白字
+                    panelBubble.BackColor = Color.FromArgb(0, 120, 215); // 一种典型的蓝色（如QQ蓝）
+                    lblMessage.ForeColor = Color.White;
                 }
                 else
                 {
-                    panelBubble.BackColor = Color.LightGray;    // 对方消息背景色
-                  //  panelBubble.Left = 0;
-                    panelBubble.Dock = DockStyle.Left;          // 靠左
+                    // 对方消息：灰底黑字
+                    panelBubble.BackColor = Color.LightGray;  // 浅灰色
+                    lblMessage.ForeColor = Color.Black;
                 }
+                UpdateBubblePosition();   // 立即更新对齐方向
             }
         }
+
+        //// 重写 OnLayout 以确保在布局变化时更新位置
+        //protected override void OnLayout(LayoutEventArgs e)
+        //{
+        //    base.OnLayout(e);
+        //    UpdateBubblePosition();
+        //}
+
+        //// 可选：当父容器宽度变化时，可能需要重新计算靠右的位置
+        //protected override void OnParentChanged(EventArgs e)
+        //{
+        //    base.OnParentChanged(e);
+        //    if (this.Parent != null)
+        //    {
+        //        // 当加入父容器时，设置控件宽度为父容器宽度（可根据需要调整，例如减去边距）
+        //        this.Width = this.Parent.ClientSize.Width - 20; // 左右留10边距
+        //        UpdateBubblePosition();
+        //    }
+        //}
     }
+    //public bool IsSelf
+    //{
+    //    get => _isSelf;
+    //    set
+    //    {
+    //        _isSelf = value;
+    //        if (value)
+    //        {
+    //            panelBubble.BackColor = Color.LightGreen;   // 自己消息背景色
+    //           // panelBubble.Left = this.ClientSize.Width - panelBubble.Width;
+    //            panelBubble.Dock = DockStyle.Right;         // 靠右
+    //        }
+    //        else
+    //        {
+    //            panelBubble.BackColor = Color.LightGray;    // 对方消息背景色
+    //          //  panelBubble.Left = 0;
+    //            panelBubble.Dock = DockStyle.Left;          // 靠左
+    //        }
+    //    }
+    //}
 }
 
 

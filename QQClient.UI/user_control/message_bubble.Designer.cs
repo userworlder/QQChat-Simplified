@@ -42,7 +42,7 @@
             this.panelBubble.MaximumSize = new System.Drawing.Size(400, 0);
             this.panelBubble.Name = "panelBubble";
             this.panelBubble.Padding = new System.Windows.Forms.Padding(8, 5, 8, 5);
-            //this.panelBubble.Size = new System.Drawing.Size(200, 28);
+            this.panelBubble.Size = new System.Drawing.Size(200, 33);
             this.panelBubble.TabIndex = 0;
             // 
             // lblMessage
@@ -52,7 +52,8 @@
             this.lblMessage.Location = new System.Drawing.Point(0, 0);
             this.lblMessage.MaximumSize = new System.Drawing.Size(380, 0);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(44, 18);
+            this.lblMessage.Padding = new System.Windows.Forms.Padding(8, 5, 8, 5);
+            this.lblMessage.Size = new System.Drawing.Size(60, 28);
             this.lblMessage.TabIndex = 0;
             this.lblMessage.Text = "消息";
             // 
@@ -61,7 +62,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackColor = System.Drawing.SystemColors.Control;
+            this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.Controls.Add(this.panelBubble);
             this.Name = "message_bubble";
             this.Size = new System.Drawing.Size(530, 84);

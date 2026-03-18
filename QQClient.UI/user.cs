@@ -86,8 +86,8 @@ namespace QQClient.UI
                     AddFriendRequest(fromUserId);
                 });
             }
-            // 新增：处理在线聊天消息
-            else if (e.Packet.Type == MessageType.ChatMessage) // 请替换为实际的聊天消息类型
+            //处理在线聊天消息
+            else if (e.Packet.Type == MessageType.ChatMessage) 
             {
                 string senderId = e.Packet.Sender;
                 string receiverId = e.Packet.Receiver;
@@ -96,7 +96,7 @@ namespace QQClient.UI
                 // 确定消息对方：如果自己是接收者，对方是发送者；否则是接收者（一般不会收到自己发的）
                 string otherId = (receiverId == GlobalClient.CurrentUserId) ? senderId : receiverId;
 
-                // 将消息存入缓存（重要！）
+                // 将消息存入缓存
                 var msg = new Msg  // Msg 是别名，指向 QQCommon.Models.Message
                 {
                     MessageId = e.Packet.MessageId,
@@ -255,6 +255,7 @@ namespace QQClient.UI
                 }
             }
         }
+        //同意请求的事件所执行的
         private void OnAcceptRequest(object sender, string fromUserId)
         {
             var client = GlobalClient.Current;
@@ -271,7 +272,7 @@ namespace QQClient.UI
                 MessageBox.Show("同意失败，请稍后重试");
             }
         }
-
+        //拒绝请求的事件所执行的
         private void OnRejectRequest(object sender, string fromUserId)
         {
             var client = GlobalClient.Current;

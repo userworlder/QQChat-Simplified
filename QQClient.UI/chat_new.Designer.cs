@@ -47,7 +47,7 @@
             // 
             // pnlTop
             // 
-            this.pnlTop.BackColor = System.Drawing.Color.White;
+            this.pnlTop.BackColor = System.Drawing.Color.DarkGray;
             this.pnlTop.Controls.Add(this.lblFriendName);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
@@ -153,7 +153,7 @@
             // flowMessages
             // 
             this.flowMessages.AutoScroll = true;
-            this.flowMessages.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.flowMessages.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.flowMessages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowMessages.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowMessages.Location = new System.Drawing.Point(0, 0);
