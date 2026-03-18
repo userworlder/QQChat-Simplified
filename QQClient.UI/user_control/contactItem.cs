@@ -40,38 +40,39 @@ namespace QQClient.UI
             //{
             //    ctrl.Click += contactItem_Click;
             //}
+
         }
         //点击好友时触发的事件
-        private void contactItem_Click(object sender, EventArgs e)
-        {
-            // 1. 获取被点击的 ContactItem 对象
-            ContactItem clickedItem = sender as ContactItem;
-            if (clickedItem == null) return;
+        //private void contactItem_Click(object sender, EventArgs e)
+        //{
+        //    // 1. 获取被点击的 ContactItem 对象
+        //    ContactItem clickedItem = sender as ContactItem;
+        //    if (clickedItem == null) return;
 
-            // 2. 获取联系人信息
-            string account=clickedItem.Account;
-            string displayname = clickedItem.DisplayName;  // 联系人昵称
+        //    // 2. 获取联系人信息
+        //    string account=clickedItem.Account;
+        //    string displayname = clickedItem.DisplayName;  // 联系人昵称
 
-            // 遍历所有已打开的窗体，查找是否已有该联系人的聊天窗口
-            foreach (Form form in Application.OpenForms)
-            {
-                if (form is chat_new chatForm && chatForm.FriendAccount == account)
-                {
-                    // 如果窗口最小化，先恢复正常
-                    if (chatForm.WindowState == FormWindowState.Minimized)
-                        chatForm.WindowState = FormWindowState.Normal;
-                    // 激活窗口
-                    chatForm.Activate();
-                    return; // 找到后直接返回，不再创建新窗口
-                }
-            }
-            // 3. 创建聊天窗口实例
-            chat_new chat = new chat_new(account,displayname);
+        //    // 遍历所有已打开的窗体，查找是否已有该联系人的聊天窗口
+        //    foreach (Form form in Application.OpenForms)
+        //    {
+        //        if (form is chat_new chatForm && chatForm.FriendAccount == account)
+        //        {
+        //            // 如果窗口最小化，先恢复正常
+        //            if (chatForm.WindowState == FormWindowState.Minimized)
+        //                chatForm.WindowState = FormWindowState.Normal;
+        //            // 激活窗口
+        //            chatForm.Activate();
+        //            return; // 找到后直接返回，不再创建新窗口
+        //        }
+        //    }
+        //    // 3. 创建聊天窗口实例
+        //    chat_new chat = new chat_new(account,displayname);
 
-            // 4. 显示聊天窗口（允许同时打开多个聊天窗口）
-            chat.Show();
+        //    // 4. 显示聊天窗口（允许同时打开多个聊天窗口）
+        //    chat.Show();
 
            
-        }
+        //}
     }
 }

@@ -19,12 +19,6 @@ namespace QQClient.UI
             // 当气泡面板大小变化时，调整整个控件的高度
             this.Resize += (s, e) => UpdatePosition();
             panelBubble.Resize += (s, e) => UpdatePosition(); // 以防 panel 大小变化
-                                                              // 调试：输出控件信息
-            lblMessage.TextChanged += (s, e) =>
-            {
-                System.Diagnostics.Debug.WriteLine($"lblMessage 高度: {lblMessage.Height}, 文本长度: {lblMessage.Text.Length}");
-            };
-           // MessageBox.Show($"lblMessage.MaximumSize = {lblMessage.MaximumSize}");
         }
         //检测是否是自己来确定出现的方位/颜色
         private void UpdatePosition()

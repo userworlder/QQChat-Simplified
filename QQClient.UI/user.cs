@@ -21,6 +21,8 @@ namespace QQClient.UI
         //panel的坐标
         int panel_x;
         int panel_y;
+        // 存储已打开的聊天窗口，键为好友用户名
+        private Dictionary<string, chat_new> _openChatWindows = new Dictionary<string, chat_new>();
         public user()
         {
             InitializeComponent();
@@ -42,6 +44,35 @@ namespace QQClient.UI
             Load_OfflineMessages();
             this.FormClosed += (sender, e) => login.Show();
         }
+        // 打开或激活聊天窗口的方法
+        private void OpenChatWindow(string friendUserName, string friendDisplayName)
+        {
+            if (_openChatWindows.ContainsKey(friendUserName))
+            {
+                // 如果窗口已存在，激活它
+                var existing = _openChatWindows[friendUserName];
+                if (!existing.IsDisposed)
+                {
+                    existing.Activate();
+                    return;
+                }
+                else
+                {
+                    // 如果窗口已关闭，从字典移除
+                    _openChatWindows.Remove(friendUserName);
+                }
+            }
+
+            // 创建新窗口
+            var chatForm = new chat_new(friendUserName, friendDisplayName);
+            // 订阅窗口关闭事件，以便从字典中移除
+            chatForm.FormClosed += (s, e) =>
+            {
+                _openChatWindows.Remove(friendUserName);
+            };
+            _openChatWindows[friendUserName] = chatForm;
+            chatForm.Show();
+        }
         private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             // 根据包的类型判断是否为好友请求
@@ -55,9 +86,61 @@ namespace QQClient.UI
                     AddFriendRequest(fromUserId);
                 });
             }
-            // 可能还需要处理其他消息类型，比如新消息等
-        }
+            // 新增：处理在线聊天消息
+            else if (e.Packet.Type == MessageType.ChatMessage) // 请替换为实际的聊天消息类型
+            {
+                string senderId = e.Packet.Sender;
+                string receiverId = e.Packet.Receiver;
+                string content = e.Packet.Content;
 
+                // 确定消息对方：如果自己是接收者，对方是发送者；否则是接收者（一般不会收到自己发的）
+                string otherId = (receiverId == GlobalClient.CurrentUserId) ? senderId : receiverId;
+
+                // 将消息存入缓存（重要！）
+                var msg = new Msg  // Msg 是别名，指向 QQCommon.Models.Message
+                {
+                    MessageId = e.Packet.MessageId,
+                    SenderId = senderId,
+                    ReceiverId = receiverId,
+                    Content = content,
+                    SendTime = e.Packet.Timestamp,
+                    IsRead = false,          // 初始为未读
+                    MessageType = 1           // 假设1=文本
+                };
+
+                this.Invoke((MethodInvoker)delegate
+                {
+                    // 存入缓存
+                    if (!GlobalClient.MessageCache.ContainsKey(otherId))
+                        GlobalClient.MessageCache[otherId] = new List<Msg>();
+                    GlobalClient.MessageCache[otherId].Add(msg);
+
+                    if (_openChatWindows.ContainsKey(otherId))
+                    {
+                        // 窗口已打开，直接添加消息
+                        _openChatWindows[otherId].AddReceivedMessage(content);
+                    }
+                    else
+                    {
+                        // 窗口未打开：更新好友列表的未读计数（可选）
+                        // UpdateFriendUnreadCount(otherId);
+                    }
+                });
+            }
+        }
+        private void UpdateFriendUnreadCount(string friendUserName)
+        {
+            foreach (Control ctrl in private_chat.Controls)
+            {
+                if (ctrl is ContactItem item && item.Account == friendUserName)
+                {
+                    // 假设 ContactItem 有一个 UnreadCount 属性，用来显示小红点
+                    // 如果你还没有这个属性，可以添加一个，或者用其他方式（如修改背景色）
+                    // item.UnreadCount++; // 需要先在 ContactItem 中定义 UnreadCount 属性
+                    break;
+                }
+            }
+        }
         private void AddFriendRequest(string fromUserId)
         {
             //MessageBox.Show(fromUserId);
@@ -110,6 +193,13 @@ namespace QQClient.UI
                 // 设置宽度适应 FlowLayoutPanel
                 item.Width = private_chat.ClientSize.Width - (private_chat.VerticalScroll.Visible ? SystemInformation.VerticalScrollBarWidth : 0);
                 private_chat.Controls.Add(item);
+                item.Click += (s, e) =>
+                {
+                    var clickedItem = (ContactItem)s;
+                    string friendUserName = clickedItem.Account;
+                    string FriendDisplayName = clickedItem.DisplayName;
+                    OpenChatWindow(friendUserName, FriendDisplayName);
+                };
             }
 
 
