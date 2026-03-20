@@ -19,7 +19,7 @@ namespace QQClient.UI
         private string _friendAccount;
         private string _friendNickname;
 
-        public chat_new(string friendAccount, string friendNickname)
+        public chat_new(string friendAccount, string friendNickname,user parentForm)
         {
             InitializeComponent();
             _friendAccount = friendAccount;
@@ -30,80 +30,81 @@ namespace QQClient.UI
             // 订阅事件       
             //this.Load += chat_new_Load;  // 注意方法名不要写错，且没有括号
             //LoadHistroyMessages();
-            Show_OfflineMessages();
-          
+            //Show_OfflineMessages();
+            LoadHistoryMessages();
+            this.FormClosed += (s, e) => parentForm.RefreshFriendList();
         }
-        //private async void LoadHistoryMessages()
-        //{
-        //    var client = GlobalClient.Current;
-        //    if (client == null) return;
-
-        //    // 异步获取历史消息
-        //    var messages = await Task.Run(() => client.GetHistoryMessages(_friendAccount));
-
-        //    // 清空现有消息（如果有测试消息）
-        //    flowMessages.Controls.Clear();
-
-        //    // 按时间顺序显示
-        //    foreach (var msg in messages.OrderBy(m => m.SendTime))
-        //    {
-        //        if (msg.SenderId == _friendAccount) // 对方发送
-        //        {
-        //            AddReceivedMessage(msg.Content);
-        //        }
-        //        else // 自己发送
-        //        {
-        //            AddSentMessage(msg.Content);
-        //        }
-        //    }
-
-        //    // 找出所有未读消息（接收者是当前用户，且 IsRead == false）
-        //    var unreadMessages = messages.Where(m => !m.IsRead && m.ReceiverId == GlobalClient.CurrentUserId).ToList();
-        //    if (unreadMessages.Any())
-        //    {
-        //        // 调用服务器标记已读
-        //        bool success = await Task.Run(() => client.MarkMessagesAsRead(_friendAccount));
-        //        if (success)
-        //        {
-        //            // 可选：更新本地缓存中的 IsRead 状态
-        //            if (GlobalClient.MessageCache.ContainsKey(_friendAccount))
-        //            {
-        //                foreach (var msg in GlobalClient.MessageCache[_friendAccount])
-        //                    msg.IsRead = true;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("标记已读失败");
-        //        }
-        //    }
-        //}
-
-        
-        private void Show_OfflineMessages()
+        private async void LoadHistoryMessages()
         {
-            //如果消息缓存中没有对应键（没有好友）则无事发生
-            if (!GlobalClient.MessageCache.ContainsKey(_friendAccount))
-                return;
-            //将未收到信息按时间排序
-            var messages = GlobalClient.MessageCache[_friendAccount]
-                .OrderBy(m => m.SendTime) // 按时间排序
-                .ToList();
-            //按序“打印”消息
-            foreach (var msg in messages)
+            var client = GlobalClient.Current;
+            if (client == null) return;
+
+            // 异步获取历史消息
+            var messages = await Task.Run(() => client.GetHistoryMessages(_friendAccount));
+
+            // 清空现有消息（如果有测试消息）
+            flowMessages.Controls.Clear();
+
+            // 按时间顺序显示
+            foreach (var msg in messages.OrderBy(m => m.SendTime))
             {
-                if (msg.SenderId == _friendAccount) // 对方发送的消息
+                if (msg.SenderId == _friendAccount) // 对方发送
                 {
-                    AddReceivedMessage(msg.Content); // 使用对方气泡样式
+                    AddReceivedMessage(msg.Content);
                 }
-                else if (msg.SenderId == GlobalClient.CurrentUserId) // 自己发送的消息
+                else // 自己发送
                 {
-                    AddSentMessage(msg.Content); // 使用自己气泡样式
+                    AddSentMessage(msg.Content);
                 }
             }
-            MarkMessagesAsRead();
 
+            // 找出所有未读消息（接收者是当前用户，且 IsRead == false）
+            var unreadMessages = messages.Where(m => !m.IsRead && m.ReceiverId == GlobalClient.CurrentUserId).ToList();
+            if (unreadMessages.Any())
+            {
+                // 调用服务器标记已读
+                bool success = await Task.Run(() => client.MarkMessagesAsRead(_friendAccount));
+                if (success)
+                {
+                    // 可选：更新本地缓存中的 IsRead 状态
+                    if (GlobalClient.MessageCache.ContainsKey(_friendAccount))
+                    {
+                        foreach (var msg in GlobalClient.MessageCache[_friendAccount])
+                            msg.IsRead = true;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("标记已读失败");
+                }
+            }
         }
+
+
+        //private void Show_OfflineMessages()
+        //{
+        //    //如果消息缓存中没有对应键（没有好友）则无事发生
+        //    if (!GlobalClient.MessageCache.ContainsKey(_friendAccount))
+        //        return;
+        //    //将未收到信息按时间排序
+        //    var messages = GlobalClient.MessageCache[_friendAccount]
+        //        .OrderBy(m => m.SendTime) // 按时间排序
+        //        .ToList();
+        //    //按序“打印”消息
+        //    foreach (var msg in messages)
+        //    {
+        //        if (msg.SenderId == _friendAccount) // 对方发送的消息
+        //        {
+        //            AddReceivedMessage(msg.Content); // 使用对方气泡样式
+        //        }
+        //        else if (msg.SenderId == GlobalClient.CurrentUserId) // 自己发送的消息
+        //        {
+        //            AddSentMessage(msg.Content); // 使用自己气泡样式
+        //        }
+        //    }
+        //    MarkMessagesAsRead();
+
+        //}
         private void MarkMessagesAsRead()
         {
             if (GlobalClient.MessageCache.ContainsKey(_friendAccount))
@@ -115,14 +116,14 @@ namespace QQClient.UI
             }
         }
         //测试用消息
-        private void chat_new_Load(object sender, EventArgs e)
-        {
-            flowMessages.Controls.Clear();
-            AddReceivedMessage("这是一条对方短消息");
-            AddSentMessage("这是我的短消息");
-            AddReceivedMessage("这是一条对方非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长的信息消息的。");
-            AddSentMessage("这是一条非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长我的信息。");        
-        }
+        //private void chat_new_Load(object sender, EventArgs e)
+        //{
+        //    flowMessages.Controls.Clear();
+        //    AddReceivedMessage("这是一条对方短消息");
+        //    AddSentMessage("这是我的短消息");
+        //    AddReceivedMessage("这是一条对方非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长的信息消息的。");
+        //    AddSentMessage("这是一条非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长我的信息。");        
+        //}
         //添加对方的消息
         public void AddReceivedMessage(string text)
         {

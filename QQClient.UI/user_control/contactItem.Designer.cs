@@ -64,11 +64,14 @@
             // label_unread
             // 
             this.label_unread.AutoSize = true;
+            this.label_unread.BackColor = System.Drawing.SystemColors.Control;
+            this.label_unread.ForeColor = System.Drawing.Color.Red;
             this.label_unread.Location = new System.Drawing.Point(273, 50);
             this.label_unread.Name = "label_unread";
             this.label_unread.Size = new System.Drawing.Size(44, 18);
             this.label_unread.TabIndex = 3;
             this.label_unread.Text = "未读";
+            this.label_unread.Visible = false;
             // 
             // ContactItem
             // 

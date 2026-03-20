@@ -88,6 +88,12 @@
     <Compile Include="login_new.Designer.cs">
       <DependentUpon>login_new.cs</DependentUpon>
     </Compile>
+    <Compile Include="user_control\group_bubble.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="user_control\group_bubble.Designer.cs">
+      <DependentUpon>group_bubble.cs</DependentUpon>
+    </Compile>
     <Compile Include="user_control\message_bubble.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -158,6 +164,9 @@
     <EmbeddedResource Include="login_new.resx">
       <DependentUpon>login_new.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="user_control\group_bubble.resx">
+      <DependentUpon>group_bubble.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="user_control\message_bubble.resx">
       <DependentUpon>message_bubble.cs</DependentUpon>
