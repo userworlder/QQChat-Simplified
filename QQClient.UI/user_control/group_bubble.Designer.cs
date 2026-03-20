@@ -28,71 +28,71 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.lbl_nickname = new System.Windows.Forms.Label();
-            this.lbl_message = new System.Windows.Forms.Label();
-            this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
+            this.panelNickname = new System.Windows.Forms.Panel();
+            this.lblNickname = new System.Windows.Forms.Label();
+            this.panelBubble = new System.Windows.Forms.Panel();
+            this.lblMessage = new System.Windows.Forms.Label();
+            this.panelNickname.SuspendLayout();
+            this.panelBubble.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panel1
+            // panelNickname
             // 
-            this.panel1.Controls.Add(this.lbl_nickname);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(530, 30);
-            this.panel1.TabIndex = 0;
+            this.panelNickname.Controls.Add(this.lblNickname);
+            this.panelNickname.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelNickname.Location = new System.Drawing.Point(0, 0);
+            this.panelNickname.Name = "panelNickname";
+            this.panelNickname.Size = new System.Drawing.Size(530, 30);
+            this.panelNickname.TabIndex = 0;
             // 
-            // panel2
+            // lblNickname
             // 
-            this.panel2.Controls.Add(this.lbl_message);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 30);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(530, 54);
-            this.panel2.TabIndex = 1;
+            this.lblNickname.AutoSize = true;
+            this.lblNickname.Location = new System.Drawing.Point(4, 4);
+            this.lblNickname.Name = "lblNickname";
+            this.lblNickname.Size = new System.Drawing.Size(44, 18);
+            this.lblNickname.TabIndex = 0;
+            this.lblNickname.Text = "昵称";
             // 
-            // lbl_nickname
+            // panelBubble
             // 
-            this.lbl_nickname.AutoSize = true;
-            this.lbl_nickname.Location = new System.Drawing.Point(4, 4);
-            this.lbl_nickname.Name = "lbl_nickname";
-            this.lbl_nickname.Size = new System.Drawing.Size(44, 18);
-            this.lbl_nickname.TabIndex = 0;
-            this.lbl_nickname.Text = "昵称";
+            this.panelBubble.Controls.Add(this.lblMessage);
+            this.panelBubble.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelBubble.Location = new System.Drawing.Point(0, 30);
+            this.panelBubble.Name = "panelBubble";
+            this.panelBubble.Size = new System.Drawing.Size(530, 54);
+            this.panelBubble.TabIndex = 1;
             // 
-            // lbl_message
+            // lblMessage
             // 
-            this.lbl_message.AutoSize = true;
-            this.lbl_message.Location = new System.Drawing.Point(3, 3);
-            this.lbl_message.Name = "lbl_message";
-            this.lbl_message.Size = new System.Drawing.Size(44, 18);
-            this.lbl_message.TabIndex = 0;
-            this.lbl_message.Text = "文本";
+            this.lblMessage.AutoSize = true;
+            this.lblMessage.Location = new System.Drawing.Point(3, 3);
+            this.lblMessage.Name = "lblMessage";
+            this.lblMessage.Size = new System.Drawing.Size(44, 18);
+            this.lblMessage.TabIndex = 0;
+            this.lblMessage.Text = "文本";
             // 
             // group_bubble
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panelBubble);
+            this.Controls.Add(this.panelNickname);
             this.Name = "group_bubble";
             this.Size = new System.Drawing.Size(530, 84);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
+            this.panelNickname.ResumeLayout(false);
+            this.panelNickname.PerformLayout();
+            this.panelBubble.ResumeLayout(false);
+            this.panelBubble.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label lbl_nickname;
-        private System.Windows.Forms.Label lbl_message;
+        private System.Windows.Forms.Panel panelNickname;
+        private System.Windows.Forms.Panel panelBubble;
+        private System.Windows.Forms.Label lblNickname;
+        private System.Windows.Forms.Label lblMessage;
     }
 }

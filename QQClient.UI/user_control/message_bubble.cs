@@ -57,15 +57,7 @@ namespace QQClient.UI
             if (panelBubble.Left != newLeft)
             {
                 panelBubble.Left = newLeft;
-            }
-
-            // 同时确保 lblMessage 在 panelBubble 内位于 Padding 区域
-            // 由于 panelBubble 开启了 AutoSize，其大小已包含 Padding，但 lblMessage 需要手动定位到 Padding 起始点
-            //Point expectedLocation = new Point(panelBubble.Padding.Left, panelBubble.Padding.Top);
-            //if (lblMessage.Location != expectedLocation)
-            //{
-            //    lblMessage.Location = expectedLocation;
-            //}
+            }       
         }
 
 
@@ -102,47 +94,8 @@ namespace QQClient.UI
                 }
                 UpdateBubblePosition();   // 立即更新对齐方向
             }
-        }
-
-        //// 重写 OnLayout 以确保在布局变化时更新位置
-        //protected override void OnLayout(LayoutEventArgs e)
-        //{
-        //    base.OnLayout(e);
-        //    UpdateBubblePosition();
-        //}
-
-        //// 可选：当父容器宽度变化时，可能需要重新计算靠右的位置
-        //protected override void OnParentChanged(EventArgs e)
-        //{
-        //    base.OnParentChanged(e);
-        //    if (this.Parent != null)
-        //    {
-        //        // 当加入父容器时，设置控件宽度为父容器宽度（可根据需要调整，例如减去边距）
-        //        this.Width = this.Parent.ClientSize.Width - 20; // 左右留10边距
-        //        UpdateBubblePosition();
-        //    }
-        //}
+        }     
     }
-    //public bool IsSelf
-    //{
-    //    get => _isSelf;
-    //    set
-    //    {
-    //        _isSelf = value;
-    //        if (value)
-    //        {
-    //            panelBubble.BackColor = Color.LightGreen;   // 自己消息背景色
-    //           // panelBubble.Left = this.ClientSize.Width - panelBubble.Width;
-    //            panelBubble.Dock = DockStyle.Right;         // 靠右
-    //        }
-    //        else
-    //        {
-    //            panelBubble.BackColor = Color.LightGray;    // 对方消息背景色
-    //          //  panelBubble.Left = 0;
-    //            panelBubble.Dock = DockStyle.Left;          // 靠左
-    //        }
-    //    }
-    //}
 }
 
 

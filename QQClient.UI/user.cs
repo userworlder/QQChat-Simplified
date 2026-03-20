@@ -34,7 +34,7 @@ namespace QQClient.UI
             GlobalClient.Current.MessageReceived += OnMessageReceived;
 
             Load_Panel();    
-            Load_OfflineMessages_new();
+            Load_OfflineMessages();
             Load_Friend();
            // Load_PendingRequests();
             this.FormClosed += (sender, e) => login.Show();
@@ -77,6 +77,7 @@ namespace QQClient.UI
             _openChatWindows[friendUserName] = chatForm;
             chatForm.Show();
         }
+        //在线消息/请求的接收
         private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             // 根据包的类型判断是否为好友请求
@@ -133,6 +134,7 @@ namespace QQClient.UI
                 });
             }
         }
+        //更新未读消息小红点
         private void UpdateFriendUnreadCount(string friendUserName)
         {
             foreach (Control ctrl in private_chat.Controls)
@@ -145,6 +147,7 @@ namespace QQClient.UI
                 }
             }
         }
+        //加载好友请求
         private void AddFriendRequest(string fromUserId)
         {
             //MessageBox.Show(fromUserId);
@@ -160,13 +163,14 @@ namespace QQClient.UI
             item.RejectClicked += OnRejectRequest;
             request.Controls.Add(item);
         }
-        private void Load_OfflineMessages_new()
+        //加载离线消息/请求
+        private void Load_OfflineMessages()
         {
             List<string> friendRequests;
             var client = GlobalClient.Current;
             var offlineMessages = client.GetOfflineMessages(out friendRequests);
 
-            // 处理好友请求（原 Load_PendingRequests 的逻辑）
+            // 处理好友请求
             if (friendRequests != null && friendRequests.Count > 0)
             {
                 request.Controls.Clear();
@@ -182,7 +186,7 @@ namespace QQClient.UI
             // 处理离线消息：存入缓存（供好友列表显示最后消息和时间）并更新未读计数
             if (offlineMessages != null && offlineMessages.Count > 0)
             {
-                MessageBox.Show($"离线消息数量: {offlineMessages.Count}");  // 调试用
+                MessageBox.Show($"你有 {offlineMessages.Count}条离线消息");  // 调试用
 
                 // 先存入缓存
                 foreach (var msg in offlineMessages)
@@ -202,11 +206,7 @@ namespace QQClient.UI
                         unreadCounts[otherId]++;
                     else
                         unreadCounts[otherId] = 1;
-                }
-
-                // 更新好友列表中的未读计数（在 Load_Friend 之前执行，此时 private_chat.Controls 可能还没有好友项）
-                // 所以这里不更新，而是留到 Load_Friend 中从缓存读取。
-                // 如果你希望好友列表加载后立即有小红点，可以在 Load_Friend 中从缓存计算未读计数（见下一步）
+                }              
             }
         }
         //加载界面的位置
@@ -219,6 +219,7 @@ namespace QQClient.UI
             request.Left = 0;
             request.Top = 0;
         }
+        //加载好友栏
         void Load_Friend()
         {
             private_chat.Controls.Clear();  // 清空现有控件，防止重复
@@ -276,54 +277,6 @@ namespace QQClient.UI
                         });
                     }
                 });
-            }
-        }
-     
-        //加载离线消息       
-        private void Load_OfflineMessages()
-        {
-            List<string> friendRequests;
-            var client = GlobalClient.Current;
-            var offlineMessages = client.GetOfflineMessages(out friendRequests);
-
-            // 处理好友请求
-            if (friendRequests != null && friendRequests.Count > 0)
-            {
-
-                request.Controls.Clear();
-                foreach (var fromUserId in friendRequests)
-                {
-                    var item = new FriendItem(fromUserId);
-                    item.AcceptClicked += OnAcceptRequest;
-                    item.RejectClicked += OnRejectRequest;
-                    request.Controls.Add(item);
-                }
-            }
-
-            // 处理未读消息计数
-            if (offlineMessages != null && offlineMessages.Count > 0)
-            {
-                MessageBox.Show($"离线消息数量: {offlineMessages.Count}");  // 临时调试
-                var unreadCounts = new Dictionary<string, int>();
-                foreach (var msg in offlineMessages)
-                {
-                    
-                    string otherId = msg.SenderId == GlobalClient.CurrentUserId ? msg.ReceiverId : msg.SenderId;
-                    MessageBox.Show($"存储消息，键: {otherId}");
-                    if (unreadCounts.ContainsKey(otherId))
-                        unreadCounts[otherId]++;
-                    else
-                        unreadCounts[otherId] = 1;
-                }
-
-                // 更新好友列表中的未读计数
-                foreach (Control ctrl in private_chat.Controls)
-                {
-                    if (ctrl is ContactItem item && unreadCounts.TryGetValue(item.Account, out int count))
-                    {
-                        item.UnreadCount = count;
-                    }
-                }
             }
         }
         //更新最后消息

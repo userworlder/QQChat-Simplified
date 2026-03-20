@@ -13,9 +13,7 @@ namespace QQClient.UI
 {
     public partial class chat_new : Form
     {
-        //供外部窗体使用的账号，用于识别唯一窗口
-        public string FriendAccount => _friendAccount;
-
+        
         private string _friendAccount;
         private string _friendNickname;
 
@@ -25,12 +23,7 @@ namespace QQClient.UI
             _friendAccount = friendAccount;
             _friendNickname = friendNickname;
             lblFriendName.Text = friendNickname;
-            this.Text = $"与 {friendNickname} 聊天中";
-
-            // 订阅事件       
-            //this.Load += chat_new_Load;  // 注意方法名不要写错，且没有括号
-            //LoadHistroyMessages();
-            //Show_OfflineMessages();
+            this.Text = $"与 {friendNickname} 聊天中";        
             LoadHistoryMessages();
             this.FormClosed += (s, e) => parentForm.RefreshFriendList();
         }
@@ -79,32 +72,6 @@ namespace QQClient.UI
                 }
             }
         }
-
-
-        //private void Show_OfflineMessages()
-        //{
-        //    //如果消息缓存中没有对应键（没有好友）则无事发生
-        //    if (!GlobalClient.MessageCache.ContainsKey(_friendAccount))
-        //        return;
-        //    //将未收到信息按时间排序
-        //    var messages = GlobalClient.MessageCache[_friendAccount]
-        //        .OrderBy(m => m.SendTime) // 按时间排序
-        //        .ToList();
-        //    //按序“打印”消息
-        //    foreach (var msg in messages)
-        //    {
-        //        if (msg.SenderId == _friendAccount) // 对方发送的消息
-        //        {
-        //            AddReceivedMessage(msg.Content); // 使用对方气泡样式
-        //        }
-        //        else if (msg.SenderId == GlobalClient.CurrentUserId) // 自己发送的消息
-        //        {
-        //            AddSentMessage(msg.Content); // 使用自己气泡样式
-        //        }
-        //    }
-        //    MarkMessagesAsRead();
-
-        //}
         private void MarkMessagesAsRead()
         {
             if (GlobalClient.MessageCache.ContainsKey(_friendAccount))
@@ -115,15 +82,7 @@ namespace QQClient.UI
                 }
             }
         }
-        //测试用消息
-        //private void chat_new_Load(object sender, EventArgs e)
-        //{
-        //    flowMessages.Controls.Clear();
-        //    AddReceivedMessage("这是一条对方短消息");
-        //    AddSentMessage("这是我的短消息");
-        //    AddReceivedMessage("这是一条对方非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长的信息消息的。");
-        //    AddSentMessage("这是一条非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长我的信息。");        
-        //}
+        
         //添加对方的消息
         public void AddReceivedMessage(string text)
         {
