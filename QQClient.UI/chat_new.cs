@@ -33,13 +33,14 @@ namespace QQClient.UI
         }
         private void Show_OfflineMessages()
         {
+            //如果消息缓存中没有对应键（没有好友）则无事发生
             if (!GlobalClient.MessageCache.ContainsKey(_friendAccount))
                 return;
-
+            //将未收到信息按时间排序
             var messages = GlobalClient.MessageCache[_friendAccount]
                 .OrderBy(m => m.SendTime) // 按时间排序
                 .ToList();
-
+            //按序“打印”消息
             foreach (var msg in messages)
             {
                 if (msg.SenderId == _friendAccount) // 对方发送的消息
@@ -64,23 +65,14 @@ namespace QQClient.UI
                 }
             }
         }
+        //测试用消息
         private void chat_new_Load(object sender, EventArgs e)
         {
             flowMessages.Controls.Clear();
-
             AddReceivedMessage("这是一条对方短消息");
             AddSentMessage("这是我的短消息");
             AddReceivedMessage("这是一条对方非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长的信息消息的。");
-            AddSentMessage("这是一条非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长我的信息。");
-            //AddReceivedMessage("这是一段包含空格的测试文本，应该会换行，因为有很多单词并且设置了最大宽度。");
-            // 调试：输出每个控件的高度
-            //foreach (Control ctrl in flowMessages.Controls)
-            //{
-            //    if (ctrl is message_bubble msg)
-            //    {
-            //        MessageBox.Show($"消息: {msg.MessageText}\n控件高度: {msg.Height}\nPanelBubble高度: {msg.Controls[0].Height}");
-            //    }
-            //}
+            AddSentMessage("这是一条非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长我的信息。");        
         }
 
 

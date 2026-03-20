@@ -18,10 +18,10 @@ namespace QQClient.UI
             InitializeComponent();
         }
 
-        private void label3_Click(object sender, EventArgs e)
-        {
+        //private void label3_Click(object sender, EventArgs e)
+        //{
             
-        }
+        //}
         private void button1_Click(object sender, EventArgs e)
         {
             textBox1.Text = "1";
@@ -33,7 +33,7 @@ namespace QQClient.UI
             textBox1.Text = "wxb";
             textBox2.Text = "wxb";
         }
-
+        //登录键
         private void pictureBox2_Click(object sender, EventArgs e)
         {
             // QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();

@@ -17,20 +17,18 @@ namespace QQClient.UI
             get { return label_name.Text; }
             set { label_name.Text = value; }
         }
-
         public string LastMessage
         {
             get { return label_lstchat.Text; }
             set { label_lstchat.Text = value; }
         }
-
         public string Time
         {
             get { return label_time.Text; }
             set { label_time.Text = value; }
         }
         public string Account { get; set; }
-        public string Nickname { get; set; }
+        public int UnReadAccount { get; set; }
         public ContactItem()
         {
             InitializeComponent();           

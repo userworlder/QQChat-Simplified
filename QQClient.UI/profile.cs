@@ -18,24 +18,27 @@ namespace QQClient.UI
         string origin_nickname;
         string origin_signature;
         string origin_password;
+        private User User;
         public profile(string self_account, string friend_account)
         {
             //所有文本框初始均为只读状态
             InitializeComponent();
-
+            var client=GlobalClient.Current;
+           // User=client.GetUserInfo(friend_account);
             //打开自己的界面
             if (self_account == friend_account)
             {
-                //Load();
+                Load(User);
             }
             //打开他人的界面
             else
             {   //无法修改字段，隐藏修改按钮和密码
-                //Load();
+                Load(User);
                 lbl_update.Visible = false;
                 label4.Visible = false;
                 textBox4.Visible = false;
             }
+
         }
         //读取个人资料并获取
         void Load(User user)
@@ -45,13 +48,7 @@ namespace QQClient.UI
             textBox3.Text = user.Signature;
             textBox4.Text = user.Password;
         }
-        void Load(string id)
-        {
-            //textBox1.Text =getAccount(id);
-            //textBox2.Text =getNickname(id);
-            //textBox3.Text =getSinature(id);
-            //textBox4.Text =getPassword(id);
-        }
+       
         private void btn_accept_Click(object sender, EventArgs e)
         {
             string new_nickname = textBox2.Text;
