@@ -37,6 +37,10 @@ namespace QQCommon.Interfaces
 
         List<Message> GetOfflineMessages(out List<string> friendRequests);
 
+        User GetUserInfo(string userId);
+
+        bool UpdateUserInfo(User updatedUser);
+
         // 事件：收到消息
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
