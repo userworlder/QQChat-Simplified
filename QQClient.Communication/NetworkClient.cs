@@ -25,7 +25,82 @@ namespace QQClient.Communication
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<ConnectionEventArgs> ConnectionChanged;
+        //获取与指定好友的历史聊天记录
+        public List<Message> GetHistoryMessages(string friendId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.GetHistoryMessagesRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Content = friendId,
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.GetHistoryMessagesResponse);
 
+            if (response != null && response.Content == "SUCCESS")
+            {
+                if (response.Extras.TryGetValue("Messages", out string json))
+                {
+                    return JsonConvert.DeserializeObject<List<Message>>(json);
+                }
+            }
+            return new List<Message>(); // 失败或没有消息时返回空列表
+        }
+        //标记与指定好友的未读消息为已读
+        public bool MarkMessagesAsRead(string friendId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.MarkMessagesReadRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Content = friendId,
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.MarkMessagesReadResponse);
+            return response != null && response.Content == "SUCCESS";
+        }
+        //根据用户名获取用户详细信息
+        public User GetUserInfo(string userId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.GetUserInfoRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Content = userId,
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.GetUserInfoResponse);
+
+            if (response != null && response.Content == "SUCCESS")
+            {
+                if (response.Extras.TryGetValue("UserInfo", out string json))
+                {
+                    return JsonConvert.DeserializeObject<User>(json);
+                }
+            }
+            return null;
+        }
+        // 更新当前用户的个人信息
+        public bool UpdateUserInfo(User updatedUser)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.UpdateUserInfoRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Content = JsonConvert.SerializeObject(updatedUser),
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.UpdateUserInfoResponse);
+            return response != null && response.Content == "SUCCESS";
+        }
         public bool SearchId(string fromUserId, string userId)
         {
             var packet = new ChatPacket
@@ -326,8 +401,8 @@ namespace QQClient.Communication
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine($"[ReceiveLoop] 致命异常: {ex.GetType().Name} - {ex.Message}\n{ex.StackTrace}");
                     // 其他致命异常，记录并退出
-                    Console.WriteLine($"[ReceiveLoop] 致命异常: {ex.GetType().Name} - {ex.Message}");
                     break;
                 }
             }
@@ -438,6 +513,7 @@ namespace QQClient.Communication
 
         protected virtual void OnMessageReceived(ChatPacket packet)
         {
+            Console.WriteLine($"[OnMessageReceived] Type={packet.Type}, Sender={packet.Sender}, Content={packet.Content}");
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs(packet));
         }
 

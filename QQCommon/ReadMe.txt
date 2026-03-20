@@ -43,3 +43,6 @@
 	9）点击 ContactItem 时，触发其 Click 事件（已在 ContactItem 中实现），打开对应的 chat 窗体，传入好友账号和昵称。
 	10）订阅 NetworkClient.MessageReceived 事件，当收到新消息时，更新对应好友项的 LastMessage 和 Time，并可增加未读消息计数（显示红点）。
 	11）群聊列表类似，但需从服务器获取群组列表，使用不同的数据源。
+
+3/18：
+当前正在做的功能：

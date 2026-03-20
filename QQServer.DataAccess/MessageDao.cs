@@ -67,7 +67,15 @@ namespace QQServer.DataAccess
 
             DbHelper.ExecuteNonQuery(sql, parameters);
         }
-
+        public void MarkMessagesAsRead(string receiverId, string senderId)
+        {
+            string sql = "UPDATE Messages SET IsRead = 1 WHERE ReceiverId = @ReceiverId AND SenderId = @SenderId AND IsRead = 0";
+            SqlParameter[] parameters = {
+                new SqlParameter("@ReceiverId", receiverId),
+                new SqlParameter("@SenderId", senderId)
+            };
+            DbHelper.ExecuteNonQuery(sql, parameters);
+        }
         // 将DataRow转换为Message对象
         private Message DataRowToMessage(DataRow row)
         {

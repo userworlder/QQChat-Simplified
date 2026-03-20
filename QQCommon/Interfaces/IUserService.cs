@@ -20,5 +20,7 @@ namespace QQCommon.Interfaces
 
         // 更新用户在线状态
         void UpdateUserStatus(string userId, bool isOnline);
+        User GetUserByUsername(string username);
+        bool UpdateUser(User user);
     }
 }

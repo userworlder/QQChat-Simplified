@@ -17,7 +17,16 @@ namespace QQServer.Business
         {
             userDao = new UserDao();
         }
+        public User GetUserByUsername(string username)
+        {
+            return userDao.GetUserByUsername(username);
+        }
 
+        public bool UpdateUser(User user)
+        {
+            // 可根据需要添加密码加密等逻辑
+            return userDao.UpdateUserByUsername(user);
+        }
         // 登录，返回用户信息，失败返回null
         public User Login(string username, string password)
         {

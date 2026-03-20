@@ -27,7 +27,7 @@ namespace QQClient.UI
             lblFriendName.Text = friendNickname;
             this.Text = $"与 {friendNickname} 聊天中";
             // 订阅事件       
-            //this.Load += chat_new_Load;  // 注意方法名不要写错，且没有括号
+            this.Load += chat_new_Load;  // 注意方法名不要写错，且没有括号
             Show_OfflineMessages();
           
         }
