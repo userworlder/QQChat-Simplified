@@ -31,6 +31,7 @@
             this.label_name = new System.Windows.Forms.Label();
             this.label_lstchat = new System.Windows.Forms.Label();
             this.label_time = new System.Windows.Forms.Label();
+            this.label_unread = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label_name
@@ -60,16 +61,25 @@
             this.label_time.TabIndex = 2;
             this.label_time.Text = "时间";
             // 
-            // contactItem
+            // label_unread
+            // 
+            this.label_unread.AutoSize = true;
+            this.label_unread.Location = new System.Drawing.Point(273, 50);
+            this.label_unread.Name = "label_unread";
+            this.label_unread.Size = new System.Drawing.Size(44, 18);
+            this.label_unread.TabIndex = 3;
+            this.label_unread.Text = "未读";
+            // 
+            // ContactItem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label_unread);
             this.Controls.Add(this.label_time);
             this.Controls.Add(this.label_lstchat);
             this.Controls.Add(this.label_name);
-            this.Name = "contactItem";
+            this.Name = "ContactItem";
             this.Size = new System.Drawing.Size(344, 77);
-            //this.Click += new System.EventHandler(this.contactItem_Click);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -80,5 +90,6 @@
         private System.Windows.Forms.Label label_name;
         private System.Windows.Forms.Label label_lstchat;
         private System.Windows.Forms.Label label_time;
+        private System.Windows.Forms.Label label_unread;
     }
 }

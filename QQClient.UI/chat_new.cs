@@ -26,11 +26,60 @@ namespace QQClient.UI
             _friendNickname = friendNickname;
             lblFriendName.Text = friendNickname;
             this.Text = $"与 {friendNickname} 聊天中";
+
             // 订阅事件       
-            this.Load += chat_new_Load;  // 注意方法名不要写错，且没有括号
+            //this.Load += chat_new_Load;  // 注意方法名不要写错，且没有括号
+            //LoadHistroyMessages();
             Show_OfflineMessages();
           
         }
+        //private async void LoadHistoryMessages()
+        //{
+        //    var client = GlobalClient.Current;
+        //    if (client == null) return;
+
+        //    // 异步获取历史消息
+        //    var messages = await Task.Run(() => client.GetHistoryMessages(_friendAccount));
+
+        //    // 清空现有消息（如果有测试消息）
+        //    flowMessages.Controls.Clear();
+
+        //    // 按时间顺序显示
+        //    foreach (var msg in messages.OrderBy(m => m.SendTime))
+        //    {
+        //        if (msg.SenderId == _friendAccount) // 对方发送
+        //        {
+        //            AddReceivedMessage(msg.Content);
+        //        }
+        //        else // 自己发送
+        //        {
+        //            AddSentMessage(msg.Content);
+        //        }
+        //    }
+
+        //    // 找出所有未读消息（接收者是当前用户，且 IsRead == false）
+        //    var unreadMessages = messages.Where(m => !m.IsRead && m.ReceiverId == GlobalClient.CurrentUserId).ToList();
+        //    if (unreadMessages.Any())
+        //    {
+        //        // 调用服务器标记已读
+        //        bool success = await Task.Run(() => client.MarkMessagesAsRead(_friendAccount));
+        //        if (success)
+        //        {
+        //            // 可选：更新本地缓存中的 IsRead 状态
+        //            if (GlobalClient.MessageCache.ContainsKey(_friendAccount))
+        //            {
+        //                foreach (var msg in GlobalClient.MessageCache[_friendAccount])
+        //                    msg.IsRead = true;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("标记已读失败");
+        //        }
+        //    }
+        //}
+
+        
         private void Show_OfflineMessages()
         {
             //如果消息缓存中没有对应键（没有好友）则无事发生
@@ -74,8 +123,7 @@ namespace QQClient.UI
             AddReceivedMessage("这是一条对方非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长的信息消息的。");
             AddSentMessage("这是一条非常非常非常非常非常非常非常非常非常非常非常长非常非常非常非常非常非常非常非常非常非常非常非常长我的信息。");        
         }
-
-
+        //添加对方的消息
         public void AddReceivedMessage(string text)
         {
             var msg = new message_bubble
@@ -89,7 +137,7 @@ namespace QQClient.UI
             AdjustMessageWidths();
             // System.Diagnostics.Debug.WriteLine($"添加消息: {text}, 宽度: {msg.Width}");
         }
-
+        //添加自己的消息
         public void AddSentMessage(string text)
         {
             var msg = new message_bubble
@@ -100,10 +148,9 @@ namespace QQClient.UI
             };
             flowMessages.Controls.Add(msg);
             flowMessages.ScrollControlIntoView(msg);
-            AdjustMessageWidths();
-            //System.Diagnostics.Debug.WriteLine($"添加消息: {text}, 宽度: {msg.Width}");
+            AdjustMessageWidths();          
         }
-
+        //聊天气泡自适应宽度
         private void AdjustMessageWidths()
         {
             int newWidth = flowMessages.ClientSize.Width;

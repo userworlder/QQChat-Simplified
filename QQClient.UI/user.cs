@@ -23,13 +23,7 @@ namespace QQClient.UI
         int panel_y;
         // 存储已打开的聊天窗口，键为好友用户名
         private Dictionary<string, chat_new> _openChatWindows = new Dictionary<string, chat_new>();
-        public user()
-        {
-            InitializeComponent();
-            panel_x = panel1.Left;
-            panel_y = panel1.Top;
-            Load_Panel();
-        }
+       
         public user(string user_account, Form login)
         {
             InitializeComponent();
@@ -38,6 +32,7 @@ namespace QQClient.UI
             panel_y = panel1.Top;
             this.Text = user_account;
             GlobalClient.Current.MessageReceived += OnMessageReceived;
+
             Load_Panel();
             Load_Friend();
             Load_PendingRequests();
@@ -76,7 +71,7 @@ namespace QQClient.UI
         private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             // 根据包的类型判断是否为好友请求
-            if (e.Packet.Type == MessageType.AddFriendRequest) // 假设有这样一个类型
+            if (e.Packet.Type == MessageType.AddFriendRequest) 
             {
                 string fromUserId = e.Packet.Sender; // 发起者账号
                 //MessageBox.Show(fromUserId);
@@ -204,6 +199,7 @@ namespace QQClient.UI
 
 
         }
+        //加载好友请求
         private void Load_PendingRequests()
         {
             var client = GlobalClient.Current;
@@ -232,7 +228,7 @@ namespace QQClient.UI
                 request.Controls.Add(lblEmpty);
             }
         }
-
+        //加载离线消息
         private void Load_OfflineMessages()
         {
             List<string> friendRequests;
@@ -255,6 +251,46 @@ namespace QQClient.UI
                 }
             }
         }
+        //private void Load_OfflineMessages()
+        //{
+        //    List<string> friendRequests;
+        //    var client = GlobalClient.Current;
+        //    var offlineMessages = client.GetOfflineMessages(out friendRequests);
+
+        //    // 处理好友请求
+        //    if (friendRequests != null && friendRequests.Count > 0)
+        //    {
+        //        request.Controls.Clear();
+        //        foreach (var fromUserId in friendRequests)
+        //        {
+        //            var item = new FriendItem(fromUserId);
+        //            item.AcceptClicked += OnAcceptRequest;
+        //            item.RejectClicked += OnRejectRequest;
+        //            request.Controls.Add(item);
+        //        }
+        //    }
+
+        //    // 处理未读消息计数（用于红点，可选）
+        //    if (offlineMessages != null && offlineMessages.Count > 0)
+        //    {
+        //        var unreadCounts = new Dictionary<string, int>();
+        //        foreach (var msg in offlineMessages)
+        //        {
+        //            string otherId = msg.SenderId == GlobalClient.CurrentUserId ? msg.ReceiverId : msg.SenderId;
+        //            unreadCounts[otherId] = unreadCounts.GetValueOrDefault(otherId) + 1;
+        //        }
+
+        //        // 更新好友列表中的未读计数
+        //        foreach (Control ctrl in private_chat.Controls)
+        //        {
+        //            if (ctrl is ContactItem item && unreadCounts.TryGetValue(item.Account, out int count))
+        //            {
+        //                // 假设 ContactItem 有 UnreadCount 属性
+        //                item.UnreadCount = count;
+        //            }
+        //        }
+        //    }
+        //}
         //同意请求的事件所执行的
         private void OnAcceptRequest(object sender, string fromUserId)
         {
@@ -287,7 +323,6 @@ namespace QQClient.UI
                 MessageBox.Show("拒绝失败，请稍后重试");
             }
         }
-
         //私聊模式
         private void btn_privatemode(object sender, EventArgs e)
         {
@@ -315,7 +350,7 @@ namespace QQClient.UI
             ez_addfriend add = new ez_addfriend(self_account);
             add.ShowDialog();
         }
-
+        //打开个人简历
         private void btn_profile_Click(object sender, EventArgs e)
         {
             profile profile = new profile(self_account, self_account);
