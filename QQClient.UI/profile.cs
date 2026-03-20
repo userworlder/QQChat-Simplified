@@ -19,12 +19,15 @@ namespace QQClient.UI
         string origin_signature;
         string origin_password;
         private User User;
+        private User new_User=new User();
         public profile(string self_account, string friend_account)
         {
             //所有文本框初始均为只读状态
             InitializeComponent();
-            var client=GlobalClient.Current;
-           // User=client.GetUserInfo(friend_account);
+            ReadOnlyMode();
+            var client = GlobalClient.Current;
+            User = client.GetUserInfo(friend_account);
+            origin_account= self_account;
             //打开自己的界面
             if (self_account == friend_account)
             {
@@ -48,12 +51,54 @@ namespace QQClient.UI
             textBox3.Text = user.Signature;
             textBox4.Text = user.Password;
         }
-       
+        //只读模式
+        void ReadOnlyMode()
+        {
+            textBox1.ReadOnly = true;
+            textBox2.ReadOnly = true;
+            textBox3.ReadOnly = true;
+            textBox4.ReadOnly = true;
+            btn_accept.Visible = false;
+            btn_cancel.Visible = false;
+        }
+        //编辑模式
+        void EditMode()
+        {
+            btn_accept.Visible = true;
+            btn_cancel.Visible = true;
+            textBox2.ReadOnly = false;
+            textBox3.ReadOnly = false;
+            textBox4.ReadOnly = false;
+        }
         private void btn_accept_Click(object sender, EventArgs e)
         {
             string new_nickname = textBox2.Text;
             string new_signature = textBox3.Text;
             string new_password = textBox4.Text;
+            new_User.Username = GlobalClient.CurrentUserId;
+            new_User.Password = new_password;
+            new_User.Nickname = new_nickname;
+            new_User.Signature = new_signature;
+            var client = GlobalClient.Current;        
+            bool x = client.UpdateUserInfo(new_User);
+            if (client == null)
+            {
+                MessageBox.Show("网络客户端未初始化");
+                return;
+            }
+            else
+            {
+                if (x)
+                {
+                    MessageBox.Show("修改成功");
+                    ReadOnlyMode();
+                }
+                else
+                {
+                    MessageBox.Show("修改失败");
+                }
+            }
+
         }
 
         private void btn_cancel_Click(object sender, EventArgs e)
@@ -63,23 +108,14 @@ namespace QQClient.UI
             textBox3.Text = origin_signature;
             textBox4.Text = origin_password;
             // 恢复只读状态
-            textBox2.ReadOnly = true;
-            textBox3.ReadOnly = true;
-            textBox4.ReadOnly = true;
-            //隐藏按钮
-            btn_accept.Visible = false;
-            btn_cancel.Visible = false;
+            ReadOnlyMode();
+            
         }
 
         private void lbl_update_Click(object sender, EventArgs e)
         {
             //允许修改除账号外的所有数据
-            textBox2.ReadOnly = false;
-            textBox3.ReadOnly = false;
-            textBox4.ReadOnly = false;
-            //显示按钮
-            btn_accept.Visible = true;
-            btn_cancel.Visible = true;
+            EditMode();
             //记忆原有的资料
             origin_account = textBox1.Text;
             origin_nickname = textBox2.Text;

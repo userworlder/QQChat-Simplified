@@ -122,6 +122,7 @@ namespace QQClient.UI
         private void lblFriendName_Click(object sender, EventArgs e)
         {
             profile profile = new profile(GlobalClient.CurrentUserId, _friendAccount);
+            profile.Show();
         }
         //发送消息
         private void btnSend_Click_1(object sender, EventArgs e)
