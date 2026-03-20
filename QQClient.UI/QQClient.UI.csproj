@@ -188,6 +188,10 @@
   <ItemGroup>
     <EmbeddedResource Include="picture\login_btn.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="picture\login_btn_new.png" />
+    <Content Include="picture\login_new.jpg" />
+    <Content Include="picture\register_new.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

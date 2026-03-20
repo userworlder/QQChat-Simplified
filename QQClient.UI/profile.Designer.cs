@@ -125,6 +125,7 @@
             this.btn_accept.TabIndex = 9;
             this.btn_accept.Text = "确认";
             this.btn_accept.UseVisualStyleBackColor = true;
+            this.btn_accept.Visible = false;
             this.btn_accept.Click += new System.EventHandler(this.btn_accept_Click);
             // 
             // btn_cancel
@@ -135,6 +136,7 @@
             this.btn_cancel.TabIndex = 10;
             this.btn_cancel.Text = "取消";
             this.btn_cancel.UseVisualStyleBackColor = true;
+            this.btn_cancel.Visible = false;
             this.btn_cancel.Click += new System.EventHandler(this.btn_cancel_Click);
             // 
             // profile
