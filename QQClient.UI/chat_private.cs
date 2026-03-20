@@ -11,13 +11,13 @@ using System.Windows.Forms;
 using Msg = QQCommon.Models.Message;
 namespace QQClient.UI
 {
-    public partial class chat_new : Form
+    public partial class chat_private : Form
     {
         
         private string _friendAccount;
         private string _friendNickname;
 
-        public chat_new(string friendAccount, string friendNickname,user parentForm)
+        public chat_private(string friendAccount, string friendNickname,user parentForm)
         {
             InitializeComponent();
             _friendAccount = friendAccount;

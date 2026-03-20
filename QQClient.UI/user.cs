@@ -22,7 +22,7 @@ namespace QQClient.UI
         int panel_x;
         int panel_y;
         // 存储已打开的聊天窗口，键为好友用户名
-        private Dictionary<string, chat_new> _openChatWindows = new Dictionary<string, chat_new>();
+        private Dictionary<string, chat_private> _openChatWindows = new Dictionary<string, chat_private>();
        
         public user(string user_account, Form login)
         {
@@ -68,7 +68,7 @@ namespace QQClient.UI
             }
 
             // 创建新窗口
-            var chatForm = new chat_new(friendUserName, friendDisplayName, this);
+            var chatForm = new chat_private(friendUserName, friendDisplayName, this);
             // 订阅窗口关闭事件，以便从字典中移除
             chatForm.FormClosed += (s, e) =>
             {

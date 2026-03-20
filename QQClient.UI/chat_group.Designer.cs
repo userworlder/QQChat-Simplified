@@ -1,6 +1,6 @@
 ﻿namespace QQClient.UI
 {
-    partial class chat_new
+    partial class chat_group
     {
         /// <summary>
         /// Required designer variable.
@@ -29,42 +29,43 @@
         private void InitializeComponent()
         {
             this.pnlTop = new System.Windows.Forms.Panel();
-            this.lblFriendName = new System.Windows.Forms.Label();
+            this.lblGroupName = new System.Windows.Forms.Label();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.btn_test = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
+            this.pnlMessages = new System.Windows.Forms.Panel();
+            this.flowMessages = new System.Windows.Forms.FlowLayoutPanel();
             this.pnlInput = new System.Windows.Forms.Panel();
             this.lbl_warn = new System.Windows.Forms.Label();
             this.txtInput = new System.Windows.Forms.TextBox();
-            this.pnlMessages = new System.Windows.Forms.Panel();
-            this.flowMessages = new System.Windows.Forms.FlowLayoutPanel();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.pnlTop.SuspendLayout();
             this.pnlBottom.SuspendLayout();
-            this.pnlInput.SuspendLayout();
             this.pnlMessages.SuspendLayout();
+            this.pnlInput.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlTop
             // 
             this.pnlTop.BackColor = System.Drawing.Color.DarkGray;
-            this.pnlTop.Controls.Add(this.lblFriendName);
+            this.pnlTop.Controls.Add(this.flowMessages);
+            this.pnlTop.Controls.Add(this.lblGroupName);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
             this.pnlTop.Size = new System.Drawing.Size(800, 49);
-            this.pnlTop.TabIndex = 0;
+            this.pnlTop.TabIndex = 1;
             // 
-            // lblFriendName
+            // lblGroupName
             // 
-            this.lblFriendName.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.lblFriendName.AutoSize = true;
-            this.lblFriendName.Location = new System.Drawing.Point(371, 9);
-            this.lblFriendName.Name = "lblFriendName";
-            this.lblFriendName.Size = new System.Drawing.Size(62, 18);
-            this.lblFriendName.TabIndex = 0;
-            this.lblFriendName.Text = "好友名";
-            this.lblFriendName.Click += new System.EventHandler(this.lblFriendName_Click);
+            this.lblGroupName.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.lblGroupName.AutoSize = true;
+            this.lblGroupName.Location = new System.Drawing.Point(371, 9);
+            this.lblGroupName.Name = "lblGroupName";
+            this.lblGroupName.Size = new System.Drawing.Size(62, 18);
+            this.lblGroupName.TabIndex = 0;
+            this.lblGroupName.Text = "群组名";
             // 
             // pnlBottom
             // 
@@ -76,7 +77,7 @@
             this.pnlBottom.Location = new System.Drawing.Point(0, 402);
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(800, 48);
-            this.pnlBottom.TabIndex = 2;
+            this.pnlBottom.TabIndex = 3;
             // 
             // btn_test
             // 
@@ -86,7 +87,6 @@
             this.btn_test.TabIndex = 5;
             this.btn_test.Text = "测试发送";
             this.btn_test.UseVisualStyleBackColor = true;
-            this.btn_test.Click += new System.EventHandler(this.btn_test_Click);
             // 
             // btnSend
             // 
@@ -96,7 +96,6 @@
             this.btnSend.TabIndex = 4;
             this.btnSend.Text = "发送";
             this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click_1);
             // 
             // btnClear
             // 
@@ -106,7 +105,26 @@
             this.btnClear.TabIndex = 3;
             this.btnClear.Text = "清空";
             this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click_1);
+            // 
+            // pnlMessages
+            // 
+            this.pnlMessages.Controls.Add(this.flowLayoutPanel1);
+            this.pnlMessages.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlMessages.Location = new System.Drawing.Point(0, 49);
+            this.pnlMessages.Name = "pnlMessages";
+            this.pnlMessages.Size = new System.Drawing.Size(800, 250);
+            this.pnlMessages.TabIndex = 5;
+            // 
+            // flowMessages
+            // 
+            this.flowMessages.AutoScroll = true;
+            this.flowMessages.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.flowMessages.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowMessages.Location = new System.Drawing.Point(3, 52);
+            this.flowMessages.Name = "flowMessages";
+            this.flowMessages.Size = new System.Drawing.Size(800, 250);
+            this.flowMessages.TabIndex = 0;
+            this.flowMessages.WrapContents = false;
             // 
             // pnlInput
             // 
@@ -116,7 +134,7 @@
             this.pnlInput.Location = new System.Drawing.Point(0, 299);
             this.pnlInput.Name = "pnlInput";
             this.pnlInput.Size = new System.Drawing.Size(800, 103);
-            this.pnlInput.TabIndex = 3;
+            this.pnlInput.TabIndex = 6;
             // 
             // lbl_warn
             // 
@@ -141,44 +159,31 @@
             this.txtInput.Size = new System.Drawing.Size(800, 103);
             this.txtInput.TabIndex = 0;
             // 
-            // pnlMessages
+            // flowLayoutPanel1
             // 
-            this.pnlMessages.Controls.Add(this.flowMessages);
-            this.pnlMessages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlMessages.Location = new System.Drawing.Point(0, 49);
-            this.pnlMessages.Name = "pnlMessages";
-            this.pnlMessages.Size = new System.Drawing.Size(800, 250);
-            this.pnlMessages.TabIndex = 4;
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(800, 250);
+            this.flowLayoutPanel1.TabIndex = 0;
             // 
-            // flowMessages
-            // 
-            this.flowMessages.AutoScroll = true;
-            this.flowMessages.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.flowMessages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowMessages.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowMessages.Location = new System.Drawing.Point(0, 0);
-            this.flowMessages.Name = "flowMessages";
-            this.flowMessages.Size = new System.Drawing.Size(800, 250);
-            this.flowMessages.TabIndex = 0;
-            this.flowMessages.WrapContents = false;
-            // 
-            // chat_new
+            // chat_group
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.pnlMessages);
             this.Controls.Add(this.pnlInput);
+            this.Controls.Add(this.pnlMessages);
             this.Controls.Add(this.pnlBottom);
             this.Controls.Add(this.pnlTop);
-            this.Name = "chat_new";
-            this.Text = "chat_new";
+            this.Name = "chat_group";
+            this.Text = "chat_group";
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
             this.pnlBottom.ResumeLayout(false);
+            this.pnlMessages.ResumeLayout(false);
             this.pnlInput.ResumeLayout(false);
             this.pnlInput.PerformLayout();
-            this.pnlMessages.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -186,15 +191,16 @@
         #endregion
 
         private System.Windows.Forms.Panel pnlTop;
-        private System.Windows.Forms.Label lblFriendName;
+        private System.Windows.Forms.Label lblGroupName;
         private System.Windows.Forms.Panel pnlBottom;
+        private System.Windows.Forms.Button btn_test;
         private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Panel pnlInput;
-        private System.Windows.Forms.TextBox txtInput;
         private System.Windows.Forms.Panel pnlMessages;
         private System.Windows.Forms.FlowLayoutPanel flowMessages;
+        private System.Windows.Forms.Panel pnlInput;
         private System.Windows.Forms.Label lbl_warn;
-        private System.Windows.Forms.Button btn_test;
+        private System.Windows.Forms.TextBox txtInput;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
     }
 }

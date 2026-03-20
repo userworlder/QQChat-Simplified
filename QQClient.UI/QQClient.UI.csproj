@@ -58,11 +58,17 @@
     <Compile Include="broken\chat.Designer.cs">
       <DependentUpon>chat.cs</DependentUpon>
     </Compile>
-    <Compile Include="chat_new.cs">
+    <Compile Include="chat_group.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="chat_new.Designer.cs">
-      <DependentUpon>chat_new.cs</DependentUpon>
+    <Compile Include="chat_group.Designer.cs">
+      <DependentUpon>chat_group.cs</DependentUpon>
+    </Compile>
+    <Compile Include="chat_private.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="chat_private.Designer.cs">
+      <DependentUpon>chat_private.cs</DependentUpon>
     </Compile>
     <Compile Include="ez_addfriend.cs">
       <SubType>Form</SubType>
@@ -149,8 +155,11 @@
     <EmbeddedResource Include="broken\chat.resx">
       <DependentUpon>chat.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="chat_new.resx">
-      <DependentUpon>chat_new.cs</DependentUpon>
+    <EmbeddedResource Include="chat_group.resx">
+      <DependentUpon>chat_group.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="chat_private.resx">
+      <DependentUpon>chat_private.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ez_addfriend.resx">
       <DependentUpon>ez_addfriend.cs</DependentUpon>
