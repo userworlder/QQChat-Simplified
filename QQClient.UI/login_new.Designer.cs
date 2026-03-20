@@ -45,20 +45,20 @@
             // 
             this.textBox1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.Location = new System.Drawing.Point(280, 115);
+            this.textBox1.Location = new System.Drawing.Point(306, 152);
             this.textBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(291, 21);
+            this.textBox1.Size = new System.Drawing.Size(239, 21);
             this.textBox1.TabIndex = 1;
             // 
             // textBox2
             // 
             this.textBox2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox2.Location = new System.Drawing.Point(280, 184);
+            this.textBox2.Location = new System.Drawing.Point(306, 210);
             this.textBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(291, 21);
+            this.textBox2.Size = new System.Drawing.Size(239, 21);
             this.textBox2.TabIndex = 3;
             // 
             // button1
@@ -90,7 +90,6 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(0, 18);
             this.label3.TabIndex = 7;
-            //this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // pictureBox1
             // 
@@ -107,9 +106,9 @@
             // 
             this.pictureBox2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.BackgroundImage")));
             this.pictureBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox2.Location = new System.Drawing.Point(213, 277);
+            this.pictureBox2.Location = new System.Drawing.Point(235, 281);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(377, 58);
+            this.pictureBox2.Size = new System.Drawing.Size(336, 54);
             this.pictureBox2.TabIndex = 9;
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
@@ -118,12 +117,12 @@
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label1.Font = new System.Drawing.Font("新宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label1.Location = new System.Drawing.Point(433, 343);
+            this.label1.Font = new System.Drawing.Font("幼圆", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.ForeColor = System.Drawing.Color.SlateGray;
+            this.label1.Location = new System.Drawing.Point(424, 339);
             this.label1.Margin = new System.Windows.Forms.Padding(0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(84, 18);
+            this.label1.Size = new System.Drawing.Size(71, 15);
             this.label1.TabIndex = 10;
             this.label1.Text = "注册账号";
             this.label1.Click += new System.EventHandler(this.label1_Click);

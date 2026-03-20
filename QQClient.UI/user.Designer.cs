@@ -42,6 +42,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.btn_profile = new System.Windows.Forms.Button();
             this.paneltab.SuspendLayout();
             this.panel1.SuspendLayout();
             this.private_chat.SuspendLayout();
@@ -121,7 +122,6 @@
             this.public_chat.TabIndex = 0;
             this.public_chat.Visible = false;
             this.public_chat.WrapContents = false;
-            //this.public_chat.Paint += new System.Windows.Forms.PaintEventHandler(this.public_chat_Paint);
             // 
             // label1
             // 
@@ -176,11 +176,23 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.btn_requestmode);
             // 
+            // btn_profile
+            // 
+            this.btn_profile.Location = new System.Drawing.Point(241, 7);
+            this.btn_profile.Name = "btn_profile";
+            this.btn_profile.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btn_profile.Size = new System.Drawing.Size(106, 29);
+            this.btn_profile.TabIndex = 4;
+            this.btn_profile.Text = "个人简介";
+            this.btn_profile.UseVisualStyleBackColor = true;
+            this.btn_profile.Click += new System.EventHandler(this.btn_profile_Click);
+            // 
             // user
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(349, 628);
+            this.Controls.Add(this.btn_profile);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.panel1);
@@ -214,5 +226,6 @@
         private System.Windows.Forms.FlowLayoutPanel request;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button btn_profile;
     }
 }

@@ -316,9 +316,11 @@ namespace QQClient.UI
             add.ShowDialog();
         }
 
-
-
-
+        private void btn_profile_Click(object sender, EventArgs e)
+        {
+            profile profile = new profile(self_account, self_account);
+            profile.ShowDialog();
+        }
     }
 }
 
