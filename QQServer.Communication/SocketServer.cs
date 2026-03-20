@@ -24,6 +24,9 @@ namespace QQServer.Communication
         private IUserService _userService;
         private IMessageService _messageService;
         private IFriendService _friendService;
+        private IGroupService _groupService;
+        private IGroupMessageService _groupMessageService;
+        private IGroupMemberService _groupMemberService;
 
         public SocketServer()
         {
@@ -31,6 +34,9 @@ namespace QQServer.Communication
             _userService = new UserService();
             _messageService = new MessageService();
             _friendService = new FriendService();
+            _groupService = new GroupService();
+            _groupMessageService = new GroupMessageService();
+            _groupMemberService = new GroupMemberService();
         }
 
         // 启动服务器
@@ -260,10 +266,143 @@ namespace QQServer.Communication
                     HandleUpdateUserInfo(packet, clientInfo);
                     break;
 
+                case MessageType.GetGroupListRequest:
+                    HandleGetGroupList(packet, clientInfo);
+                    break;
+                case MessageType.GroupChatMessage:
+                    HandleGroupChatMessage(packet, clientInfo);
+                    break;
+                case MessageType.GetGroupHistoryRequest:
+                    HandleGetGroupHistory(packet, clientInfo);
+                    break;
+                case MessageType.CreateGroupRequest:
+                    HandleCreateGroup(packet, clientInfo);
+                    break;
                 default:
                     Console.WriteLine($"未知消息类型: {packet.Type}");
                     break;
             }
+        }
+        private void HandleCreateGroup(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string creator = packet.Sender;  // 创建者用户名
+            dynamic data = JsonConvert.DeserializeObject(packet.Content);
+            string groupName = data.GroupName;
+            string description = data.Description ?? "";
+
+            Console.WriteLine($"创建群聊: {creator} 创建群 [{groupName}]");
+
+            // 调用业务层创建群
+            string groupId = _groupService.CreateGroup(creator, groupName, description);
+
+            var response = new ChatPacket
+            {
+                Type = MessageType.CreateGroupResponse,
+                Sender = "Server",
+                Receiver = creator,
+                MessageId = packet.MessageId,
+                Content = groupId != null ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            if (groupId != null)
+            {
+                response.Extras["GroupId"] = groupId;
+            }
+            SendToClient(response, clientInfo);
+        }
+        private void HandleGetGroupList(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string userId = packet.Sender;
+            Console.WriteLine($"获取群列表: {userId}");
+
+            // 调用业务层获取群列表
+            var groups = _groupService.GetGroupsByUserId(userId);
+            var response = new ChatPacket
+            {
+                Type = MessageType.GetGroupListResponse,
+                Sender = "Server",
+                Receiver = userId,
+                MessageId = packet.MessageId,
+                Content = groups != null ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            if (groups != null)
+            {
+                string json = JsonConvert.SerializeObject(groups);
+                response.Extras["GroupList"] = json;
+            }
+            SendToClient(response, clientInfo);
+        }
+
+        private void HandleGroupChatMessage(ChatPacket packet, ClientInfo senderInfo)
+        {
+            string sender = packet.Sender;
+            string groupId = packet.Receiver;
+            string content = packet.Content;
+
+            Console.WriteLine($"群聊消息: {sender} -> 群[{groupId}]: {content}");
+
+            // 1. 保存消息到数据库
+            var groupMsg = new GroupMessage
+            {
+                MessageId = Guid.NewGuid().ToString(),
+                GroupId = groupId,
+                SenderId = sender,
+                Content = content,
+                SendTime = packet.Timestamp,
+                MessageType = 1 // 文本消息
+            };
+            _groupMessageService.SendGroupMessage(groupMsg);
+
+            // 2. 获取群内所有成员
+            var members = _groupMemberService.GetGroupMembersByGroupId(groupId);
+            // 3. 广播给所有在线成员（除发送者外）
+            foreach (var member in members)
+            {
+                if (member.UserId != sender)  // 不发给发送者自己
+                {
+                    SendToUser(packet, member.UserId);  // 注意：packet.Receiver 已经是群ID，转发时保持群ID
+                }
+            }
+
+            // 4. 可选：发送送达确认给发送者
+            var ack = new ChatPacket
+            {
+                Type = MessageType.MessageReceived,
+                Sender = "Server",
+                Receiver = sender,
+                MessageId = packet.MessageId,
+                Content = "DELIVERED",
+                Timestamp = DateTime.Now
+            };
+            SendToClient(ack, senderInfo);
+        }
+
+        private void HandleGetGroupHistory(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string groupId = packet.Content;
+            int limit = 50;
+            if (packet.Extras.TryGetValue("Limit", out string limitStr))
+                int.TryParse(limitStr, out limit);
+
+            Console.WriteLine($"获取群历史消息: 群[{groupId}]，数量 {limit}");
+
+            var messages = _groupMessageService.GetGroupMessagesByGroupId(groupId, limit);
+            var response = new ChatPacket
+            {
+                Type = MessageType.GetGroupHistoryResponse,
+                Sender = "Server",
+                Receiver = packet.Sender,
+                MessageId = packet.MessageId,
+                Content = messages != null ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            if (messages != null)
+            {
+                string json = JsonConvert.SerializeObject(messages);
+                response.Extras["GroupMessages"] = json;
+            }
+            SendToClient(response, clientInfo);
         }
         private void HandleGetHistoryMessages(ChatPacket packet, ClientInfo clientInfo)
         {

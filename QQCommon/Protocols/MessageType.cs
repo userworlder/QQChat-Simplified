@@ -51,6 +51,15 @@ namespace QQCommon.Protocols
         // 系统消息 (400系列)
         Heartbeat = 401,        // 心跳包（保证连接不中断）
         Disconnect = 402,
-        Error = 403
+        Error = 403,
+
+        GetGroupListRequest = 501,          // 请求获取群列表
+        GetGroupListResponse = 502,         // 返回群列表
+        GroupChatMessage = 503,             // 群聊消息（发送/接收）
+        GetGroupHistoryRequest = 504,       // 请求获取群历史消息
+        GetGroupHistoryResponse = 505,      // 返回群历史消息
+                                            // 群聊创建
+        CreateGroupRequest = 506,
+        CreateGroupResponse = 507
     }
 }

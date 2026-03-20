@@ -487,7 +487,7 @@ namespace QQClient.Communication
         }
 
         public bool SendMessage(string username, string receiver, string content)
-        {//
+        {
             try
             {
                 var packet = new ChatPacket
@@ -510,7 +510,101 @@ namespace QQClient.Communication
                 return false;
             }
         }
+        // 获取当前用户加入的群组列表
+        public List<Group> GetGroupList()
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.GetGroupListRequest,
+                Sender = GlobalClient.CurrentUserId,
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.GetGroupListResponse);
 
+            if (response != null && response.Content == "SUCCESS")
+            {
+                if (response.Extras.TryGetValue("GroupList", out string json))
+                {
+                    return JsonConvert.DeserializeObject<List<Group>>(json);
+                }
+            }
+            return new List<Group>();
+        }
+
+        // 发送群聊消息
+        public bool SendGroupMessage(string groupId, string content)
+        {
+            try
+            {
+                var packet = new ChatPacket
+                {
+                    Type = MessageType.GroupChatMessage,
+                    Sender = GlobalClient.CurrentUserId,
+                    Receiver = groupId,          // 接收者为群ID
+                    Content = content,
+                    Timestamp = DateTime.Now,
+                    MessageId = Guid.NewGuid().ToString()
+                };
+                SendPacket(packet);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"发送群消息失败: {ex.Message}");
+                return false;
+            }
+        }
+
+        // 获取群历史消息
+        public List<GroupMessage> GetGroupHistory(string groupId, int limit = 50)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.GetGroupHistoryRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Content = groupId,
+                Extras = new Dictionary<string, string> { ["Limit"] = limit.ToString() },
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.GetGroupHistoryResponse);
+
+            if (response != null && response.Content == "SUCCESS")
+            {
+                if (response.Extras.TryGetValue("GroupMessages", out string json))
+                {
+                    return JsonConvert.DeserializeObject<List<GroupMessage>>(json);
+                }
+            }
+            return new List<GroupMessage>();
+        }
+        // 创建群聊
+        // "groupName"群名称
+        // "description"群简介（可选）
+        // 成功返回群ID，失败返回null
+        public string CreateGroup(string groupName, string description = "")
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.CreateGroupRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Content = JsonConvert.SerializeObject(new { GroupName = groupName, Description = description }),
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.CreateGroupResponse);
+
+            if (response != null && response.Content == "SUCCESS")
+            {
+                if (response.Extras.TryGetValue("GroupId", out string groupId))
+                    return groupId;
+            }
+            return null;
+        }
         protected virtual void OnMessageReceived(ChatPacket packet)
         {
             Console.WriteLine($"[OnMessageReceived] Type={packet.Type}, Sender={packet.Sender}, Content={packet.Content}");
