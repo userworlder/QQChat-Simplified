@@ -20,5 +20,7 @@ namespace QQCommon.Models
 
         public static Dictionary<string, List<GroupMessage>> GroupMessageCache { get; } 
             = new Dictionary<string, List<GroupMessage>>();
+
+        public static Dictionary<string, int> GroupUnreadCount { get; } = new Dictionary<string, int>();
     }
 }
