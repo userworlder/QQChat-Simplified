@@ -44,7 +44,7 @@
             // 
             // btn_accept
             // 
-            this.btn_accept.Location = new System.Drawing.Point(268, 12);
+            this.btn_accept.Location = new System.Drawing.Point(191, 12);
             this.btn_accept.Name = "btn_accept";
             this.btn_accept.Size = new System.Drawing.Size(36, 32);
             this.btn_accept.TabIndex = 1;
@@ -54,7 +54,7 @@
             // 
             // btn_reject
             // 
-            this.btn_reject.Location = new System.Drawing.Point(328, 12);
+            this.btn_reject.Location = new System.Drawing.Point(250, 12);
             this.btn_reject.Name = "btn_reject";
             this.btn_reject.Size = new System.Drawing.Size(36, 32);
             this.btn_reject.TabIndex = 2;
