@@ -40,7 +40,7 @@ namespace QQClient.UI
                     {
                         
                         MessageBox.Show("申请已发送");
-                        _parentForm?.RefreshGroupList();
+                        _parentForm?.Load_all();
                     }
                     else
                     {
@@ -71,6 +71,7 @@ namespace QQClient.UI
                     {   //打开界面
                         MessageBox.Show("已发送好友申请");
                         lbl_friendwarn.Visible=false;
+                        _parentForm?.Load_all();
                     }
                     else
                     {   //返回错误信息

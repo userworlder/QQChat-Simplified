@@ -313,7 +313,13 @@ namespace QQClient.UI
                 });
             }
         }
+       public void Load_all()
+        {
+            Load_OfflineMessages();
+            Load_Friend();
+            LoadGroupList();
 
+        }
         //加载好友请求
         private void AddFriendRequest(string fromUserId)
         {
@@ -353,7 +359,7 @@ namespace QQClient.UI
             // 处理离线消息：存入缓存（供好友列表显示最后消息和时间）并更新未读计数
             if (offlineMessages != null && offlineMessages.Count > 0)
             {
-                MessageBox.Show($"你有 {offlineMessages.Count}条离线消息");  // 调试用
+                //MessageBox.Show($"你有 {offlineMessages.Count}条离线消息");  // 调试用
 
                 // 先存入缓存
                 foreach (var msg in offlineMessages)
