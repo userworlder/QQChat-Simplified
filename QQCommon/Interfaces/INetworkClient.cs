@@ -66,6 +66,13 @@ namespace QQCommon.Interfaces
 
         string CreateGroup(string groupName, string description = "");
 
+        // 邀请好友入群
+        bool InviteToGroup(string groupId, string invitedUserId);
+        // 搜索群
+        List<Group> SearchGroups(string keyword);
+        // 申请加入群
+        bool JoinGroup(string groupId);
+
         // 事件：收到消息
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
 

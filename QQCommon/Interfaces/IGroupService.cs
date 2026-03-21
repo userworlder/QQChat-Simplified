@@ -13,5 +13,7 @@ namespace QQCommon.Interfaces
         bool SendGroupMessage(GroupMessage message);
         List<GroupMessage> GetGroupMessagesByGroupId(string groupId, int limit = 50);
         string CreateGroup(string creatorUsername, string groupName, string description);
+        Group GetGroupById(string groupId);
+        List<Group> SearchGroups(string keyword);
     }
 }

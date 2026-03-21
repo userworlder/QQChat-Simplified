@@ -28,11 +28,17 @@ namespace QQServer.DataAccess
         // 获取群消息列表
         public List<GroupMessage> GetGroupMessagesByGroupId(string groupId, int limit = 100)
         {
-            string sql = "SELECT TOP @Limit * FROM GroupMessages WHERE GroupId = @GroupId ORDER BY SendTime DESC";
+            string sql = @"
+        SELECT * FROM GroupMessages 
+        WHERE GroupId = @GroupId 
+        ORDER BY SendTime DESC 
+        OFFSET 0 ROWS 
+        FETCH NEXT @Limit ROWS ONLY";
+
             SqlParameter[] parameters = {
-                new SqlParameter("@Limit", limit),
-                new SqlParameter("@GroupId", groupId)
-            };
+        new SqlParameter("@Limit", limit),
+        new SqlParameter("@GroupId", groupId)
+    };
 
             DataTable dt = DbHelper.ExecuteQuery(sql, parameters);
             List<GroupMessage> messages = new List<GroupMessage>();
@@ -40,7 +46,7 @@ namespace QQServer.DataAccess
             {
                 messages.Add(DataRowToGroupMessage(row));
             }
-            // 反转列表，使消息按时间顺序排列
+            // 反转列表，使消息按时间顺序排列（如果需要升序）
             messages.Reverse();
             return messages;
         }

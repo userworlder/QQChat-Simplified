@@ -605,6 +605,53 @@ namespace QQClient.Communication
             }
             return null;
         }
+        public bool InviteToGroup(string groupId, string invitedUserId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.InviteToGroupRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Receiver = groupId,
+                Content = invitedUserId,
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.InviteToGroupResponse);
+            return response != null && response.Content == "SUCCESS";
+        }
+
+        public List<Group> SearchGroups(string keyword)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.SearchGroupRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Content = keyword,
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.SearchGroupResponse);
+            if (response != null && response.Content == "SUCCESS" && response.Extras.TryGetValue("Groups", out string json))
+                return JsonConvert.DeserializeObject<List<Group>>(json);
+            return new List<Group>();
+        }
+
+        public bool JoinGroup(string groupId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.JoinGroupRequest,
+                Sender = GlobalClient.CurrentUserId,
+                Content = groupId,
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+            SendPacket(packet);
+            var response = WaitForResponse(packet.MessageId, MessageType.JoinGroupResponse);
+            return response != null && response.Content == "SUCCESS";
+        }
         protected virtual void OnMessageReceived(ChatPacket packet)
         {
             Console.WriteLine($"[OnMessageReceived] Type={packet.Type}, Sender={packet.Sender}, Content={packet.Content}");

@@ -71,6 +71,15 @@ namespace QQServer.Business
 
             return groupId;
         }
+        public Group GetGroupById(string groupId)
+        {
+            return _groupDao.GetGroupById(groupId);
+        }
+
+        public List<Group> SearchGroups(string keyword)
+        {
+            return _groupDao.SearchGroups(keyword);
+        }
         public bool SendGroupMessage(GroupMessage message)
         {
             return _messageDao.SendGroupMessage(message);

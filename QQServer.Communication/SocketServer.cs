@@ -265,7 +265,6 @@ namespace QQServer.Communication
                 case MessageType.UpdateUserInfoRequest:
                     HandleUpdateUserInfo(packet, clientInfo);
                     break;
-
                 case MessageType.GetGroupListRequest:
                     HandleGetGroupList(packet, clientInfo);
                     break;
@@ -278,10 +277,156 @@ namespace QQServer.Communication
                 case MessageType.CreateGroupRequest:
                     HandleCreateGroup(packet, clientInfo);
                     break;
+                case MessageType.InviteToGroupRequest:
+                    HandleInviteToGroup(packet, clientInfo);
+                    break;
+                case MessageType.SearchGroupRequest:
+                    HandleSearchGroup(packet, clientInfo);
+                    break;
+                case MessageType.JoinGroupRequest:
+                    HandleJoinGroup(packet, clientInfo);
+                    break;
                 default:
                     Console.WriteLine($"未知消息类型: {packet.Type}");
                     break;
             }
+        }
+        private void SendErrorResponse(string messageId, ClientInfo clientInfo, string errorMessage)
+        {
+            var response = new ChatPacket
+            {
+                Type = MessageType.Error,
+                Sender = "Server",
+                Receiver = clientInfo.Username ?? "Unknown",
+                MessageId = messageId,
+                Content = errorMessage,
+                Timestamp = DateTime.Now
+            };
+            SendToClient(response, clientInfo);
+        }
+        private void HandleInviteToGroup(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string inviter = packet.Sender;
+            string groupId = packet.Receiver;   // 群ID
+            string invitedUser = packet.Content; // 被邀请的用户名
+
+            // 1. 验证邀请者权限（必须是群主或管理员）
+            var member = _groupMemberService.GetGroupMember(groupId, inviter);
+            if (member == null || (member.Role != 1 && member.Role != 2))
+            {
+                SendErrorResponse(packet.MessageId, clientInfo, "你没有权限");
+                return;
+            }
+
+            // 2. 检查被邀请者是否已在群中
+            var existing = _groupMemberService.GetGroupMember(groupId, invitedUser);
+            if (existing != null)
+            {
+                SendErrorResponse(packet.MessageId, clientInfo, "用户不在群里");
+                return;
+            }
+
+            // 3. 添加成员
+            var newMember = new GroupMember
+            {
+                GroupMemberId = Guid.NewGuid().ToString(),
+                GroupId = groupId,
+                UserId = invitedUser,
+                Role = 0,
+                JoinTime = DateTime.Now
+            };
+            bool success = _groupMemberService.AddGroupMember(newMember);
+
+            // 4. 响应邀请者
+            var response = new ChatPacket
+            {
+                Type = MessageType.InviteToGroupResponse,
+                Sender = "Server",
+                Receiver = inviter,
+                MessageId = packet.MessageId,
+                Content = success ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            SendToClient(response, clientInfo);
+
+            // 5. 如果成功，通知被邀请者（如果在线）
+            if (success)
+            {
+                var notification = new ChatPacket
+                {
+                    Type = MessageType.GroupJoinRequestNotification,
+                    Sender = inviter,
+                    Receiver = invitedUser,
+                    Content = groupId,
+                    Extras = new Dictionary<string, string>
+                    {
+                        ["GroupId"] = groupId,
+                        ["GroupName"] = _groupService.GetGroupById(groupId)?.GroupName ?? ""
+                    },
+                    Timestamp = DateTime.Now
+                };
+                SendToUser(notification, invitedUser);
+            }
+        }
+        private void HandleSearchGroup(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string keyword = packet.Content;
+            var groups = _groupService.SearchGroups(keyword); // 需实现
+            var response = new ChatPacket
+            {
+                Type = MessageType.SearchGroupResponse,
+                Sender = "Server",
+                Receiver = packet.Sender,
+                MessageId = packet.MessageId,
+                Content = groups != null ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            if (groups != null && groups.Count > 0)
+            {
+                response.Extras["Groups"] = JsonConvert.SerializeObject(groups);
+            }
+            SendToClient(response, clientInfo);
+        }
+        private void HandleJoinGroup(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string userId = packet.Sender;
+            string groupId = packet.Content;
+
+            var group = _groupService.GetGroupById(groupId);
+            if (group == null)
+            {
+                SendErrorResponse(packet.MessageId, clientInfo, "Group not found");
+                return;
+            }
+
+            var existing = _groupMemberService.GetGroupMember(groupId, userId);
+            if (existing != null)
+            {
+                SendErrorResponse(packet.MessageId, clientInfo, "Already in group");
+                return;
+            }
+
+            // 简化：直接加入（可扩展审核流程）
+            var newMember = new GroupMember
+            {
+                GroupMemberId = Guid.NewGuid().ToString(),
+                GroupId = groupId,
+                UserId = userId,
+                Role = 0,
+                JoinTime = DateTime.Now
+            };
+            bool success = _groupMemberService.AddGroupMember(newMember);
+
+            var response = new ChatPacket
+            {
+                Type = MessageType.JoinGroupResponse,
+                Sender = "Server",
+                Receiver = userId,
+                MessageId = packet.MessageId,
+                Content = success ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            SendToClient(response, clientInfo);
         }
         private void HandleCreateGroup(ChatPacket packet, ClientInfo clientInfo)
         {

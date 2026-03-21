@@ -70,17 +70,35 @@
     <Compile Include="chat_private.Designer.cs">
       <DependentUpon>chat_private.cs</DependentUpon>
     </Compile>
+    <Compile Include="CreateGroupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateGroupForm.Designer.cs">
+      <DependentUpon>CreateGroupForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ez_addfriend.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ez_addfriend.Designer.cs">
       <DependentUpon>ez_addfriend.cs</DependentUpon>
     </Compile>
+    <Compile Include="InviteToGroup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InviteToGroup.Designer.cs">
+      <DependentUpon>InviteToGroup.cs</DependentUpon>
+    </Compile>
     <Compile Include="profile.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="profile.Designer.cs">
       <DependentUpon>profile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SearchGroupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SearchGroupForm.Designer.cs">
+      <DependentUpon>SearchGroupForm.cs</DependentUpon>
     </Compile>
     <Compile Include="user_control\FriendItem.cs">
       <SubType>UserControl</SubType>
@@ -93,6 +111,12 @@
     </Compile>
     <Compile Include="login_new.Designer.cs">
       <DependentUpon>login_new.cs</DependentUpon>
+    </Compile>
+    <Compile Include="user_control\GroupItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="user_control\GroupItem.Designer.cs">
+      <DependentUpon>GroupItem.cs</DependentUpon>
     </Compile>
     <Compile Include="user_control\group_bubble.cs">
       <SubType>UserControl</SubType>
@@ -173,6 +197,9 @@
     <EmbeddedResource Include="login_new.resx">
       <DependentUpon>login_new.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="user_control\GroupItem.resx">
+      <DependentUpon>GroupItem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="user_control\group_bubble.resx">
       <DependentUpon>group_bubble.cs</DependentUpon>

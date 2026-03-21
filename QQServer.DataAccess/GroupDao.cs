@@ -40,7 +40,16 @@ namespace QQServer.DataAccess
             }
             return null;
         }
-
+        public List<Group> SearchGroups(string keyword)
+        {
+            string sql = "SELECT * FROM Groups WHERE GroupName LIKE @Keyword OR GroupId LIKE @Keyword";
+            SqlParameter[] parameters = { new SqlParameter("@Keyword", "%" + keyword + "%") };
+            DataTable dt = DbHelper.ExecuteQuery(sql, parameters);
+            List<Group> groups = new List<Group>();
+            foreach (DataRow row in dt.Rows)
+                groups.Add(DataRowToGroup(row));
+            return groups;
+        }
         // 更新群聊信息
         public bool UpdateGroup(Group group)
         {

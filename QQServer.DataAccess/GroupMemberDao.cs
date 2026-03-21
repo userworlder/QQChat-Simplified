@@ -24,7 +24,17 @@ namespace QQServer.DataAccess
 
             return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
         }
-
+        public GroupMember GetGroupMember(string groupId, string userId)
+        {
+            string sql = "SELECT * FROM GroupMembers WHERE GroupId = @GroupId AND UserId = @UserId";
+            SqlParameter[] parameters = {
+        new SqlParameter("@GroupId", groupId),
+        new SqlParameter("@UserId", userId)
+    };
+            DataTable dt = DbHelper.ExecuteQuery(sql, parameters);
+            if (dt.Rows.Count > 0) return DataRowToGroupMember(dt.Rows[0]);
+            return null;
+        }
         // 获取群成员列表
         public List<GroupMember> GetGroupMembersByGroupId(string groupId)
         {

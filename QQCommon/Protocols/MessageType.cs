@@ -60,6 +60,14 @@ namespace QQCommon.Protocols
         GetGroupHistoryResponse = 505,      // 返回群历史消息
                                             // 群聊创建
         CreateGroupRequest = 506,
-        CreateGroupResponse = 507
+        CreateGroupResponse = 507,
+        InviteToGroupRequest = 508,
+        InviteToGroupResponse = 509,
+        SearchGroupRequest = 510,
+        SearchGroupResponse = 511,
+        JoinGroupRequest = 512,
+        JoinGroupResponse = 513,
+        GroupJoinRequestNotification = 514,
+        GroupJoinRequestResponse = 515
     }
 }

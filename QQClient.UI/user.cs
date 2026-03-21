@@ -1,4 +1,8 @@
-﻿using System;
+﻿using QQClient.UI.user_control;
+using QQCommon.Interfaces;
+using QQCommon.Models;
+using QQCommon.Protocols;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,9 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using QQCommon.Interfaces;
-using QQCommon.Models;
-using QQCommon.Protocols;
 //防止关键字的冲突
 using Msg = QQCommon.Models.Message;
 namespace QQClient.UI
@@ -23,7 +24,8 @@ namespace QQClient.UI
         int panel_y;
         // 存储已打开的聊天窗口，键为好友用户名
         private Dictionary<string, chat_private> _openChatWindows = new Dictionary<string, chat_private>();
-       
+        private Dictionary<string, GroupItem> _groupItems = new Dictionary<string, GroupItem>();
+        private Dictionary<string, chat_group> _openGroupWindows = new Dictionary<string, chat_group>();
         public user(string user_account, Form login)
         {
             InitializeComponent();
@@ -76,6 +78,48 @@ namespace QQClient.UI
             };
             _openChatWindows[friendUserName] = chatForm;
             chatForm.Show();
+        }
+        private void LoadGroupList()
+        {
+            var client = GlobalClient.Current;
+            var groups = client.GetGroupList();
+            public_chat.Controls.Clear();
+            _groupItems.Clear();
+            foreach (var group in groups)
+            {
+                var item = new GroupItem
+                {
+                    GroupId = group.GroupId,
+                    GroupName = group.GroupName,
+                    Width = public_chat.ClientSize.Width - (public_chat.VerticalScroll.Visible ? SystemInformation.VerticalScrollBarWidth : 0)
+                };
+                // 从缓存中获取最后消息和未读（如果有群消息缓存）
+                // 暂未实现群消息缓存，可以简单显示“暂无消息”
+                item.LastMessage = "暂无消息";
+                item.Time = "";
+                item.UnreadCount = 0; // 从缓存读取
+
+                public_chat.Controls.Add(item);
+                item.Click += (s, e) =>
+                {
+                    OpenGroupChat(item.GroupId, item.GroupName);
+                };
+                _groupItems[group.GroupId] = item;
+            }
+        }
+        
+        private void OpenGroupChat(string groupId, string groupName)
+        {
+            // 检查是否已打开，可类似私聊做窗口管理
+            if (_openGroupWindows.ContainsKey(groupId))
+            {
+                _openGroupWindows[groupId].Activate();
+                return;
+            }
+            var groupChat = new chat_group(groupId, groupName, this);
+            groupChat.FormClosed += (s, e) => _openGroupWindows.Remove(groupId);
+            _openGroupWindows[groupId] = groupChat;
+            groupChat.Show();
         }
         //在线消息/请求的接收
         private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
@@ -130,6 +174,36 @@ namespace QQClient.UI
                         // 窗口未打开：更新好友列表的未读计数
                         UpdateFriendUnreadCount(otherId);
                         UpdateFriendLastMessage(otherId, content); 
+                    }
+                });
+            }
+            else if (e.Packet.Type == MessageType.GroupChatMessage)
+            {
+                string groupId = e.Packet.Receiver;
+                string content = e.Packet.Content;
+                var groupMsg = new GroupMessage
+                {
+                    MessageId = e.Packet.MessageId,
+                    GroupId = groupId,
+                    SenderId = e.Packet.Sender,
+                    Content = content,
+                    SendTime = e.Packet.Timestamp,
+                    MessageType = 1
+                };
+                this.Invoke((MethodInvoker)delegate
+                {
+                    if (_openGroupWindows.ContainsKey(groupId))
+                    {
+                        _openGroupWindows[groupId].AddGroupMessage(groupMsg, true);
+                    }
+                    else
+                    {
+                        if (_groupItems.TryGetValue(groupId, out var item))
+                        {
+                            item.LastMessage = content;
+                            item.Time = groupMsg.SendTime.ToString("HH:mm");
+                            item.UnreadCount++;
+                        }
                     }
                 });
             }
@@ -356,6 +430,34 @@ namespace QQClient.UI
         {
             profile profile = new profile(self_account, self_account);
             profile.ShowDialog();
+        }
+        public void RefreshGroupList()
+        {
+            LoadGroupList(); // 刷新群列表
+        }
+        private void button5_Click(object sender, EventArgs e)
+        {
+            var form = new CreateGroupForm();
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                var client = GlobalClient.Current;
+                string groupId = client.CreateGroup(form.GroupName, form.Description);
+                if (!string.IsNullOrEmpty(groupId))
+                {
+                    MessageBox.Show("群组创建成功");
+                    LoadGroupList(); // 刷新群列表
+                }
+                else
+                {
+                    MessageBox.Show("创建失败");
+                }
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            var form = new SearchGroupForm();
+            form.ShowDialog();
         }
     }
 }

@@ -12,5 +12,6 @@ namespace QQCommon.Interfaces
         List<GroupMember> GetGroupMembersByGroupId(string groupId);
         bool AddGroupMember(GroupMember member);
         bool RemoveGroupMember(string groupId, string userId);
+        GroupMember GetGroupMember(string groupId, string userId);
     }
 }

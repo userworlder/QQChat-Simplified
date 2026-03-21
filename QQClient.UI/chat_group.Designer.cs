@@ -6,6 +6,7 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+        private System.Windows.Forms.Button btnInvite;   // 新增邀请按钮
 
         /// <summary>
         /// Clean up any resources being used.
@@ -40,6 +41,8 @@
             this.lbl_warn = new System.Windows.Forms.Label();
             this.txtInput = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            // 新增邀请按钮
+            this.btnInvite = new System.Windows.Forms.Button();
             this.pnlTop.SuspendLayout();
             this.pnlBottom.SuspendLayout();
             this.pnlMessages.SuspendLayout();
@@ -70,6 +73,7 @@
             // pnlBottom
             // 
             this.pnlBottom.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.pnlBottom.Controls.Add(this.btnInvite);    // 添加邀请按钮
             this.pnlBottom.Controls.Add(this.btn_test);
             this.pnlBottom.Controls.Add(this.btnSend);
             this.pnlBottom.Controls.Add(this.btnClear);
@@ -105,6 +109,15 @@
             this.btnClear.TabIndex = 3;
             this.btnClear.Text = "清空";
             this.btnClear.UseVisualStyleBackColor = true;
+            // 
+            // btnInvite
+            // 
+            this.btnInvite.Location = new System.Drawing.Point(386, 13);
+            this.btnInvite.Name = "btnInvite";
+            this.btnInvite.Size = new System.Drawing.Size(91, 32);
+            this.btnInvite.TabIndex = 6;
+            this.btnInvite.Text = "邀请成员";
+            this.btnInvite.UseVisualStyleBackColor = true;
             // 
             // pnlMessages
             // 

@@ -13,7 +13,10 @@ namespace QQServer.Business
     public class GroupMemberService : IGroupMemberService
     {
         private readonly GroupMemberDao _memberDao;
-
+        public GroupMember GetGroupMember(string groupId, string userId)
+        {
+            return _memberDao.GetGroupMember(groupId, userId);
+        }
         public GroupMemberService()
         {
             _memberDao = new GroupMemberDao();
