@@ -46,10 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="add_friend.cs">
+    <Compile Include="broken\add_friend.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="add_friend.Designer.cs">
+    <Compile Include="broken\add_friend.Designer.cs">
       <DependentUpon>add_friend.cs</DependentUpon>
     </Compile>
     <Compile Include="broken\chat.cs">
@@ -76,10 +76,10 @@
     <Compile Include="CreateGroupForm.Designer.cs">
       <DependentUpon>CreateGroupForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ez_addfriend.cs">
+    <Compile Include="broken\ez_addfriend.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ez_addfriend.Designer.cs">
+    <Compile Include="broken\ez_addfriend.Designer.cs">
       <DependentUpon>ez_addfriend.cs</DependentUpon>
     </Compile>
     <Compile Include="InviteToGroup.cs">
@@ -94,10 +94,16 @@
     <Compile Include="profile.Designer.cs">
       <DependentUpon>profile.cs</DependentUpon>
     </Compile>
-    <Compile Include="SearchGroupForm.cs">
+    <Compile Include="search.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SearchGroupForm.Designer.cs">
+    <Compile Include="search.Designer.cs">
+      <DependentUpon>search.cs</DependentUpon>
+    </Compile>
+    <Compile Include="broken\SearchGroupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="broken\SearchGroupForm.Designer.cs">
       <DependentUpon>SearchGroupForm.cs</DependentUpon>
     </Compile>
     <Compile Include="user_control\FriendItem.cs">
@@ -173,7 +179,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="add_friend.resx">
+    <EmbeddedResource Include="broken\add_friend.resx">
       <DependentUpon>add_friend.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="broken\chat.resx">
@@ -185,11 +191,14 @@
     <EmbeddedResource Include="chat_private.resx">
       <DependentUpon>chat_private.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ez_addfriend.resx">
+    <EmbeddedResource Include="broken\ez_addfriend.resx">
       <DependentUpon>ez_addfriend.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="profile.resx">
       <DependentUpon>profile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="search.resx">
+      <DependentUpon>search.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="user_control\FriendItem.resx">
       <DependentUpon>FriendItem.cs</DependentUpon>
