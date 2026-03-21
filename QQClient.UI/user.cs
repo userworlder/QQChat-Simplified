@@ -439,12 +439,7 @@ namespace QQClient.UI
             private_chat.Visible = false;
             request.Visible = true;
         }
-        //添加好友
-        private void btn_addfriend(object sender, EventArgs e)
-        {
-            ez_addfriend add = new ez_addfriend(self_account);
-            add.ShowDialog();
-        }
+        
         //打开个人简历
         private void btn_profile_Click(object sender, EventArgs e)
         {
@@ -474,12 +469,27 @@ namespace QQClient.UI
                 }
             }
         }
-        //搜索群聊
-        private void button6_Click(object sender, EventArgs e)
+      
+        //加人/群
+        private void btn_search_Click(object sender, EventArgs e)
         {
-            var form = new SearchGroupForm(this);
-            form.ShowDialog();
+            search search = new search(GlobalClient.CurrentUserId, this);
+            search.ShowDialog();
         }
+
+        //废弃代码
+        //搜索群聊
+        //private void button6_Click(object sender, EventArgs e)
+        //{
+        //    var form = new SearchGroupForm(this);
+        //    form.ShowDialog();
+        //}
+        //添加好友
+        //private void btn_addfriend(object sender, EventArgs e)
+        //{
+        //    ez_addfriend add = new ez_addfriend(self_account);
+        //    add.ShowDialog();
+        //}
     }
 }
 

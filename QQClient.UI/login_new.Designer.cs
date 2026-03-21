@@ -77,6 +77,7 @@
             this.button2.Location = new System.Drawing.Point(623, 184);
             this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button2.Name = "button2";
+            this.button2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.button2.Size = new System.Drawing.Size(86, 30);
             this.button2.TabIndex = 5;
             this.button2.Text = "wxb";

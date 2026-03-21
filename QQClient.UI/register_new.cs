@@ -60,14 +60,7 @@ namespace QQClient.UI
                     label_warn.Text = "请尝试其他账号密码";
                     label_warn.Visible = true;
                 }
-
             }
-
         }
-
-
-
-
-
     }
 }

@@ -35,8 +35,7 @@ namespace QQClient.UI
         }
         //登录键
         private void pictureBox2_Click(object sender, EventArgs e)
-        {
-            // QQClient.Communication.NetworkClient client = new QQClient.Communication.NetworkClient();
+        {       
             //是否为空
             var client = GlobalClient.Current;
             if (client == null)
