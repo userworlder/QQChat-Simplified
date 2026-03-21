@@ -1108,6 +1108,10 @@ namespace QQServer.Communication
                 {
                     SendToClient(packet, client);
                 }
+                else
+                {
+                    Console.WriteLine($"[SendToUser] 用户 {username} 不在线，无法发送消息");
+                }
             }
         }
 
