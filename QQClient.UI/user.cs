@@ -198,6 +198,23 @@ namespace QQClient.UI
         //在线消息/请求的接收
         private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
+            void SafeInvoke(Action action)
+            {
+                if (this.IsHandleCreated)
+                {
+                    this.Invoke(action);
+                }
+                else
+                {
+                    EventHandler handler = null;
+                    handler = (s, ev) =>
+                    {
+                        this.HandleCreated -= handler;
+                        this.Invoke(action);
+                    };
+                    this.HandleCreated += handler;
+                }
+            }
             // 根据包的类型判断是否为好友请求
             if (e.Packet.Type == MessageType.AddFriendRequest)
             {

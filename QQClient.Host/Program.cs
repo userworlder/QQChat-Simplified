@@ -21,7 +21,7 @@ namespace QQClient.Host
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            string ip = "192.168.24.81";
+            string ip = "192.168.24.61";
             int port = 8888;
 
             //创建唯一的 NetworkClient 实例
