@@ -62,7 +62,19 @@ namespace QQClient.UI
             }
             ScrollToBottom();
         }
-
+        private void chat_group_Load(object sender, EventArgs e)
+        {
+            var test = new group_bubble
+            {
+                IsSelf = true,
+                Nickname = "我",
+                MessageText = "测试消息",
+                Width = flowMessages.ClientSize.Width,
+                BackColor = Color.Red   // 给整个控件一个醒目的背景色，便于观察
+            };
+            flowMessages.Controls.Add(test);
+            MessageBox.Show($"控件高度: {test.Height}, 宽度: {test.Width}");
+        }
         public void AddGroupMessage(GroupMessage msg, bool autoScroll = true)
         {
             if (_messageControls.ContainsKey(msg.MessageId)) return;
@@ -127,7 +139,7 @@ namespace QQClient.UI
                 });
             }
         }
-
+        //发送
         private void btnSend_Click(object sender, EventArgs e)
         {
             string text = txtInput.Text.Trim();
@@ -160,21 +172,22 @@ namespace QQClient.UI
                 MessageBox.Show("发送失败");
             }
         }
-
+        //清空输入
         private void btnClear_Click(object sender, EventArgs e)
         {
             txtInput.Clear();
         }
-
+        //测试信息
         private void btn_test_Click(object sender, EventArgs e)
         {
             txtInput.Text = $"测试消息 {DateTime.Now:HH:mm:ss}";
         }
-
+        //邀请好友
         private void btnInvite_Click(object sender, EventArgs e)
         {
             var inviteForm = new InviteToGroup(_groupId);
             inviteForm.ShowDialog();
         }
+
     }
 }
