@@ -46,6 +46,7 @@
             // label_lstchat
             // 
             this.label_lstchat.AutoSize = true;
+            this.label_lstchat.ForeColor = System.Drawing.SystemColors.AppWorkspace;
             this.label_lstchat.Location = new System.Drawing.Point(64, 51);
             this.label_lstchat.Name = "label_lstchat";
             this.label_lstchat.Size = new System.Drawing.Size(80, 18);
@@ -55,6 +56,7 @@
             // label_time
             // 
             this.label_time.AutoSize = true;
+            this.label_time.ForeColor = System.Drawing.SystemColors.AppWorkspace;
             this.label_time.Location = new System.Drawing.Point(270, 10);
             this.label_time.Name = "label_time";
             this.label_time.Size = new System.Drawing.Size(44, 18);

@@ -17,5 +17,8 @@ namespace QQCommon.Models
         // 新增：存储离线消息，键为好友用户名
         public static Dictionary<string, List<Msg>> MessageCache { get; } 
             = new Dictionary<string, List<Msg>>();
+
+        public static Dictionary<string, List<GroupMessage>> GroupMessageCache { get; } 
+            = new Dictionary<string, List<GroupMessage>>();
     }
 }

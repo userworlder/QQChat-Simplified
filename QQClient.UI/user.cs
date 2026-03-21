@@ -133,7 +133,6 @@ namespace QQClient.UI
             if (e.Packet.Type == MessageType.AddFriendRequest) 
             {
                 string fromUserId = e.Packet.Sender; // 发起者账号
-                //MessageBox.Show(fromUserId);
                 // 切换到 UI 线程添加请求项
                 this.Invoke((MethodInvoker)delegate
                 {
@@ -228,19 +227,7 @@ namespace QQClient.UI
                 });
             }
         }
-        //更新未读消息小红点
-        private void UpdateFriendUnreadCount(string friendUserName)
-        {
-            foreach (Control ctrl in private_chat.Controls)
-            {
-                if (ctrl is ContactItem item && item.Account == friendUserName)
-                {
-                    // UnreadCount 属性，用来显示小红点
-                    item.UnreadCount++; 
-                    break;
-                }
-            }
-        }
+       
         //加载好友请求
         private void AddFriendRequest(string fromUserId)
         {
@@ -302,6 +289,7 @@ namespace QQClient.UI
                         unreadCounts[otherId] = 1;
                 }              
             }
+
         }
         //加载界面的位置
         void Load_Panel()
@@ -367,10 +355,22 @@ namespace QQClient.UI
                         {
                             item.LastMessage = latest.Content;
                             item.Time = latest.SendTime.ToString("HH:mm");
-                            // 可选：更新未读计数（如果历史消息中也有未读，但 GetHistoryMessages 应该返回所有消息，未读状态可能已经包含在 MessageCache 中，这里不重复）
                         });
                     }
                 });
+            }
+        }
+        //更新未读消息小红点
+        private void UpdateFriendUnreadCount(string friendUserName)
+        {
+            foreach (Control ctrl in private_chat.Controls)
+            {
+                if (ctrl is ContactItem item && item.Account == friendUserName)
+                {
+                    // UnreadCount 属性，用来显示小红点
+                    item.UnreadCount++;
+                    break;
+                }
             }
         }
         //更新最后消息
@@ -380,6 +380,7 @@ namespace QQClient.UI
             {
                 if (ctrl is ContactItem item && item.Account == friendUserName)
                 {
+                    //LastMessage 属性，用来显示聊天的最后一条消息
                     item.LastMessage = lastMessage;
                     break;
                 }
@@ -438,20 +439,20 @@ namespace QQClient.UI
             public_chat.Visible = false;
             private_chat.Visible = false;
             request.Visible = true;
-        }
-        
+        }  
         //打开个人简历
         private void btn_profile_Click(object sender, EventArgs e)
         {
             profile profile = new profile(self_account, self_account);
             profile.ShowDialog();
         }
+        // 刷新群列表
         public void RefreshGroupList()
         {
-            LoadGroupList(); // 刷新群列表
+            LoadGroupList();
         }
         //创建群聊
-        private void button5_Click(object sender, EventArgs e)
+        private void btn_creatgroup_Click(object sender, EventArgs e)
         {
             var form = new CreateGroupForm();
             if (form.ShowDialog() == DialogResult.OK)
@@ -468,8 +469,7 @@ namespace QQClient.UI
                     MessageBox.Show("创建失败");
                 }
             }
-        }
-      
+        }  
         //加人/群
         private void btn_search_Click(object sender, EventArgs e)
         {
