@@ -27,8 +27,12 @@ namespace QQClient.UI
             lblGroupName.Text = groupName;
             this.Text = $"{groupName} 群聊";
 
+            flowMessages.Visible = true;
             LoadHistoryMessages();
-            GlobalClient.Current.MessageReceived += OnMessageReceived;
+            this.Load += (s, e) =>
+            {
+                GlobalClient.Current.MessageReceived += OnMessageReceived;
+            };
             this.FormClosed += (s, e) =>
             {
                 GlobalClient.Current.MessageReceived -= OnMessageReceived;
@@ -39,7 +43,9 @@ namespace QQClient.UI
             btnClear.Click += btnClear_Click;
             btn_test.Click += btn_test_Click;
             btnInvite.Click += btnInvite_Click;
+            this.Shown += (s, e) => AdjustBubbleWidths();
         }
+
 
         private async void LoadHistoryMessages()
         {
@@ -72,6 +78,7 @@ namespace QQClient.UI
             };
             flowMessages.Controls.Add(bubble);
             _messageControls[msg.MessageId] = bubble;
+            AdjustBubbleWidths();
             if (autoScroll) ScrollToBottom();
             AdjustBubbleWidths();
         }
@@ -80,8 +87,12 @@ namespace QQClient.UI
         {
             if (flowMessages.Controls.Count > 0)
             {
-                var last = flowMessages.Controls[flowMessages.Controls.Count - 1];
-                flowMessages.ScrollControlIntoView(last);
+                // 确保滚动到底部
+                flowMessages.ScrollControlIntoView(flowMessages.Controls[flowMessages.Controls.Count - 1]);
+
+                // 双重保险：设置滚动位置
+                flowMessages.AutoScrollPosition = new Point(0, flowMessages.VerticalScroll.Maximum);
+                flowMessages.PerformLayout();
             }
         }
 

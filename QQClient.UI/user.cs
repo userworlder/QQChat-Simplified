@@ -35,10 +35,14 @@ namespace QQClient.UI
             this.Text = user_account;
             GlobalClient.Current.MessageReceived += OnMessageReceived;
 
-            Load_Panel();    
-            Load_OfflineMessages();
-            Load_Friend();
-           // Load_PendingRequests();
+            this.Load += (s, e) =>
+            {
+                Load_Panel();
+                Load_OfflineMessages();
+                Load_Friend();
+                LoadGroupList();
+            };
+            // Load_PendingRequests();
             this.FormClosed += (sender, e) => login.Show();
         }
         //刷新所有列表（关闭聊天窗口的事件所触发）
@@ -205,6 +209,21 @@ namespace QQClient.UI
                             item.UnreadCount++;
                         }
                     }
+                });
+            }
+            else if (e.Packet.Type == MessageType.GroupJoinRequestNotification)
+            {
+                // 收到邀请或加入群的通知，刷新群列表
+                this.Invoke((MethodInvoker)delegate
+                {
+                    LoadGroupList();
+                });
+            }
+            else if (e.Packet.Type == MessageType.JoinGroupResponse && e.Packet.Content == "SUCCESS")
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    LoadGroupList();
                 });
             }
         }
@@ -456,7 +475,7 @@ namespace QQClient.UI
 
         private void button6_Click(object sender, EventArgs e)
         {
-            var form = new SearchGroupForm();
+            var form = new SearchGroupForm(this);
             form.ShowDialog();
         }
     }

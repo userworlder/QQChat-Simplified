@@ -13,9 +13,11 @@ namespace QQClient.UI
 {
     public partial class SearchGroupForm : Form
     {
-        public SearchGroupForm()
+        private user _parentForm;
+        public SearchGroupForm(user parentForm)
         {
             InitializeComponent();
+            _parentForm = parentForm;
         }
 
         private async void BtnSearch_Click(object sender, EventArgs e)
@@ -37,6 +39,7 @@ namespace QQClient.UI
                 {
                     bool success = await Task.Run(() => client.JoinGroup(group.GroupId));
                     MessageBox.Show(success ? "申请已发送" : "加入失败");
+                    _parentForm?.RefreshGroupList();
                 };
                 panel.Controls.Add(lblName);
                 panel.Controls.Add(lblDesc);
