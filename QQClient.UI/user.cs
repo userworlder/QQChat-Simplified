@@ -569,6 +569,11 @@ namespace QQClient.UI
             search.ShowDialog();
         }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Load_all();
+        }
+
         //废弃代码
         //搜索群聊
         //private void button6_Click(object sender, EventArgs e)
