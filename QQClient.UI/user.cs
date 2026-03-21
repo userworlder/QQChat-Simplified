@@ -38,6 +38,7 @@ namespace QQClient.UI
             Load_Panel();    
             Load_OfflineMessages();
             Load_Friend();
+            LoadGroupList();
            // Load_PendingRequests();
             this.FormClosed += (sender, e) => login.Show();
         }
@@ -46,9 +47,10 @@ namespace QQClient.UI
         {
             // 先获取最新的离线消息（包括好友请求和未读消息），更新缓存
             Load_OfflineMessages();
-
             // 重新加载好友列表（会清空原有控件，从缓存读取最后消息、未读计数，并显示新好友）
             Load_Friend();
+            //重新加载群聊列表
+            RefreshGroupList();
         }
         // 打开或激活聊天窗口的方法
         private void OpenChatWindow(string friendUserName, string friendDisplayName)
@@ -435,6 +437,7 @@ namespace QQClient.UI
         {
             LoadGroupList(); // 刷新群列表
         }
+        //创建群聊
         private void button5_Click(object sender, EventArgs e)
         {
             var form = new CreateGroupForm();
@@ -453,7 +456,7 @@ namespace QQClient.UI
                 }
             }
         }
-
+        //搜索群聊
         private void button6_Click(object sender, EventArgs e)
         {
             var form = new SearchGroupForm();

@@ -71,18 +71,7 @@ namespace QQClient.UI
                     Console.WriteLine("标记已读失败");
                 }
             }
-        }
-        private void MarkMessagesAsRead()
-        {
-            if (GlobalClient.MessageCache.ContainsKey(_friendAccount))
-            {
-                foreach (var msg in GlobalClient.MessageCache[_friendAccount])
-                {
-                    msg.IsRead = true;
-                }
-            }
-        }
-        
+        }       
         //添加对方的消息
         public void AddReceivedMessage(string text)
         {
