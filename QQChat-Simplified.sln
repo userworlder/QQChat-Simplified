@@ -24,6 +24,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决�
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QQClient.DataAccess", "QQClient.DataAccess\QQClient.DataAccess.csproj", "{2D33E2CB-6D03-4330-A501-9767F11D7335}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QQClient.Business", "QQClient.Business\QQClient.Business.csproj", "{807275B7-1027-4748-8A3F-77F28EB1283C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QQClientBusiness.Tests", "QQClientBusiness.Tests\QQClientBusiness.Tests.csproj", "{6EA587D3-DE69-4505-B13A-02BD42534B4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +68,18 @@ Global
 		{936A9FA2-56EF-43E8-A319-C569B187C13A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{936A9FA2-56EF-43E8-A319-C569B187C13A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{936A9FA2-56EF-43E8-A319-C569B187C13A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D33E2CB-6D03-4330-A501-9767F11D7335}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D33E2CB-6D03-4330-A501-9767F11D7335}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D33E2CB-6D03-4330-A501-9767F11D7335}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D33E2CB-6D03-4330-A501-9767F11D7335}.Release|Any CPU.Build.0 = Release|Any CPU
+		{807275B7-1027-4748-8A3F-77F28EB1283C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{807275B7-1027-4748-8A3F-77F28EB1283C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{807275B7-1027-4748-8A3F-77F28EB1283C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{807275B7-1027-4748-8A3F-77F28EB1283C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EA587D3-DE69-4505-B13A-02BD42534B4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EA587D3-DE69-4505-B13A-02BD42534B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EA587D3-DE69-4505-B13A-02BD42534B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EA587D3-DE69-4505-B13A-02BD42534B4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

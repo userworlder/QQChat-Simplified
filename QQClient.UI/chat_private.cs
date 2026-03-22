@@ -1,78 +1,195 @@
-﻿using QQCommon.Models;
+﻿using QQClient.Business;
+using QQClient.Business.Services;
+using QQCommon.Interfaces;
+using QQCommon.Models;
+using QQCommon.Protocols;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Msg = QQCommon.Models.Message;
+
 namespace QQClient.UI
 {
     public partial class chat_private : Form
     {
-        
         private string _friendAccount;
         private string _friendNickname;
+        private user _parentForm;
 
-        public chat_private(string friendAccount, string friendNickname,user parentForm)
+        // 业务服务
+        private IUserBusinessService _userService;
+        private IFriendBusinessService _friendService;
+        private IMessageBusinessService _messageService;
+
+        private bool _useNewService = false;
+
+        public chat_private(string friendAccount, string friendNickname, user parentForm)
         {
             InitializeComponent();
             _friendAccount = friendAccount;
             _friendNickname = friendNickname;
+            _parentForm = parentForm;
+
             lblFriendName.Text = friendNickname;
-            this.Text = $"与 {friendNickname} 聊天中";        
+            this.Text = $"与 {friendNickname} 聊天中";
+
+            // 初始化服务
+            InitializeServices();
+
+            // 加载历史消息
             LoadHistoryMessages();
-            this.FormClosed += (s, e) => parentForm.RefreshFriendList();
+
+            this.FormClosed += (s, e) =>
+            {
+                UnsubscribeEvents();
+                _parentForm?.RefreshFriendList();
+            };
         }
+
+        private void InitializeServices()
+        {
+            try
+            {
+                if (ServiceContainer.IsRegistered<IUserBusinessService>())
+                    _userService = ServiceContainer.Resolve<IUserBusinessService>();
+                if (ServiceContainer.IsRegistered<IFriendBusinessService>())
+                    _friendService = ServiceContainer.Resolve<IFriendBusinessService>();
+                if (ServiceContainer.IsRegistered<IMessageBusinessService>())
+                {
+                    _messageService = ServiceContainer.Resolve<IMessageBusinessService>();
+                    _useNewService = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[chat_private] 初始化服务失败: {ex.Message}");
+                _useNewService = false;
+            }
+
+            // 订阅新消息事件
+            if (_useNewService && _messageService != null)
+            {
+                _messageService.MessageReceived += OnNewMessageReceived;
+            }
+        }
+
+        private void UnsubscribeEvents()
+        {
+            if (_useNewService && _messageService != null)
+            {
+                _messageService.MessageReceived -= OnNewMessageReceived;
+            }
+        }
+
+        // 新版消息接收
+        private void OnNewMessageReceived(object sender, MessageReceivedEventArgs e)
+        {
+            if (e.Packet.Type == MessageType.ChatMessage && e.Packet.Sender == _friendAccount)
+            {
+                this.Invoke((MethodInvoker)delegate
+                {
+                    AddReceivedMessage(e.Packet.Content);
+                    // 标记已读
+                    MarkMessagesAsRead();
+                });
+            }
+        }
+
         private async void LoadHistoryMessages()
+        {
+            if (_useNewService && _messageService != null)
+            {
+                await LoadHistoryMessagesByServiceAsync();
+            }
+            else
+            {
+                LoadHistoryMessagesLegacy();
+            }
+        }
+
+        private async Task LoadHistoryMessagesByServiceAsync()
+        {
+            try
+            {
+                var messages = await _messageService.GetHistoryMessagesAsync(_friendAccount);
+
+                flowMessages.Controls.Clear();
+
+                foreach (var msg in messages.OrderBy(m => m.SendTime))
+                {
+                    if (msg.SenderId == _friendAccount)
+                    {
+                        AddReceivedMessage(msg.Content);
+                    }
+                    else
+                    {
+                        AddSentMessage(msg.Content);
+                    }
+                }
+
+                // 标记未读消息为已读
+                var unreadMessages = messages.Where(m => !m.IsRead && m.ReceiverId == CurrentUser.UserId).ToList();
+                if (unreadMessages.Any())
+                {
+                    await _messageService.MarkMessagesAsReadAsync(_friendAccount);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoadHistoryMessagesByServiceAsync] 异常: {ex.Message}");
+                LoadHistoryMessagesLegacy();
+            }
+        }
+
+        private void LoadHistoryMessagesLegacy()
         {
             var client = GlobalClient.Current;
             if (client == null) return;
 
-            // 异步获取历史消息
-            var messages = await Task.Run(() => client.GetHistoryMessages(_friendAccount));
+            var messages = client.GetHistoryMessages(_friendAccount);
 
-            // 清空现有消息（如果有测试消息）
             flowMessages.Controls.Clear();
 
-            // 按时间顺序显示
             foreach (var msg in messages.OrderBy(m => m.SendTime))
             {
-                if (msg.SenderId == _friendAccount) // 对方发送
+                if (msg.SenderId == _friendAccount)
                 {
                     AddReceivedMessage(msg.Content);
                 }
-                else // 自己发送
+                else
                 {
                     AddSentMessage(msg.Content);
                 }
             }
 
-            // 找出所有未读消息（接收者是当前用户，且 IsRead == false）
             var unreadMessages = messages.Where(m => !m.IsRead && m.ReceiverId == GlobalClient.CurrentUserId).ToList();
             if (unreadMessages.Any())
             {
-                // 调用服务器标记已读
-                bool success = await Task.Run(() => client.MarkMessagesAsRead(_friendAccount));
+                bool success = client.MarkMessagesAsRead(_friendAccount);
                 if (success)
                 {
-                    // 可选：更新本地缓存中的 IsRead 状态
-                    if (GlobalClient.MessageCache.ContainsKey(_friendAccount))
-                    {
-                        foreach (var msg in GlobalClient.MessageCache[_friendAccount])
-                            msg.IsRead = true;
-                    }
+                    Console.WriteLine("消息已标记为已读");
                 }
                 else
                 {
                     Console.WriteLine("标记已读失败");
                 }
             }
-        }       
-        //添加对方的消息
+        }
+
+        private async void MarkMessagesAsRead()
+        {
+            if (_useNewService && _messageService != null)
+            {
+                await _messageService.MarkMessagesAsReadAsync(_friendAccount);
+            }
+            else
+            {
+                var client = GlobalClient.Current;
+                client?.MarkMessagesAsRead(_friendAccount);
+            }
+        }
+
         public void AddReceivedMessage(string text)
         {
             var msg = new message_bubble
@@ -84,9 +201,8 @@ namespace QQClient.UI
             flowMessages.Controls.Add(msg);
             flowMessages.ScrollControlIntoView(msg);
             AdjustMessageWidths();
-            // System.Diagnostics.Debug.WriteLine($"添加消息: {text}, 宽度: {msg.Width}");
         }
-        //添加自己的消息
+
         public void AddSentMessage(string text)
         {
             var msg = new message_bubble
@@ -97,9 +213,9 @@ namespace QQClient.UI
             };
             flowMessages.Controls.Add(msg);
             flowMessages.ScrollControlIntoView(msg);
-            AdjustMessageWidths();          
+            AdjustMessageWidths();
         }
-        //聊天气泡自适应宽度
+
         private void AdjustMessageWidths()
         {
             int newWidth = flowMessages.ClientSize.Width;
@@ -114,17 +230,17 @@ namespace QQClient.UI
                 }
             }
         }
-        //打开简介
+
         private void lblFriendName_Click(object sender, EventArgs e)
         {
-            profile profile = new profile(GlobalClient.CurrentUserId, _friendAccount);
-            profile.Show();
+            string currentUserId = CurrentUser.UserId ?? GlobalClient.CurrentUserId;
+            var profileForm = new profile(currentUserId, _friendAccount);
+            profileForm.Show();
         }
-        //发送消息
-        private void btnSend_Click_1(object sender, EventArgs e)
+
+        private async void btnSend_Click_1(object sender, EventArgs e)
         {
-            var client = GlobalClient.Current;
-            string text = txtInput.Text;
+            string text = txtInput.Text.Trim();
             if (string.IsNullOrWhiteSpace(text))
             {
                 lbl_warn.Visible = true;
@@ -132,25 +248,23 @@ namespace QQClient.UI
                 return;
             }
 
-            bool x = client.SendMessage(GlobalClient.CurrentUserId, _friendAccount, text);
-            if (x)
+            lbl_warn.Visible = false;
+
+            if (_useNewService && _messageService != null)
             {
-                // 将发送的消息存入缓存
-                var msg = new Msg
-                {
-                    MessageId = Guid.NewGuid().ToString(), // 如果没有实际ID，可以生成临时ID
-                    SenderId = GlobalClient.CurrentUserId,
-                    ReceiverId = _friendAccount,
-                    Content = text,
-                    SendTime = DateTime.Now,
-                    IsRead = true,       // 自己发送的消息默认已读
-                    MessageType = 1
-                };
+                await SendMessageByServiceAsync(text);
+            }
+            else
+            {
+                SendMessageLegacy(text);
+            }
+        }
 
-                if (!GlobalClient.MessageCache.ContainsKey(_friendAccount))
-                    GlobalClient.MessageCache[_friendAccount] = new List<Msg>();
-                GlobalClient.MessageCache[_friendAccount].Add(msg);
-
+        private async Task SendMessageByServiceAsync(string text)
+        {
+            bool success = await _messageService.SendMessageAsync(_friendAccount, text);
+            if (success)
+            {
                 AddSentMessage(text);
                 txtInput.Clear();
                 lbl_warn.Visible = false;
@@ -159,19 +273,35 @@ namespace QQClient.UI
             {
                 MessageBox.Show("发送失败，请稍后重试");
             }
-
         }
-        //清空消息
+
+        private void SendMessageLegacy(string text)
+        {
+            var client = GlobalClient.Current;
+            if (client == null) return;
+
+            bool success = client.SendMessage(GlobalClient.CurrentUserId, _friendAccount, text);
+            if (success)
+            {
+                AddSentMessage(text);
+                txtInput.Clear();
+                lbl_warn.Visible = false;
+            }
+            else
+            {
+                MessageBox.Show("发送失败，请稍后重试");
+            }
+        }
+
         private void btnClear_Click_1(object sender, EventArgs e)
         {
             txtInput.Text = "";
         }
-        //快捷测试
+
         private void btn_test_Click(object sender, EventArgs e)
         {
-            string text = $"这是{GlobalClient.CurrentUserId}发给{_friendAccount}的快捷消息";
-            txtInput.Text = text;
-            //AddSentMessage(text);
+            string currentUser = CurrentUser.UserId ?? GlobalClient.CurrentUserId;
+            txtInput.Text = $"这是{currentUser}发给{_friendAccount}的快捷消息";
         }
     }
 }

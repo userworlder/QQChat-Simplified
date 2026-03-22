@@ -77,7 +77,7 @@
             this.pnlBottom.Controls.Add(this.btnSend);
             this.pnlBottom.Controls.Add(this.btnClear);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 249);
+            this.pnlBottom.Location = new System.Drawing.Point(0, 335);
             this.pnlBottom.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(711, 40);
@@ -92,6 +92,7 @@
             this.btnInvite.TabIndex = 6;
             this.btnInvite.Text = "邀请成员";
             this.btnInvite.UseVisualStyleBackColor = true;
+            this.btnInvite.Click += new System.EventHandler(this.btnInvite_Click_1);
             // 
             // btn_test
             // 
@@ -130,7 +131,7 @@
             this.pnlMessages.Location = new System.Drawing.Point(0, 41);
             this.pnlMessages.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlMessages.Name = "pnlMessages";
-            this.pnlMessages.Size = new System.Drawing.Size(711, 334);
+            this.pnlMessages.Size = new System.Drawing.Size(711, 208);
             this.pnlMessages.TabIndex = 5;
             // 
             // flowMessages
@@ -142,7 +143,7 @@
             this.flowMessages.Location = new System.Drawing.Point(0, 0);
             this.flowMessages.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.flowMessages.Name = "flowMessages";
-            this.flowMessages.Size = new System.Drawing.Size(711, 334);
+            this.flowMessages.Size = new System.Drawing.Size(711, 208);
             this.flowMessages.TabIndex = 0;
             this.flowMessages.WrapContents = false;
             // 
@@ -151,7 +152,7 @@
             this.pnlInput.Controls.Add(this.lbl_warn);
             this.pnlInput.Controls.Add(this.txtInput);
             this.pnlInput.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlInput.Location = new System.Drawing.Point(0, 289);
+            this.pnlInput.Location = new System.Drawing.Point(0, 249);
             this.pnlInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlInput.Name = "pnlInput";
             this.pnlInput.Size = new System.Drawing.Size(711, 86);

@@ -78,6 +78,8 @@ namespace QQCommon.Interfaces
 
         // 事件：连接状态改变
         event EventHandler<ConnectionEventArgs> ConnectionChanged;
+
+        void SendPacket(ChatPacket packet);
     }
 
     // 当通信端收到新消息时，通过事件通知UI层，并传递消息的详细信息。

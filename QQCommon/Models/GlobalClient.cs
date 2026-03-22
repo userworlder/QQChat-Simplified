@@ -14,13 +14,13 @@ namespace QQCommon.Models
         public static INetworkClient Current { get; set; }
         public  static string CurrentUserId {  get; set; }
 
-        // 新增：存储离线消息，键为好友用户名
-        public static Dictionary<string, List<Msg>> MessageCache { get; } 
-            = new Dictionary<string, List<Msg>>();
+        //// 新增：存储离线消息，键为好友用户名
+        //public static Dictionary<string, List<Msg>> MessageCache { get; } 
+        //    = new Dictionary<string, List<Msg>>();
 
-        public static Dictionary<string, List<GroupMessage>> GroupMessageCache { get; } 
-            = new Dictionary<string, List<GroupMessage>>();
+        //public static Dictionary<string, List<GroupMessage>> GroupMessageCache { get; } 
+        //    = new Dictionary<string, List<GroupMessage>>();
 
-        public static Dictionary<string, int> GroupUnreadCount { get; } = new Dictionary<string, int>();
+        //public static Dictionary<string, int> GroupUnreadCount { get; } = new Dictionary<string, int>();
     }
 }

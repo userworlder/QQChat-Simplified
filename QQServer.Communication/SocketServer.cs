@@ -471,6 +471,7 @@ namespace QQServer.Communication
                 Content = groups != null ? "SUCCESS" : "FAILED",
                 Timestamp = DateTime.Now
             };
+            Console.WriteLine($"[GetGroupList] 收到请求，MessageId: {packet.MessageId}");
             if (groups != null)
             {
                 string json = JsonConvert.SerializeObject(groups);

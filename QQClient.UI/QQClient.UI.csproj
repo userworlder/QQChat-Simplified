@@ -34,6 +34,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -169,6 +172,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QQClient.Business\QQClient.Business.csproj">
+      <Project>{807275b7-1027-4748-8a3f-77f28eb1283c}</Project>
+      <Name>QQClient.Business</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QQClient.Communication\QQClient.Communication.csproj">
       <Project>{90077b3f-1323-44aa-9e7b-1c271dbad24e}</Project>
       <Name>QQClient.Communication</Name>
@@ -246,6 +253,9 @@
     <Content Include="picture\login_btn_new.png" />
     <Content Include="picture\login_new.jpg" />
     <Content Include="picture\register_new.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,20 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{936A9FA2-56EF-43E8-A319-C569B187C13A}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>QQClient.Host</RootNamespace>
-    <AssemblyName>QQClient.Host</AssemblyName>
+    <ProjectGuid>{807275B7-1027-4748-8A3F-77F28EB1283C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QQClient.Business</RootNamespace>
+    <AssemblyName>QQClient.Business</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,52 +30,37 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>QQClient.Host.Program</StartupObject>
-  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="CacheManager.cs" />
+    <Compile Include="CurrentUser.cs" />
+    <Compile Include="ServiceHelper.cs" />
+    <Compile Include="Services\BaseService.cs" />
+    <Compile Include="Services\FriendBusinessService.cs" />
+    <Compile Include="Services\GroupBusinessService.cs" />
+    <Compile Include="Services\MessageBusinessService.cs" />
+    <Compile Include="RequestManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
+    <Compile Include="ServiceContainer.cs" />
+    <Compile Include="Services\IFriendBusinessService.cs" />
+    <Compile Include="Services\IGroupBusinessService.cs" />
+    <Compile Include="Services\IMessageBusinessService.cs" />
+    <Compile Include="Services\IUserBusinessService.cs" />
+    <Compile Include="Services\UserBusinessService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\QQClient.Business\QQClient.Business.csproj">
-      <Project>{807275b7-1027-4748-8a3f-77f28eb1283c}</Project>
-      <Name>QQClient.Business</Name>
-    </ProjectReference>
     <ProjectReference Include="..\QQClient.Communication\QQClient.Communication.csproj">
       <Project>{90077b3f-1323-44aa-9e7b-1c271dbad24e}</Project>
       <Name>QQClient.Communication</Name>
@@ -86,14 +69,13 @@
       <Project>{2d33e2cb-6d03-4330-a501-9767f11d7335}</Project>
       <Name>QQClient.DataAccess</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QQClient.UI\QQClient.UI.csproj">
-      <Project>{874a39c7-b547-4241-9063-fba39209748f}</Project>
-      <Name>QQClient.UI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\QQCommon\QQCommon.csproj">
       <Project>{b0124de9-65e7-4c16-885b-edebb2d0d09c}</Project>
       <Name>QQCommon</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

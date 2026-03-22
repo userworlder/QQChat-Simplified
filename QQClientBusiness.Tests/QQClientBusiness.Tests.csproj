@@ -1,17 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{936A9FA2-56EF-43E8-A319-C569B187C13A}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>QQClient.Host</RootNamespace>
-    <AssemblyName>QQClient.Host</AssemblyName>
+    <ProjectGuid>{6EA587D3-DE69-4505-B13A-02BD42534B4A}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>QQClientBusiness.Tests</RootNamespace>
+    <AssemblyName>QQClientBusiness.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,46 +34,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>QQClient.Host.Program</StartupObject>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QQClient.Business\QQClient.Business.csproj">
@@ -82,18 +62,17 @@
       <Project>{90077b3f-1323-44aa-9e7b-1c271dbad24e}</Project>
       <Name>QQClient.Communication</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QQClient.DataAccess\QQClient.DataAccess.csproj">
-      <Project>{2d33e2cb-6d03-4330-a501-9767f11d7335}</Project>
-      <Name>QQClient.DataAccess</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QQClient.UI\QQClient.UI.csproj">
-      <Project>{874a39c7-b547-4241-9063-fba39209748f}</Project>
-      <Name>QQClient.UI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\QQCommon\QQCommon.csproj">
       <Project>{b0124de9-65e7-4c16-885b-edebb2d0d09c}</Project>
       <Name>QQCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets" Condition="Exists('..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets'))" />
+  </Target>
 </Project>

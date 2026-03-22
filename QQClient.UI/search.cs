@@ -1,80 +1,169 @@
-﻿using QQCommon.Models;
+﻿using QQClient.Business;
+using QQClient.Business.Services;
+using QQCommon.Models;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace QQClient.UI
 {
     public partial class search : Form
     {
-        user _parentForm;
-        string _self_account;
-        string friend_account;
-        public search(string self_account,user parentform)
+        private user _parentForm;
+        private string _selfAccount;
+
+        // 业务服务
+        private IFriendBusinessService _friendService;
+        private IGroupBusinessService _groupService;
+        private bool _useNewService = false;
+
+        public search(string selfAccount, user parentForm)
         {
             InitializeComponent();
             Load_Panel();
-            _self_account= self_account;
-            _parentForm = parentform;
+            _selfAccount = selfAccount;
+            _parentForm = parentForm;
 
+            // 初始化服务
+            InitializeServices();
         }
-       
+
+        private void InitializeServices()
+        {
+            try
+            {
+                if (ServiceContainer.IsRegistered<IFriendBusinessService>())
+                    _friendService = ServiceContainer.Resolve<IFriendBusinessService>();
+                if (ServiceContainer.IsRegistered<IGroupBusinessService>())
+                    _groupService = ServiceContainer.Resolve<IGroupBusinessService>();
+
+                _useNewService = _friendService != null || _groupService != null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[search] 初始化服务失败: {ex.Message}");
+                _useNewService = false;
+            }
+        }
+
         private async void btn_addgroup_Click(object sender, EventArgs e)
         {
-            string group_account = txt_group.Text;
+            string groupAccount = txt_group.Text.Trim();
+            if (string.IsNullOrEmpty(groupAccount))
+            {
+                lbl_groupwarn.Text = "请输入群组ID";
+                lbl_groupwarn.Visible = true;
+                return;
+            }
+
+            if (_useNewService && _groupService != null)
+            {
+                await AddGroupByServiceAsync(groupAccount);
+            }
+            else
+            {
+                AddGroupLegacy(groupAccount);
+            }
+        }
+
+        private async Task AddGroupByServiceAsync(string groupAccount)
+        {
+            try
+            {
+                var groups = await _groupService.SearchGroupsAsync(groupAccount);
+                if (groups != null && groups.Count > 0)
+                {
+                    foreach (var group in groups)
+                    {
+                        bool success = await _groupService.JoinGroupAsync(group.GroupId);
+                        if (success)
+                        {
+                            MessageBox.Show("申请已发送");
+                            _parentForm?.Load_all();
+                        }
+                        else
+                        {
+                            MessageBox.Show("申请发送失败");
+                        }
+                    }
+                }
+                else
+                {
+                    lbl_groupwarn.Visible = true;
+                    lbl_groupwarn.Text = "未找到该群组";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"搜索失败: {ex.Message}");
+            }
+        }
+
+        private void AddGroupLegacy(string groupAccount)
+        {
             var client = GlobalClient.Current;
-            var groups= await Task.Run(() => client.SearchGroups(group_account));
-            if (groups != null)
+            if (client == null) return;
+
+            var groups = client.SearchGroups(groupAccount);
+            if (groups != null && groups.Count > 0)
             {
                 foreach (var group in groups)
                 {
-                    bool success = await Task.Run(() => client.JoinGroup(group.GroupId));
+                    bool success = client.JoinGroup(group.GroupId);
                     if (success)
                     {
-                        
                         MessageBox.Show("申请已发送");
                         _parentForm?.Load_all();
                     }
                     else
                     {
                         MessageBox.Show("申请发送失败");
-                    }             
-                } 
+                    }
+                }
             }
             else
             {
-                lbl_groupwarn.Visible=true;
+                lbl_groupwarn.Visible = true;
                 lbl_groupwarn.Text = "未找到该群组";
-            }  
+            }
         }
 
-        private void btn_addfriend_Click(object sender, EventArgs e)
+        private async void btn_addfriend_Click(object sender, EventArgs e)
         {
-            friend_account = txt_friend.Text;
-            var client = GlobalClient.Current;
-            if (txt_friend.Text != "")
+            string friendAccount = txt_friend.Text.Trim();
+            if (string.IsNullOrEmpty(friendAccount))
             {
-                friend_account = txt_friend.Text;
-                //检验是否是这个人
-                bool check = client.SearchId(_self_account, friend_account);
-                if (check)
+                MessageBox.Show("账号不可为空");
+                return;
+            }
+
+            if (_useNewService && _friendService != null)
+            {
+                await AddFriendByServiceAsync(friendAccount);
+            }
+            else
+            {
+                AddFriendLegacy(friendAccount);
+            }
+        }
+
+        private async Task AddFriendByServiceAsync(string friendAccount)
+        {
+            try
+            {
+                bool exists = await _friendService.SearchUserAsync(_selfAccount, friendAccount);
+                if (exists)
                 {
-                    bool x = client.AddFriend(_self_account, friend_account);
-                    if (x)
-                    {   //打开界面
+                    bool success = await _friendService.AddFriendAsync(_selfAccount, friendAccount);
+                    if (success)
+                    {
                         MessageBox.Show("已发送好友申请");
-                        lbl_friendwarn.Visible=false;
-                        _parentForm?.Load_all();
+                        lbl_friendwarn.Visible = false;
+                        _parentForm?.RefreshFriendList();
+                        _parentForm?.RefreshGroupList();
                     }
                     else
-                    {   //返回错误信息
+                    {
                         MessageBox.Show("发送好友申请失败");
                     }
                 }
@@ -84,14 +173,41 @@ namespace QQClient.UI
                     lbl_friendwarn.Visible = true;
                 }
             }
-            else
-            {   //返回错误信息
-                MessageBox.Show("账号不可为空");
+            catch (Exception ex)
+            {
+                MessageBox.Show($"搜索失败: {ex.Message}");
             }
-
         }
-        //载入
-        void Load_Panel()
+
+        private void AddFriendLegacy(string friendAccount)
+        {
+            var client = GlobalClient.Current;
+            if (client == null) return;
+
+            bool exists = client.SearchId(_selfAccount, friendAccount);
+            if (exists)
+            {
+                bool success = client.AddFriend(_selfAccount, friendAccount);
+                if (success)
+                {
+                    MessageBox.Show("已发送好友申请");
+                    lbl_friendwarn.Visible = false;
+                    _parentForm?.RefreshFriendList();
+                    _parentForm?.RefreshGroupList();
+                }
+                else
+                {
+                    MessageBox.Show("发送好友申请失败");
+                }
+            }
+            else
+            {
+                lbl_friendwarn.Text = "不存在该用户";
+                lbl_friendwarn.Visible = true;
+            }
+        }
+
+        private void Load_Panel()
         {
             pnl_addfriend.Top = 0;
             pnl_addfriend.Left = 0;
@@ -99,18 +215,17 @@ namespace QQClient.UI
             pnl_addgroup.Left = 0;
             pnl_addgroup.Visible = false;
         }
-        //加人模式
+
         private void btn_friendmode_Click(object sender, EventArgs e)
         {
             pnl_addfriend.Visible = true;
             pnl_addgroup.Visible = false;
         }
-        //加群模式
+
         private void btn_groupmode_Click(object sender, EventArgs e)
         {
             pnl_addgroup.Visible = true;
             pnl_addfriend.Visible = false;
         }
-
     }
 }

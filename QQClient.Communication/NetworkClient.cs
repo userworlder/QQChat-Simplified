@@ -2,17 +2,16 @@
 using QQCommon.Models;
 using QQCommon.Protocols;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace QQClient.Communication
 {
+
+    // 精简版网络客户端 - 只负责底层通信
+
     public class NetworkClient : INetworkClient
     {
         private TcpClient _tcpClient;
@@ -20,200 +19,14 @@ namespace QQClient.Communication
         private Thread _receiveThread;
         private bool _isRunning;
         private readonly object _streamLock = new object();
-        private readonly ConcurrentDictionary<string, TaskCompletionSource<ChatPacket>> _pendingRequests
-            = new ConcurrentDictionary<string, TaskCompletionSource<ChatPacket>>();
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
         public event EventHandler<ConnectionEventArgs> ConnectionChanged;
-        //获取与指定好友的历史聊天记录
-        public List<Message> GetHistoryMessages(string friendId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.GetHistoryMessagesRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Content = friendId,
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.GetHistoryMessagesResponse);
 
-            if (response != null && response.Content == "SUCCESS")
-            {
-                if (response.Extras.TryGetValue("Messages", out string json))
-                {
-                    return JsonConvert.DeserializeObject<List<Message>>(json);
-                }
-            }
-            return new List<Message>(); // 失败或没有消息时返回空列表
-        }
-        //标记与指定好友的未读消息为已读
-        public bool MarkMessagesAsRead(string friendId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.MarkMessagesReadRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Content = friendId,
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.MarkMessagesReadResponse);
-            return response != null && response.Content == "SUCCESS";
-        }
-        //根据用户名获取用户详细信息
-        public User GetUserInfo(string userId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.GetUserInfoRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Content = userId,
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.GetUserInfoResponse);
-
-            if (response != null && response.Content == "SUCCESS")
-            {
-                if (response.Extras.TryGetValue("UserInfo", out string json))
-                {
-                    return JsonConvert.DeserializeObject<User>(json);
-                }
-            }
-            return null;
-        }
-        // 更新当前用户的个人信息
-        public bool UpdateUserInfo(User updatedUser)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.UpdateUserInfoRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Content = JsonConvert.SerializeObject(updatedUser),
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.UpdateUserInfoResponse);
-            return response != null && response.Content == "SUCCESS";
-        }
-        public bool SearchId(string fromUserId, string userId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.SearchId,
-                Sender = fromUserId,
-                Content = userId,
-                Timestamp = DateTime.Now,
-                MessageId = Guid.NewGuid().ToString() // 添加唯一ID，用于匹配响应
-            };
-
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.SearchIdResponse);
-            return response != null && response.Content == "SUCCESS";
-        }
-        public List<Friend> SearchAllFriends(string userId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.SearchAllFriendsRequest,
-                Sender = userId,
-                Timestamp = DateTime.Now,
-                MessageId = Guid.NewGuid().ToString()
-            };
-
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.SearchAllFriendsResponse);
-
-            if (response != null && response.Content == "SUCCESS")
-            {
-                // 从响应包的 Extras 中获取好友列表 JSON
-                if (response.Extras.TryGetValue("FriendsList", out string friendsJson))
-                {
-                    return JsonConvert.DeserializeObject<List<Friend>>(friendsJson);
-                }
-            }
-            return null; // 或返回空列表
-        }
-        //返回的是执行加好友操作是否成功，与成功添加好友没有关系
-        public bool AddFriend(string fromUserId, string toUserId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.AddFriendRequest,
-                Sender = fromUserId,
-                Content = toUserId,
-                Timestamp = DateTime.Now,
-                MessageId = Guid.NewGuid().ToString()
-            };
-
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.AddFriendResponse);
-            return response != null && response.Content == "SUCCESS";
-        }
-        public bool AcceptFriendRequest(string fromUserId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.AcceptFriendRequest,
-                Sender = GlobalClient.CurrentUserId, // 当前登录用户（接受者）
-                Content = fromUserId,                 // 发起者账号
-                Timestamp = DateTime.Now,
-                MessageId = Guid.NewGuid().ToString()
-            };
-
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.AcceptFriendResponse);
-            return response != null && response.Content == "SUCCESS";
-        }
-        public bool RejectFriendRequest(string fromUserId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.RejectFriendRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Content = fromUserId,
-                Timestamp = DateTime.Now,
-                MessageId = Guid.NewGuid().ToString()
-            };
-
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.RejectFriendResponse);
-            return response != null && response.Content == "SUCCESS";
-        }
-        public List<Message> GetOfflineMessages(out List<string> friendRequests)
-        {
-            friendRequests = null;
-            var packet = new ChatPacket
-            {
-                Type = MessageType.GetOfflineMessagesRequest,
-                Sender = GlobalClient.CurrentUserId, // 需确保已设置
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.GetOfflineMessagesResponse);
-
-            if (response != null && response.Content == "SUCCESS")
-            {
-                List<Message> messages = null;
-                if (response.Extras.TryGetValue("OfflineMessages", out string msgJson))
-                {
-                    messages = JsonConvert.DeserializeObject<List<Message>>(msgJson);
-                }
-                if (response.Extras.TryGetValue("FriendRequests", out string reqJson))
-                {
-                    friendRequests = JsonConvert.DeserializeObject<List<string>>(reqJson);
-                }
-                return messages;
-            }
-            return null;
-        }
-        private bool IsConnected()
+    
+        /// 检查是否已连接
+    
+        public bool IsConnected()
         {
             if (_tcpClient == null || !_tcpClient.Connected)
                 return false;
@@ -227,6 +40,9 @@ namespace QQClient.Communication
             }
         }
 
+    
+        /// 连接服务器
+    
         public bool Connect(string serverIp, int port)
         {
             if (IsConnected())
@@ -250,23 +66,20 @@ namespace QQClient.Communication
                 OnConnectionChanged(true, "连接成功");
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[NetworkClient] 连接失败: {ex.Message}");
                 return false;
             }
         }
 
+    
+        /// 断开连接
+    
         public void Disconnect()
         {
-            Console.WriteLine($"[Disconnect] 被调用，调用堆栈: {Environment.StackTrace}");
+            Console.WriteLine($"[NetworkClient] Disconnect 被调用");
             _isRunning = false;
-
-            // 取消所有等待的请求
-            foreach (var kv in _pendingRequests)
-            {
-                kv.Value.TrySetCanceled();
-            }
-            _pendingRequests.Clear();
 
             try
             {
@@ -296,24 +109,17 @@ namespace QQClient.Communication
             }
         }
 
-        public bool Login(string username, string password)
+    
+        /// 发送数据包（核心方法）
+    
+        public void SendPacket(ChatPacket packet)
         {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.LoginRequest,
-                Sender = username,
-                Content = password,
-                Timestamp = DateTime.Now,
-                MessageId = Guid.NewGuid().ToString()
-            };
+            if (packet == null)
+                throw new ArgumentNullException(nameof(packet));
 
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.LoginResponse);
-            return response != null && response.Content == "SUCCESS";
-        }
+            if (!IsConnected())
+                throw new InvalidOperationException("未连接到服务器");
 
-        private void SendPacket(ChatPacket packet)
-        {
             string json = packet.ToJson();
             byte[] data = Encoding.UTF8.GetBytes(json);
             byte[] lengthBytes = BitConverter.GetBytes(data.Length);
@@ -321,98 +127,63 @@ namespace QQClient.Communication
             lock (_streamLock)
             {
                 _stream.Write(lengthBytes, 0, lengthBytes.Length);
-                var writeTask = _stream.WriteAsync(data, 0, data.Length);
-                if (!writeTask.Wait(5000))
-                    throw new TimeoutException("发送数据超时");
+                _stream.Write(data, 0, data.Length);
             }
+
+            Console.WriteLine($"[NetworkClient] 发送数据包: Type={packet.Type}, MessageId={packet.MessageId}");
         }
 
-        // 等待特定消息ID的响应
-        private ChatPacket WaitForResponse(string messageId, MessageType expectedType, int timeout = 10000)
-        {
-            var tcs = new TaskCompletionSource<ChatPacket>();
-            _pendingRequests[messageId] = tcs;
-
-            try
-            {
-                if (tcs.Task.Wait(timeout))
-                    return tcs.Task.Result;
-                else
-                    throw new TimeoutException($"等待响应超时: {expectedType}");
-            }
-            finally
-            {
-                _pendingRequests.TryRemove(messageId, out _);
-            }
-        }
-
-        // 接收循环（运行在独立线程）
+    
+        /// 接收循环（运行在独立线程）
+    
         private void ReceiveLoop()
         {
-            Console.WriteLine("[ReceiveLoop] 线程启动");
+            Console.WriteLine("[NetworkClient] 接收线程启动");
             while (_isRunning && IsConnected())
             {
                 try
                 {
-                    // 等待数据可用，避免无数据时频繁 Read 导致超时异常
+                    // 等待数据可用
                     while (_isRunning && IsConnected() && !_stream.DataAvailable)
                     {
-                        Thread.Sleep(10); // 短暂休眠，降低 CPU 占用
+                        Thread.Sleep(10);
                     }
                     if (!_isRunning || !IsConnected()) break;
 
-                    // 尝试读取一个完整的数据包
                     var packet = ReceivePacketInternal();
                     if (packet == null)
                     {
-                        Console.WriteLine("[ReceiveLoop] ReceivePacketInternal 返回 null，连接已关闭");
+                        Console.WriteLine("[NetworkClient] ReceivePacketInternal 返回 null，连接已关闭");
                         break;
                     }
 
-                    // 判断是请求响应还是服务器推送
-                    if (!string.IsNullOrEmpty(packet.MessageId) &&
-                        _pendingRequests.TryRemove(packet.MessageId, out var tcs))
-                    {
-                        tcs.TrySetResult(packet); // 完成等待的请求
-                    }
-                    else
-                    {
-                        OnMessageReceived(packet); // 触发推送消息事件
-                    }
+                    Console.WriteLine($"[NetworkClient] 收到数据包: Type={packet.Type}, MessageId={packet.MessageId}");
+                    OnMessageReceived(packet);
                 }
                 catch (TimeoutException)
                 {
-                    // 超时是正常的，说明在 ReadTimeout 内没有完整数据到达
-                    // 继续等待下一轮
-                    Console.WriteLine("[ReceiveLoop] 读取超时，继续等待");
-                    continue;
-                }
-                catch (IOException ex) when (ex.InnerException is SocketException se &&
-                                             se.SocketErrorCode == SocketError.TimedOut)
-                {
-                    // 另一种超时情况
-                    Console.WriteLine("[ReceiveLoop] 套接字超时，继续等待");
                     continue;
                 }
                 catch (ObjectDisposedException)
                 {
-                    Console.WriteLine("[ReceiveLoop] 流已关闭，退出循环");
+                    Console.WriteLine("[NetworkClient] 流已关闭，退出循环");
                     break;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[ReceiveLoop] 致命异常: {ex.GetType().Name} - {ex.Message}\n{ex.StackTrace}");
-                    // 其他致命异常，记录并退出
+                    Console.WriteLine($"[NetworkClient] 接收循环异常: {ex.Message}");
                     break;
                 }
             }
 
-            Console.WriteLine("[ReceiveLoop] 退出循环");
+            Console.WriteLine("[NetworkClient] 接收线程退出");
             OnConnectionChanged(false, "连接已断开");
             Disconnect();
         }
 
-        // 内部接收数据包（不加锁，由ReceiveLoop单线程调用，或加锁保护）
+    
+        /// 内部接收数据包
+    
         private ChatPacket ReceivePacketInternal()
         {
             byte[] lengthBytes = new byte[4];
@@ -454,213 +225,138 @@ namespace QQClient.Communication
             return ChatPacket.FromJson(json);
         }
 
-        public bool Register(string username, string password, string nickname)
-        {
-            try
-            {
-                var user = new User
-                {
-                    Username = username,
-                    Password = password,
-                    Nickname = string.IsNullOrEmpty(nickname) ? username : nickname,
-                    RegisterTime = DateTime.Now
-                };
-
-                var packet = new ChatPacket
-                {
-                    Type = MessageType.RegisterRequest,
-                    Sender = username,
-                    Content = JsonConvert.SerializeObject(user),
-                    Timestamp = DateTime.Now,
-                    MessageId = Guid.NewGuid().ToString()
-                };
-
-                SendPacket(packet);
-                var response = WaitForResponse(packet.MessageId, MessageType.RegisterResponse);
-                return response != null && response.Content == "SUCCESS";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"注册失败: {ex.Message}");
-                return false;
-            }
-        }
-
-        public bool SendMessage(string username, string receiver, string content)
-        {
-            try
-            {
-                var packet = new ChatPacket
-                {
-                    Type = MessageType.ChatMessage,
-                    Sender = username,
-                    Receiver = receiver,
-                    Content = content,
-                    Timestamp = DateTime.Now,
-                    MessageId = Guid.NewGuid().ToString() // 可选，用于送达确认
-                };
-
-                SendPacket(packet);
-                // 不需要等待响应，送达确认会通过事件异步通知
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"发送消息失败: {ex.Message}");
-                return false;
-            }
-        }
-        // 获取当前用户加入的群组列表
-        public List<Group> GetGroupList()
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.GetGroupListRequest,
-                Sender = GlobalClient.CurrentUserId,
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.GetGroupListResponse);
-
-            if (response != null && response.Content == "SUCCESS")
-            {
-                if (response.Extras.TryGetValue("GroupList", out string json))
-                {
-                    return JsonConvert.DeserializeObject<List<Group>>(json);
-                }
-            }
-            return new List<Group>();
-        }
-
-        // 发送群聊消息
-        public bool SendGroupMessage(string groupId, string content)
-        {
-            try
-            {
-                var packet = new ChatPacket
-                {
-                    Type = MessageType.GroupChatMessage,
-                    Sender = GlobalClient.CurrentUserId,
-                    Receiver = groupId,          // 接收者为群ID
-                    Content = content,
-                    Timestamp = DateTime.Now,
-                    MessageId = Guid.NewGuid().ToString()
-                };
-                SendPacket(packet);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"发送群消息失败: {ex.Message}");
-                return false;
-            }
-        }
-
-        // 获取群历史消息
-        public List<GroupMessage> GetGroupHistory(string groupId, int limit = 50)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.GetGroupHistoryRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Content = groupId,
-                Extras = new Dictionary<string, string> { ["Limit"] = limit.ToString() },
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.GetGroupHistoryResponse);
-
-            if (response != null && response.Content == "SUCCESS")
-            {
-                if (response.Extras.TryGetValue("GroupMessages", out string json))
-                {
-                    return JsonConvert.DeserializeObject<List<GroupMessage>>(json);
-                }
-            }
-            return new List<GroupMessage>();
-        }
-        // 创建群聊
-        // "groupName"群名称
-        // "description"群简介（可选）
-        // 成功返回群ID，失败返回null
-        public string CreateGroup(string groupName, string description = "")
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.CreateGroupRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Content = JsonConvert.SerializeObject(new { GroupName = groupName, Description = description }),
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.CreateGroupResponse);
-
-            if (response != null && response.Content == "SUCCESS")
-            {
-                if (response.Extras.TryGetValue("GroupId", out string groupId))
-                    return groupId;
-            }
-            return null;
-        }
-        public bool InviteToGroup(string groupId, string invitedUserId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.InviteToGroupRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Receiver = groupId,
-                Content = invitedUserId,
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.InviteToGroupResponse);
-            return response != null && response.Content == "SUCCESS";
-        }
-
-        public List<Group> SearchGroups(string keyword)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.SearchGroupRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Content = keyword,
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.SearchGroupResponse);
-            if (response != null && response.Content == "SUCCESS" && response.Extras.TryGetValue("Groups", out string json))
-                return JsonConvert.DeserializeObject<List<Group>>(json);
-            return new List<Group>();
-        }
-
-        public bool JoinGroup(string groupId)
-        {
-            var packet = new ChatPacket
-            {
-                Type = MessageType.JoinGroupRequest,
-                Sender = GlobalClient.CurrentUserId,
-                Content = groupId,
-                MessageId = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.Now
-            };
-            SendPacket(packet);
-            var response = WaitForResponse(packet.MessageId, MessageType.JoinGroupResponse);
-            return response != null && response.Content == "SUCCESS";
-        }
         protected virtual void OnMessageReceived(ChatPacket packet)
         {
-            Console.WriteLine($"[OnMessageReceived] Type={packet.Type}, Sender={packet.Sender}, Content={packet.Content}");
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs(packet));
         }
 
         protected virtual void OnConnectionChanged(bool isConnected, string message)
         {
             ConnectionChanged?.Invoke(this, new ConnectionEventArgs(isConnected, message));
+        }
+
+        // ========== INetworkClient 接口的旧业务方法（临时实现，逐步移除）==========
+        // 注意：这些方法在精简版中不应该被调用，但为了满足接口要求，临时实现
+        // 当所有 UI 迁移到业务服务后，这些方法将被移除
+
+        [Obsolete("请使用 UserService.LoginAsync 代替")]
+        public bool Login(string username, string password)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 UserService.RegisterAsync 代替")]
+        public bool Register(string username, string password, string nickname)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 MessageService.SendMessageAsync 代替")]
+        public bool SendMessage(string username, string receiver, string content)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 FriendService.AddFriendAsync 代替")]
+        public bool AddFriend(string fromUserId, string toUserId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 FriendService.SearchUserAsync 代替")]
+        public bool SearchId(string fromUserId, string userId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 FriendService.AcceptFriendRequestAsync 代替")]
+        public bool AcceptFriendRequest(string fromUserId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 FriendService.RejectFriendRequestAsync 代替")]
+        public bool RejectFriendRequest(string fromUserId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 FriendService.GetFriendListAsync 代替")]
+        public System.Collections.Generic.List<Friend> SearchAllFriends(string userId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 MessageService.GetOfflineMessagesAsync 代替")]
+        public System.Collections.Generic.List<Message> GetOfflineMessages(out System.Collections.Generic.List<string> friendRequests)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 MessageService.GetHistoryMessagesAsync 代替")]
+        public System.Collections.Generic.List<Message> GetHistoryMessages(string friendId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 MessageService.MarkMessagesAsReadAsync 代替")]
+        public bool MarkMessagesAsRead(string friendId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 UserService.GetUserInfoAsync 代替")]
+        public User GetUserInfo(string userId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 UserService.UpdateUserInfoAsync 代替")]
+        public bool UpdateUserInfo(User updatedUser)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 GroupService.GetGroupListAsync 代替")]
+        public System.Collections.Generic.List<Group> GetGroupList()
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 GroupService.SendGroupMessageAsync 代替")]
+        public bool SendGroupMessage(string groupId, string content)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 GroupService.GetGroupHistoryAsync 代替")]
+        public System.Collections.Generic.List<GroupMessage> GetGroupHistory(string groupId, int limit = 50)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 GroupService.CreateGroupAsync 代替")]
+        public string CreateGroup(string groupName, string description = "")
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 GroupService.InviteToGroupAsync 代替")]
+        public bool InviteToGroup(string groupId, string invitedUserId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 GroupService.SearchGroupsAsync 代替")]
+        public System.Collections.Generic.List<Group> SearchGroups(string keyword)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
+        }
+
+        [Obsolete("请使用 GroupService.JoinGroupAsync 代替")]
+        public bool JoinGroup(string groupId)
+        {
+            throw new NotSupportedException("请使用业务服务层的方法");
         }
     }
 }
