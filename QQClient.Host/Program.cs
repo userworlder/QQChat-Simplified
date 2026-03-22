@@ -20,9 +20,6 @@ namespace QQClient.Host
 
         static void Main()
         {
-            // 设置控制台编码为 UTF-8
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.InputEncoding = Encoding.UTF8;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //string ip = "127.0.0.1";
