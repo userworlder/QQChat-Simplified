@@ -11,16 +11,16 @@ namespace QQClient.Host
     internal static class Program
     {
         /// <summary>
-        /// Ó¦ÓÃ³ÌĞòµÄÖ÷Èë¿Úµã¡£
+        /// åº”ç”¨ç¨‹åºçš„ä¸»å…¥å£ç‚¹ã€‚
         /// </summary>
-        /// È«¾Ö¾²Ì¬£¬ËùÓĞ´°Ìå¾ù¿É·ÃÎÊ
+        /// å…¨å±€é™æ€ï¼Œæ‰€æœ‰çª—ä½“å‡å¯è®¿é—®
 
 
         [STAThread]
 
         static void Main()
         {
-            // ÉèÖÃ¿ØÖÆÌ¨±àÂëÎª UTF-8
+            // è®¾ç½®æ§åˆ¶å°ç¼–ç ä¸º UTF-8
             Console.OutputEncoding = Encoding.UTF8;
             Console.InputEncoding = Encoding.UTF8;
             Application.EnableVisualStyles();
@@ -30,7 +30,7 @@ namespace QQClient.Host
             //string ip = "192.168.24.81";
             int port = 8888;
 
-            //´´½¨Î¨Ò»µÄ NetworkClient ÊµÀı
+            //åˆ›å»ºå”¯ä¸€çš„ NetworkClient å®ä¾‹
             var client = new NetworkClient();
             bool con = client.Connect(ip, port);
             if (con)
@@ -42,7 +42,7 @@ namespace QQClient.Host
             }
             else
             {
-                MessageBox.Show("Á¬½Ó·şÎñÆ÷Ê§°Ü");
+                MessageBox.Show("è¿æ¥æœåŠ¡å™¨å¤±è´¥");
             }
 
 
