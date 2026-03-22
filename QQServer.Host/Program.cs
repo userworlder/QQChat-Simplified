@@ -1,4 +1,5 @@
-ï»¿using System;
+using System;
+using System.Text;
 using QQServer.Communication;
 
 namespace QQServer.Host
@@ -7,7 +8,10 @@ namespace QQServer.Host
     {
         static void Main(string[] args)
         {
-            Console.Title = "QQæœåŠ¡å™¨";
+            // ÉèÖÃ¿ØÖÆÌ¨±àÂëÎª UTF-8
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
+            Console.Title = "QQ·şÎñÆ÷";
 
             var server = new SocketServer();
 
@@ -15,10 +19,10 @@ namespace QQServer.Host
             {
                 server.Start(8888);
 
-                Console.WriteLine("\næœåŠ¡å™¨å‘½ä»¤:");
-                Console.WriteLine("  status - æŸ¥çœ‹æœåŠ¡å™¨çŠ¶æ€");
-                Console.WriteLine("  quit/q - å…³é—­æœåŠ¡å™¨");
-                Console.WriteLine("  help   - æ˜¾ç¤ºå¸®åŠ©");
+                Console.WriteLine("\n·şÎñÆ÷ÃüÁî:");
+                Console.WriteLine("  status - ²é¿´·şÎñÆ÷×´Ì¬");
+                Console.WriteLine("  quit/q - ¹Ø±Õ·şÎñÆ÷");
+                Console.WriteLine("  help   - ÏÔÊ¾°ïÖú");
 
                 while (true)
                 {
@@ -32,38 +36,38 @@ namespace QQServer.Host
                     else if (command == "status" || command == "st")
                     {
                         var status = server.GetServerStatus();
-                        Console.WriteLine("\n=== æœåŠ¡å™¨çŠ¶æ€ ===");
-                        Console.WriteLine($"è¿è¡ŒçŠ¶æ€: {(status.IsRunning ? "è¿è¡Œä¸­" : "å·²åœæ­¢")}");
-                        Console.WriteLine($"åœ¨çº¿å®¢æˆ·ç«¯: {status.ClientCount}");
-                        Console.WriteLine($"å¯åŠ¨æ—¶é—´: {status.StartTime:yyyy-MM-dd HH:mm:ss}");
+                        Console.WriteLine("\n=== ·şÎñÆ÷×´Ì¬ ===");
+                        Console.WriteLine($"ÔËĞĞ×´Ì¬: {(status.IsRunning ? "ÔËĞĞÖĞ" : "ÒÑÍ£Ö¹")}");
+                        Console.WriteLine($"ÔÚÏß¿Í»§¶Ë: {status.ClientCount}");
+                        Console.WriteLine($"Æô¶¯Ê±¼ä: {status.StartTime:yyyy-MM-dd HH:mm:ss}");
 
                         if (status.Clients.Count > 0)
                         {
-                            Console.WriteLine("\nåœ¨çº¿å®¢æˆ·ç«¯åˆ—è¡¨:");
+                            Console.WriteLine("\nÔÚÏß¿Í»§¶ËÁĞ±í:");
                             foreach (var client in status.Clients)
                             {
-                                Console.WriteLine($"  - {client.Username ?? "æœªç™»å½•"} [{client.RemoteEndPoint}]");
-                                Console.WriteLine($"    è¿æ¥æ—¶é—´: {client.ConnectedTime:HH:mm:ss}");
-                                Console.WriteLine($"    æœ€åæ´»åŠ¨: {client.LastActivityTime:HH:mm:ss}");
+                                Console.WriteLine($"  - {client.Username ?? "Î´µÇÂ¼"} [{client.RemoteEndPoint}]");
+                                Console.WriteLine($"    Á¬½ÓÊ±¼ä: {client.ConnectedTime:HH:mm:ss}");
+                                Console.WriteLine($"    ×îºó»î¶¯: {client.LastActivityTime:HH:mm:ss}");
                             }
                         }
                     }
                     else if (command == "help")
                     {
-                        Console.WriteLine("\nå¯ç”¨å‘½ä»¤:");
-                        Console.WriteLine("  status/st - æŸ¥çœ‹æœåŠ¡å™¨çŠ¶æ€");
-                        Console.WriteLine("  quit/q    - å…³é—­æœåŠ¡å™¨");
-                        Console.WriteLine("  help      - æ˜¾ç¤ºæ­¤å¸®åŠ©");
+                        Console.WriteLine("\n¿ÉÓÃÃüÁî:");
+                        Console.WriteLine("  status/st - ²é¿´·şÎñÆ÷×´Ì¬");
+                        Console.WriteLine("  quit/q    - ¹Ø±Õ·şÎñÆ÷");
+                        Console.WriteLine("  help      - ÏÔÊ¾´Ë°ïÖú");
                     }
                 }
 
                 server.Stop();
-                Console.WriteLine("æœåŠ¡å™¨å·²å…³é—­ï¼ŒæŒ‰ä»»æ„é”®é€€å‡º...");
+                Console.WriteLine("·şÎñÆ÷ÒÑ¹Ø±Õ£¬°´ÈÎÒâ¼üÍË³ö...");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"æœåŠ¡å™¨è¿è¡Œé”™è¯¯: {ex.Message}");
-                Console.WriteLine("æŒ‰ä»»æ„é”®é€€å‡º...");
+                Console.WriteLine($"·şÎñÆ÷ÔËĞĞ´íÎó: {ex.Message}");
+                Console.WriteLine("°´ÈÎÒâ¼üÍË³ö...");
                 Console.ReadKey();
             }
         }

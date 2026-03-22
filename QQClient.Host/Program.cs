@@ -1,7 +1,8 @@
-ï»¿using QQClient.Communication;
+using QQClient.Communication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using QQCommon.Models;
@@ -10,15 +11,18 @@ namespace QQClient.Host
     internal static class Program
     {
         /// <summary>
-        /// åº”ç”¨ç¨‹åºçš„ä¸»å…¥å£ç‚¹ã€‚
+        /// Ó¦ÓÃ³ÌĞòµÄÖ÷Èë¿Úµã¡£
         /// </summary>
-        /// å…¨å±€é™æ€ï¼Œæ‰€æœ‰çª—ä½“å‡å¯è®¿é—®
+        /// È«¾Ö¾²Ì¬£¬ËùÓĞ´°Ìå¾ù¿É·ÃÎÊ
 
 
         [STAThread]
 
         static void Main()
         {
+            // ÉèÖÃ¿ØÖÆÌ¨±àÂëÎª UTF-8
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //string ip = "127.0.0.1";
@@ -26,7 +30,7 @@ namespace QQClient.Host
             //string ip = "192.168.24.81";
             int port = 8888;
 
-            //åˆ›å»ºå”¯ä¸€çš„ NetworkClient å®ä¾‹
+            //´´½¨Î¨Ò»µÄ NetworkClient ÊµÀı
             var client = new NetworkClient();
             bool con = client.Connect(ip, port);
             if (con)
@@ -38,7 +42,7 @@ namespace QQClient.Host
             }
             else
             {
-                MessageBox.Show("è¿æ¥æœåŠ¡å™¨å¤±è´¥");
+                MessageBox.Show("Á¬½Ó·şÎñÆ÷Ê§°Ü");
             }
 
 
