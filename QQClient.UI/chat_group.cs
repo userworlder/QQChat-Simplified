@@ -58,6 +58,7 @@ namespace QQClient.UI
             btnClear.Click += btnClear_Click;
             btn_test.Click += btn_test_Click;
             btnInvite.Click += btnInvite_Click;
+            button1.Click += button1_Click;
         }
 
         /// <summary>
@@ -386,8 +387,29 @@ namespace QQClient.UI
             inviteForm.ShowDialog();
         }
 
-        private void btnInvite_Click_1(object sender, EventArgs e) { } 
+        private void btnInvite_Click_1(object sender, EventArgs e) { }
 
         #endregion
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show($"确定退出群 {_groupName} 吗？", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes) return;
+
+            if (_useNewService && _groupService != null)
+            {
+                bool success = await _groupService.LeaveGroupAsync(_groupId);
+                if (success)
+                {
+                    MessageBox.Show("已退出群组");
+                    this.Close();
+                    _parentForm?.RefreshGroupList();
+                }
+                else
+                {
+                    MessageBox.Show("退出失败");
+                }
+            }
+        }
     }
 }

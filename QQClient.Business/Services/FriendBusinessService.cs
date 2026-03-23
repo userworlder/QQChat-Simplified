@@ -284,5 +284,27 @@ namespace QQClient.Business.Services
                 base.OnPushMessageReceived(packet);
             }
         }
+        public async Task<bool> RemoveFriendAsync(string friendId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.RemoveFriendRequest,
+                Sender = CurrentUser.UserId,
+                Content = friendId,
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
+
+            try
+            {
+                var response = await SendRequestAsync(packet);
+                return IsSuccessResponse(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[FriendBusinessService] 删除好友异常: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

@@ -33,6 +33,8 @@ namespace QQClient.Business.Services
         Task<bool> InviteToGroupAsync(string groupId, string invitedUserId);
         Task<bool> JoinGroupAsync(string groupId);
 
+        Task<bool> LeaveGroupAsync(string groupId);
+
         // 事件
         event EventHandler<MessageReceivedEventArgs> MessageReceived;
     }

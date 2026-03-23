@@ -93,7 +93,14 @@ namespace QQClient.UI
             {
                 _groupService.MessageReceived += OnGroupMessageReceived;
             }
-
+            if (_friendService != null)
+            {
+                _friendService.MessageReceived += OnFriendServiceMessageReceived;
+            }
+            if (_groupService != null)
+            {
+                _groupService.MessageReceived += OnGroupServiceMessageReceived;
+            }
             // 同时订阅旧版事件（兼容）
             if (GlobalClient.Current != null)
             {
@@ -111,6 +118,10 @@ namespace QQClient.UI
                 _groupService.MessageReceived -= OnGroupMessageReceived;
             if (GlobalClient.Current != null)
                 GlobalClient.Current.MessageReceived -= OnLegacyMessageReceived;
+            if (_friendService != null)
+                _friendService.MessageReceived -= OnFriendServiceMessageReceived;
+            if (_groupService != null)
+                _groupService.MessageReceived -= OnGroupServiceMessageReceived;
         }
 
         #endregion
@@ -139,7 +150,104 @@ namespace QQClient.UI
                 });
             }
         }
+        private void OnFriendServiceMessageReceived(object sender, MessageReceivedEventArgs e)
+        {
+            if (e.Packet.Type == MessageType.FriendStatusUpdate)
+            {
+                string content = e.Packet.Content;
+                string friendId = e.Packet.Sender;
 
+                if (content == "FRIEND_REMOVED")
+                {
+                    // 对方删除了我们，刷新好友列表
+                    this.Invoke(new Action(async () =>
+                    {
+                        await LoadFriendListAsync();
+                        // 如果聊天窗口打开，关闭它
+                        if (_openChatWindows.TryGetValue(friendId, out var chatWindow))
+                        {
+                            chatWindow.Close();
+                            _openChatWindows.Remove(friendId);
+                        }
+                    }));
+                }
+                else if (content == "FRIEND_ACCEPTED")
+                {
+                    // 好友请求被接受，刷新好友列表
+                    this.Invoke(new Action(async () => await LoadFriendListAsync()));
+                }
+            }
+        }
+        private void OnGroupServiceMessageReceived(object sender, MessageReceivedEventArgs e)
+        {
+            if (e.Packet.Type == MessageType.GroupMemberChanged)
+            {
+                string content = e.Packet.Content;
+                string groupId = e.Packet.Extras["GroupId"];
+                string userId = e.Packet.Extras["UserId"];
+
+                if (content == "MEMBER_REMOVED")
+                {
+                    if (userId == CurrentUser.UserId)
+                    {
+                        // 自己被移出群
+                        this.Invoke((MethodInvoker)delegate
+                        {
+                            // 从列表中移除
+                            foreach (Control ctrl in public_chat.Controls)
+                            {
+                                if (ctrl is GroupItem item && item.GroupId == groupId)
+                                {
+                                    public_chat.Controls.Remove(item);
+                                    break;
+                                }
+                            }
+                            // 关闭聊天窗口
+                            if (_openGroupWindows.TryGetValue(groupId, out var groupWindow))
+                            {
+                                groupWindow.Close();
+                                _openGroupWindows.Remove(groupId);
+                            }
+                            CacheManager.ClearGroupUnreadCount(groupId);
+                        });
+                    }
+                    else
+                    {
+                        // 其他成员退出，可选刷新群列表
+                        this.Invoke(new Action(async () => await LoadGroupListAsync()));
+                    }
+                }
+                else if (content == "MEMBER_ADDED")
+                {
+                    // 新成员加入，刷新群列表
+                    this.Invoke(new Action(async () => await LoadGroupListAsync()));
+                }
+            }
+            if (e.Packet.Type == MessageType.GroupInfoChanged && e.Packet.Content == "GROUP_DELETED")
+            {
+                string groupId = e.Packet.Extras["GroupId"];
+                // 从UI移除
+                this.Invoke((MethodInvoker)delegate
+                {
+                    // 移除群列表项
+                    foreach (Control ctrl in public_chat.Controls)
+                    {
+                        if (ctrl is GroupItem item && item.GroupId == groupId)
+                        {
+                            public_chat.Controls.Remove(item);
+                            break;
+                        }
+                    }
+                    // 关闭窗口
+                    if (_openGroupWindows.TryGetValue(groupId, out var groupWindow))
+                    {
+                        groupWindow.Close();
+                        _openGroupWindows.Remove(groupId);
+                    }
+                    CacheManager.ClearGroupUnreadCount(groupId);
+                });
+            }
+        }
         // 新版好友请求接收
         private void OnFriendRequestReceived(object sender, MessageReceivedEventArgs e)
         {
@@ -279,6 +387,7 @@ namespace QQClient.UI
 
                     item.Width = private_chat.ClientSize.Width -
                         (private_chat.VerticalScroll.Visible ? SystemInformation.VerticalScrollBarWidth : 0);
+                    AddFriendContextMenu(item);
                     private_chat.Controls.Add(item);
 
                     item.Click += (s, e) =>
@@ -368,7 +477,7 @@ namespace QQClient.UI
                     }
 
                     item.UnreadCount = CacheManager.GetGroupUnreadCount(group.GroupId);
-
+                    AddGroupContextMenu(item);
                     public_chat.Controls.Add(item);
                     item.Click += (s, e) => OpenGroupChat(item.GroupId, item.GroupName);
                     _groupItems[group.GroupId] = item;
@@ -515,7 +624,72 @@ namespace QQClient.UI
             item.RejectClicked += OnRejectRequest;
             request.Controls.Add(item);
         }
-
+        private void AddFriendContextMenu(ContactItem item)
+        {
+            var menu = new ContextMenuStrip();
+            var deleteItem = new ToolStripMenuItem("删除好友");
+            deleteItem.Click += async (s, e) =>
+            {
+                var result = MessageBox.Show($"确定删除好友 {item.DisplayName} 吗？", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    bool success = await _friendService.RemoveFriendAsync(item.Account);
+                    if (success)
+                    {
+                        // 从UI移除
+                        private_chat.Controls.Remove(item);
+                        // 关闭对应的聊天窗口（如果打开）
+                        if (_openChatWindows.TryGetValue(item.Account, out var chatWindow))
+                        {
+                            chatWindow.Close();
+                            _openChatWindows.Remove(item.Account);
+                        }
+                        // 清理缓存中的未读计数
+                        CacheManager.ClearFriendUnreadCount(item.Account);
+                        await LoadFriendListAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("删除失败，请稍后重试");
+                    }
+                }
+            };
+            menu.Items.Add(deleteItem);
+            item.ContextMenuStrip = menu;
+        }
+        private void AddGroupContextMenu(GroupItem item)
+        {
+            var menu = new ContextMenuStrip();
+            var quitItem = new ToolStripMenuItem("退出群聊");
+            quitItem.Click += async (s, e) =>
+            {
+                var result = MessageBox.Show($"确定退出群 {item.GroupName} 吗？", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    bool success = await _groupService.LeaveGroupAsync(item.GroupId);
+                    if (success)
+                    {
+                        // 从UI移除
+                        public_chat.Controls.Remove(item);
+                        // 关闭对应的聊天窗口
+                        if (_openGroupWindows.TryGetValue(item.GroupId, out var groupWindow))
+                        {
+                            groupWindow.Close();
+                            _openGroupWindows.Remove(item.GroupId);
+                        }
+                        // 清理缓存
+                        CacheManager.ClearGroupUnreadCount(item.GroupId);
+                        await LoadGroupListAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("退出失败，请稍后重试");
+                    }
+                }
+            };
+            menu.Items.Add(quitItem);
+            item.ContextMenuStrip = menu;
+        }
         private async void OnAcceptRequest(object sender, string fromUserId)
         {
             if (_friendService != null)

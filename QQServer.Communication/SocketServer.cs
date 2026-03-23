@@ -336,6 +336,7 @@ namespace QQServer.Communication
                             Timestamp = DateTime.Now
                         };
                         SendToClient(groupDeletedNotify, clientInfo);
+                        return;
                     }
                     else
                     {
@@ -348,8 +349,8 @@ namespace QQServer.Communication
                     SendErrorResponse(packet.MessageId, clientInfo, "群主不能退出群组，请先转让群主");
                     return;
                 }
-            }
 
+            }
             // 3. 移除群成员
             bool success = _groupMemberService.RemoveGroupMember(groupId, userId);
 

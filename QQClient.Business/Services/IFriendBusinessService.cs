@@ -43,5 +43,6 @@ namespace QQClient.Business.Services
 
         Task<bool> IsFriendAsync(string userId, string friendId);     
         Task<int> GetFriendsCountAsync(string userId);
+        Task<bool> RemoveFriendAsync(string friendId);
     }
 }

@@ -42,6 +42,7 @@
             this.lbl_warn = new System.Windows.Forms.Label();
             this.txtInput = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.button1 = new System.Windows.Forms.Button();
             this.pnlTop.SuspendLayout();
             this.pnlBottom.SuspendLayout();
             this.pnlMessages.SuspendLayout();
@@ -72,6 +73,7 @@
             // pnlBottom
             // 
             this.pnlBottom.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.pnlBottom.Controls.Add(this.button1);
             this.pnlBottom.Controls.Add(this.btnInvite);
             this.pnlBottom.Controls.Add(this.btn_test);
             this.pnlBottom.Controls.Add(this.btnSend);
@@ -190,6 +192,16 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(800, 250);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(241, 10);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(85, 27);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "退出群聊";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // chat_group
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -226,5 +238,6 @@
         private System.Windows.Forms.Label lbl_warn;
         private System.Windows.Forms.TextBox txtInput;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button button1;
     }
 }

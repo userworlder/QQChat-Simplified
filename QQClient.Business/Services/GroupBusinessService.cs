@@ -256,7 +256,33 @@ namespace QQClient.Business.Services
                 return false;
             }
         }
+        public async Task<bool> LeaveGroupAsync(string groupId)
+        {
+            var packet = new ChatPacket
+            {
+                Type = MessageType.LeaveGroupRequest,
+                Sender = _currentUserId,
+                Content = groupId,
+                MessageId = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.Now
+            };
 
+            try
+            {
+                var response = await SendRequestAsync(packet);
+                return IsSuccessResponse(response);
+            }
+            catch (TimeoutException)
+            {
+                Console.WriteLine("[GroupBusinessService] 退出群组超时");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GroupBusinessService] 退出群组异常: {ex.Message}");
+                return false;
+            }
+        }
         // 实现 IGroupBusinessService 接口的其他方法（如果需要）
         public async Task SaveGroupAsync(Group group)
         {
