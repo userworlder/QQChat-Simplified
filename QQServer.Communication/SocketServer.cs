@@ -286,9 +286,142 @@ namespace QQServer.Communication
                 case MessageType.JoinGroupRequest:
                     HandleJoinGroup(packet, clientInfo);
                     break;
+                case MessageType.RemoveFriendRequest:
+                    HandleRemoveFriend(packet, clientInfo);
+                    break;
+                case MessageType.LeaveGroupRequest:
+                    HandleLeaveGroup(packet, clientInfo);
+                    break;
                 default:
                     Console.WriteLine($"未知消息类型: {packet.Type}");
                     break;
+            }
+        }
+        /// <summary>
+        /// 处理用户退出群组请求
+        /// </summary>
+        private void HandleLeaveGroup(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string userId = packet.Sender;          // 当前用户
+            string groupId = packet.Content;        // 要退出的群ID
+
+            Console.WriteLine($"用户 {userId} 请求退出群组 {groupId}");
+
+            // 1. 验证用户是否为群成员
+            var member = _groupMemberService.GetGroupMember(groupId, userId);
+            if (member == null)
+            {
+                SendErrorResponse(packet.MessageId, clientInfo, "您不是该群成员");
+                return;
+            }
+
+            // 2. 如果是群主，可能需要额外处理（不允许退群或转让群主），这里简化为允许退出
+            if (member.Role == 2) // 群主
+            {
+                var members = _groupMemberService.GetGroupMembersByGroupId(groupId);
+                if (members.Count <= 1)
+                {
+                    // 只有群主一人，删除群
+                    bool deleted = _groupService.DeleteGroup(groupId);
+                    if (deleted)
+                    {
+                        // 通知群主群已被删除
+                        var groupDeletedNotify = new ChatPacket
+                        {
+                            Type = MessageType.GroupInfoChanged,
+                            Sender = "Server",
+                            Receiver = userId,
+                            Content = "GROUP_DELETED",
+                            Extras = new Dictionary<string, string> { ["GroupId"] = groupId },
+                            Timestamp = DateTime.Now
+                        };
+                        SendToClient(groupDeletedNotify, clientInfo);
+                    }
+                    else
+                    {
+                        SendErrorResponse(packet.MessageId, clientInfo, "删除群组失败");
+                        return;
+                    }
+                }
+                else
+                {
+                    SendErrorResponse(packet.MessageId, clientInfo, "群主不能退出群组，请先转让群主");
+                    return;
+                }
+            }
+
+            // 3. 移除群成员
+            bool success = _groupMemberService.RemoveGroupMember(groupId, userId);
+
+            // 4. 响应退出者
+            var response = new ChatPacket
+            {
+                Type = MessageType.LeaveGroupResponse,
+                Sender = "Server",
+                Receiver = userId,
+                MessageId = packet.MessageId,
+                Content = success ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            SendToClient(response, clientInfo);
+
+            if (!success)
+            {
+                Console.WriteLine($"用户 {userId} 退出群组 {groupId} 失败");
+                return;
+            }
+
+            Console.WriteLine($"用户 {userId} 已退出群组 {groupId}");
+
+            // 5. 通知群内其他成员（在线）成员已离开
+            var notify = new ChatPacket
+            {
+                Type = MessageType.GroupMemberChanged,
+                Sender = "Server",
+                Receiver = groupId,
+                Content = "MEMBER_REMOVED",
+                Extras = new Dictionary<string, string>
+                {
+                    ["UserId"] = userId,
+                    ["GroupId"] = groupId
+                },
+                Timestamp = DateTime.Now
+            };
+            // 获取群成员列表（不包含刚退出的用户）
+            var remainingMembers = _groupMemberService.GetGroupMembersByGroupId(groupId);
+            foreach (var m in remainingMembers)
+            {
+                SendToUser(notify, m.UserId);
+            }
+        }
+        private void HandleRemoveFriend(ChatPacket packet, ClientInfo clientInfo)
+        {
+            string userName = packet.Sender;
+            string friendUserName = packet.Content;
+            bool success = _friendService.RemoveFriend(userName, friendUserName);
+            var response = new ChatPacket
+            {
+                Type = MessageType.RemoveFriendResponse,
+                Sender = "Server",
+                Receiver = userName,
+                MessageId = packet.MessageId,
+                Content = success ? "SUCCESS" : "FAILED",
+                Timestamp = DateTime.Now
+            };
+            SendToClient(response, clientInfo);
+
+            if (success)
+            {
+                // 通知对方好友关系已删除
+                var notify = new ChatPacket
+                {
+                    Type = MessageType.FriendStatusUpdate,
+                    Sender = userName,
+                    Receiver = friendUserName,
+                    Content = "FRIEND_REMOVED",
+                    Timestamp = DateTime.Now
+                };
+                SendToUser(notify, friendUserName);
             }
         }
         private void SendErrorResponse(string messageId, ClientInfo clientInfo, string errorMessage)
@@ -366,6 +499,26 @@ namespace QQServer.Communication
                     Timestamp = DateTime.Now
                 };
                 SendToUser(notification, invitedUser);
+                var memberUpdate = new ChatPacket
+                {
+                    Type = MessageType.GroupMemberChanged,  // 需要在 MessageType 中定义
+                    Sender = "Server",
+                    Receiver = groupId,  // 使用群ID作为接收标识，广播给群成员
+                    Content = "MEMBER_ADDED",
+                    Extras = new Dictionary<string, string>
+                    {
+                        ["UserId"] = invitedUser,
+                        ["GroupId"] = groupId
+                    },
+                    Timestamp = DateTime.Now
+                };
+                // 获取群所有成员并逐个发送
+                var members = _groupMemberService.GetGroupMembersByGroupId(groupId);
+                foreach (var m in members)
+                {
+                    if (m.UserId != invitedUser) // 不重复发给被邀请者
+                        SendToUser(memberUpdate, member.UserId);
+                }
             }
         }
         private void HandleSearchGroup(ChatPacket packet, ClientInfo clientInfo)
@@ -406,7 +559,7 @@ namespace QQServer.Communication
                 return;
             }
 
-            // 简化：直接加入（可扩展审核流程）
+            // 简化：直接加入
             var newMember = new GroupMember
             {
                 GroupMemberId = Guid.NewGuid().ToString(),
@@ -426,6 +579,30 @@ namespace QQServer.Communication
                 Content = success ? "SUCCESS" : "FAILED",
                 Timestamp = DateTime.Now
             };
+            if (success)
+            {
+                // 通知新成员自己（可选）
+                // 通知群内其他成员
+                var memberUpdate = new ChatPacket
+                {
+                    Type = MessageType.GroupMemberChanged,
+                    Sender = "Server",
+                    Receiver = groupId,
+                    Content = "MEMBER_ADDED",
+                    Extras = new Dictionary<string, string>
+                    {
+                        ["UserId"] = userId,
+                        ["GroupId"] = groupId
+                    },
+                    Timestamp = DateTime.Now
+                };
+                var members = _groupMemberService.GetGroupMembersByGroupId(groupId);
+                foreach (var member in members)
+                {
+                    if (member.UserId != userId) // 不发给刚加入的自己
+                        SendToUser(memberUpdate, member.UserId);
+                }
+            }
             SendToClient(response, clientInfo);
         }
         private void HandleCreateGroup(ChatPacket packet, ClientInfo clientInfo)
@@ -453,6 +630,7 @@ namespace QQServer.Communication
             {
                 response.Extras["GroupId"] = groupId;
             }
+
             SendToClient(response, clientInfo);
         }
         private void HandleGetGroupList(ChatPacket packet, ClientInfo clientInfo)

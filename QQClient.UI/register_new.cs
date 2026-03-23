@@ -8,17 +8,24 @@ namespace QQClient.UI
 {
     public partial class register_new : Form
     {
-        private IUserBusinessService _userService;
-        private IFriendBusinessService _friendService;
-        private Form _loginForm;
+        #region 字段声明
+
+        private IUserBusinessService _userService;      // 用户业务服务（新架构）
+        private IFriendBusinessService _friendService;  // 好友业务服务（用于检查账号是否存在）
+        private Form _loginForm;                         // 登录窗体引用，关闭时显示登录界面
+
+        #endregion
+
+        #region 构造函数与初始化
 
         public register_new(Form login)
         {
             InitializeComponent();
             _loginForm = login;
+            // 当注册窗体关闭时，重新显示登录窗体
             this.FormClosed += (sender, e) => login.Show();
 
-            // 从服务容器获取服务
+            // 从服务容器中获取已注册的业务服务
             if (ServiceContainer.IsRegistered<IUserBusinessService>())
             {
                 _userService = ServiceContainer.Resolve<IUserBusinessService>();
@@ -29,13 +36,23 @@ namespace QQClient.UI
             }
         }
 
+        #endregion
+
+        #region UI事件处理
+
+        /// <summary>
+        /// “清空”按钮：清空所有输入框
+        /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
-            textBox1.Text = "";
-            textBox2.Text = "";
-            textBox3.Text = "";
+            textBox1.Text = "";   // 昵称
+            textBox2.Text = "";   // 账号
+            textBox3.Text = "";   // 密码
         }
 
+        /// <summary>
+        /// “注册”按钮：执行注册流程
+        /// </summary>
         private async void button1_Click(object sender, EventArgs e)
         {
             string nickname = textBox1.Text;
@@ -57,7 +74,7 @@ namespace QQClient.UI
                 return;
             }
 
-            // 设置昵称（如果为空则使用账号）
+            // 如果昵称为空，则默认使用账号作为昵称
             if (string.IsNullOrEmpty(nickname))
             {
                 nickname = account;
@@ -66,7 +83,7 @@ namespace QQClient.UI
 
             try
             {
-                // 使用新版服务检查账号是否已存在
+                // 1. 检查账号是否已存在（通过好友搜索服务）
                 bool exists = false;
                 if (_friendService != null)
                 {
@@ -80,19 +97,19 @@ namespace QQClient.UI
                     return;
                 }
 
-                // 使用新版服务注册
+                // 2. 如果用户服务不可用，降级到旧版注册
                 if (_userService == null)
                 {
-                    // 降级到旧版注册
                     LegacyRegister(account, password, nickname);
                     return;
                 }
 
+                // 3. 使用新版服务注册
                 bool success = await _userService.RegisterAsync(account, password, nickname);
                 if (success)
                 {
                     MessageBox.Show("注册成功");
-                    this.Close();
+                    this.Close();   // 关闭注册窗体，自动显示登录窗体
                 }
                 else
                 {
@@ -109,7 +126,13 @@ namespace QQClient.UI
             }
         }
 
-        // 旧版注册（降级方案）
+        #endregion
+
+        #region 降级注册（旧版客户端）
+
+        /// <summary>
+        /// 旧版注册方法（使用 GlobalClient）
+        /// </summary>
         private void LegacyRegister(string account, string password, string nickname)
         {
             var client = GlobalClient.Current;
@@ -132,5 +155,7 @@ namespace QQClient.UI
                 label_warn.Visible = true;
             }
         }
+
+        #endregion
     }
 }

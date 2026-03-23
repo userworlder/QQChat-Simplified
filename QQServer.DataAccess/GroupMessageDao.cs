@@ -8,6 +8,13 @@ namespace QQServer.DataAccess
 {
     public class GroupMessageDao
     {
+        // 删除群组的所有消息
+        public bool DeleteGroupMessages(string groupId)
+        {
+            string sql = "DELETE FROM GroupMessages WHERE GroupId = @GroupId";
+            SqlParameter[] parameters = { new SqlParameter("@GroupId", groupId) };
+            return DbHelper.ExecuteNonQuery(sql, parameters) > 0;
+        }
         // 发送群消息
         public bool SendGroupMessage(GroupMessage message)
         {

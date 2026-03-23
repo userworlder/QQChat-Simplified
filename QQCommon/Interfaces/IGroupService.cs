@@ -15,5 +15,6 @@ namespace QQCommon.Interfaces
         string CreateGroup(string creatorUsername, string groupName, string description);
         Group GetGroupById(string groupId);
         List<Group> SearchGroups(string keyword);
+        bool DeleteGroup(string groupId);
     }
 }

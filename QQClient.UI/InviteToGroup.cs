@@ -9,24 +9,34 @@ namespace QQClient.UI
 {
     public partial class InviteToGroup : Form
     {
-        private string _groupId;
+        #region 字段声明
 
-        // 业务服务
+        private string _groupId;                     // 要邀请入群的群组ID
+
+        // 业务服务（新架构）
         private IFriendBusinessService _friendService;
         private IGroupBusinessService _groupService;
-        private bool _useNewService = false;
+        private bool _useNewService = false;         // 标记是否使用新架构
+
+        #endregion
+
+        #region 构造函数与初始化
 
         public InviteToGroup(string groupId)
         {
             InitializeComponent();
             _groupId = groupId;
 
-            // 初始化服务
+            // 从服务容器获取业务服务
             InitializeServices();
 
+            // 加载好友列表
             LoadFriends();
         }
 
+        /// <summary>
+        /// 初始化业务服务（从服务容器中获取）
+        /// </summary>
         private void InitializeServices()
         {
             try
@@ -45,6 +55,13 @@ namespace QQClient.UI
             }
         }
 
+        #endregion
+
+        #region 加载好友列表（新旧架构）
+
+        /// <summary>
+        /// 加载好友列表，显示为按钮
+        /// </summary>
         private async void LoadFriends()
         {
             if (_useNewService && _friendService != null)
@@ -57,22 +74,29 @@ namespace QQClient.UI
             }
         }
 
+        /// <summary>
+        /// 使用新版服务加载好友列表
+        /// </summary>
         private async Task LoadFriendsByServiceAsync()
         {
             try
             {
+                // 获取当前登录用户ID
                 string currentUserId = CurrentUser.UserId ?? GlobalClient.CurrentUserId;
+                // 从服务器获取好友列表
                 var friends = await _friendService.GetFriendListAsync(currentUserId);
 
                 flowFriends.Controls.Clear();
 
                 foreach (var friend in friends)
                 {
+                    // 优先显示昵称，没有则显示账号
                     string displayName = friend.FriendNickName ?? friend.FriendUserName;
+                    // 为每个好友创建一个邀请按钮
                     var btnInvite = new Button
                     {
                         Text = displayName,
-                        Tag = friend.FriendUserName,
+                        Tag = friend.FriendUserName,      // 存储好友账号，用于邀请
                         Width = 120,
                         Height = 30,
                         Margin = new Padding(5)
@@ -81,6 +105,7 @@ namespace QQClient.UI
                     flowFriends.Controls.Add(btnInvite);
                 }
 
+                // 如果没有好友，显示提示文本
                 if (flowFriends.Controls.Count == 0)
                 {
                     flowFriends.Controls.Add(new Label { Text = "暂无好友，请先添加好友", AutoSize = true });
@@ -89,10 +114,14 @@ namespace QQClient.UI
             catch (Exception ex)
             {
                 Console.WriteLine($"[LoadFriendsByServiceAsync] 异常: {ex.Message}");
+                // 降级到旧版
                 LoadFriendsLegacy();
             }
         }
 
+        /// <summary>
+        /// 使用旧版客户端加载好友列表（降级方案）
+        /// </summary>
         private void LoadFriendsLegacy()
         {
             var client = GlobalClient.Current;
@@ -112,6 +141,7 @@ namespace QQClient.UI
                     Height = 30,
                     Margin = new Padding(5)
                 };
+                // 旧版邀请方法（使用 Task.Run 避免阻塞UI）
                 btnInvite.Click += async (s, e) =>
                 {
                     var btn = (Button)s;
@@ -127,19 +157,33 @@ namespace QQClient.UI
             }
         }
 
+        #endregion
+
+        #region 邀请好友入群
+
+        /// <summary>
+        /// 邀请指定的好友加入群组
+        /// </summary>
+        /// <param name="btnInvite">被点击的按钮（包含好友账号）</param>
         private async Task InviteFriendAsync(Button btnInvite)
         {
+            string friendId = btnInvite.Tag.ToString();
+
             if (_useNewService && _groupService != null)
             {
-                bool success = await _groupService.InviteToGroupAsync(_groupId, btnInvite.Tag.ToString());
+                // 使用新版群组服务发送邀请
+                bool success = await _groupService.InviteToGroupAsync(_groupId, friendId);
                 MessageBox.Show(success ? "邀请已发送" : "邀请失败，请重试");
             }
             else
             {
+                // 使用旧版客户端发送邀请
                 var client = GlobalClient.Current;
-                bool success = await Task.Run(() => client.InviteToGroup(_groupId, btnInvite.Tag.ToString()));
+                bool success = await Task.Run(() => client.InviteToGroup(_groupId, friendId));
                 MessageBox.Show(success ? "邀请已发送" : "邀请失败，请重试");
             }
         }
+
+        #endregion
     }
 }

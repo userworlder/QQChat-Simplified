@@ -68,6 +68,16 @@ namespace QQCommon.Protocols
         JoinGroupRequest = 512,
         JoinGroupResponse = 513,
         GroupJoinRequestNotification = 514,
-        GroupJoinRequestResponse = 515
+        GroupJoinRequestResponse = 515,
+        // 群成员变更
+        GroupMemberChanged =516,
+        // 群信息变更
+        GroupInfoChanged = 517,
+        // 删除好友请求/响应
+        RemoveFriendRequest = 518,
+        RemoveFriendResponse = 519,
+        // 退出群组
+        LeaveGroupRequest = 520,
+        LeaveGroupResponse = 521
     }
 }

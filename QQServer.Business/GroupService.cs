@@ -21,7 +21,39 @@ namespace QQServer.Business
             _memberDao = new GroupMemberDao();
             _messageDao = new GroupMessageDao();
         }
+        /// 删除群组（同时删除群成员和群消息）
+        /// </summary>
+        /// <param name="groupId">群组ID</param>
+        /// <returns>是否删除成功</returns>
+        public bool DeleteGroup(string groupId)
+        {
+            // 1. 删除群消息
+            bool msgDeleted = _messageDao.DeleteGroupMessages(groupId);
+            if (!msgDeleted)
+            {
+                Console.WriteLine($"[GroupService] 删除群消息失败，群ID: {groupId}");
+                // 可以继续执行，但不影响群基本信息的删除，但为了数据一致性，可以选择返回false
+                // 这里选择继续，但记录日志
+            }
 
+            // 2. 删除群成员
+            bool membersDeleted = _memberDao.RemoveAllGroupMembers(groupId);
+            if (!membersDeleted)
+            {
+                Console.WriteLine($"[GroupService] 删除群成员失败，群ID: {groupId}");
+                // 继续
+            }
+
+            // 3. 删除群基本信息
+            bool groupDeleted = _groupDao.DeleteGroup(groupId);
+            if (!groupDeleted)
+            {
+                Console.WriteLine($"[GroupService] 删除群基本信息失败，群ID: {groupId}");
+                return false;
+            }
+
+            return true;
+        }
         public List<Group> GetGroupsByUserId(string userId)
         {
             var members = _memberDao.GetGroupMembersByUserId(userId);
