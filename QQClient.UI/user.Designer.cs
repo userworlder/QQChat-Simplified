@@ -32,6 +32,7 @@
             this.paneltab = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.private_chat = new System.Windows.Forms.FlowLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
@@ -40,10 +41,10 @@
             this.request = new System.Windows.Forms.FlowLayoutPanel();
             this.label3 = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.button4 = new System.Windows.Forms.Button();
             this.btn_profile = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.btn_search = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.paneltab.SuspendLayout();
             this.panel1.SuspendLayout();
             this.private_chat.SuspendLayout();
@@ -86,6 +87,18 @@
             this.button1.Text = "私聊";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.btn_privatemode);
+            // 
+            // button4
+            // 
+            this.button4.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button4.Location = new System.Drawing.Point(230, 0);
+            this.button4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(116, 38);
+            this.button4.TabIndex = 3;
+            this.button4.Text = "验证消息";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.btn_requestmode);
             // 
             // panel1
             // 
@@ -167,18 +180,6 @@
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
-            // button4
-            // 
-            this.button4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button4.Location = new System.Drawing.Point(230, 0);
-            this.button4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(116, 38);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "验证消息";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.btn_requestmode);
-            // 
             // btn_profile
             // 
             this.btn_profile.Location = new System.Drawing.Point(12, 11);
@@ -212,11 +213,22 @@
             this.btn_search.UseVisualStyleBackColor = true;
             this.btn_search.Click += new System.EventHandler(this.btn_search_Click);
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(13, 68);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(80, 35);
+            this.button3.TabIndex = 8;
+            this.button3.Text = "刷新";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // user
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(349, 628);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.btn_search);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.btn_profile);
@@ -254,5 +266,6 @@
         private System.Windows.Forms.Button btn_profile;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button btn_search;
+        private System.Windows.Forms.Button button3;
     }
 }

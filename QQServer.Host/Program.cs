@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Text;
 using QQServer.Communication;
 
 namespace QQServer.Host
@@ -7,6 +8,9 @@ namespace QQServer.Host
     {
         static void Main(string[] args)
         {
+            // 设置控制台编码为 UTF-8
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
             Console.Title = "QQ服务器";
 
             var server = new SocketServer();

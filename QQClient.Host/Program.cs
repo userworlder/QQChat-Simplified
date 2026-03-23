@@ -1,4 +1,4 @@
-﻿using QQClient.Business;
+using QQClient.Business;
 using QQClient.Business.Services;
 using QQClient.Communication;
 using QQClient.DataAccess;
